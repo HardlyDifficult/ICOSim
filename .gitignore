@@ -1,1 +1,4 @@
 /.idea
+/SmartContract/config.json
+.bin
+SmartContract/node_modules

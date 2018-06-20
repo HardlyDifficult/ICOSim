@@ -79,7 +79,7 @@ async function run(){
           contract : receipt.contract_address
         };
         content += "neb_contract=" + toSource(obj) + ";";
-        fs.writeFileSync('../static/settings.js', content);
+        fs.writeFileSync('../ICOSim/src/static/settings.js', content);
         
         await callMethod("setStartingResources", 42); 
         await callMethod("setWorldResources", 555555555); 

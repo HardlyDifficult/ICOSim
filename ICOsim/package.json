@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "bootstrap": "^4.1.1",
+    "nebpay": "^0.0.6",
+    "nebulas": "^0.5.2",
     "vue": "^2.5.2",
     "vue-particles": "^1.0.9",
     "vue-router": "^3.0.1"

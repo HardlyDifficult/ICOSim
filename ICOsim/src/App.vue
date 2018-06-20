@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF"></vue-particles>
+    <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
     <router-view/>
   </div>
 </template>

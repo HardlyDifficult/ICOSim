@@ -2,11 +2,16 @@ BigNumber.config({ DECIMAL_PLACES: 10, ROUNDING_MODE: 1 })
 
 var Contract = function() 
 {
-  // all_users, all_items
+  // all_users, all_items, active_icos
   LocalContractStorage.defineMapProperty(this, "lists");
 
-  // {resources, nas_redeemed, last_action_date, items: {'Pick Axe': 2, 'Shield': 1}}
+  // {nas_redeemed, active_ico: txhash, retired_icos: [txhash]}
   LocalContractStorage.defineMapProperty(this, "addr_to_user");
+  
+  // {name, ticker, resources, last_action_date, items: {'Pick Axe': 2, 'Shield': 1}}  
+  LocalContractStorage.defineMapProperty(this, "icohash_to_ico");
+
+  LocalContractStorage.defineMapProperty(this, "ticker_to_icohash");
   
   // {name: "Tom Lee", start_price: 1, resources_per_s: 1 (or bonus_multiplier)} 
   LocalContractStorage.defineMapProperty(this, "name_to_item");
@@ -76,11 +81,23 @@ var Contract = function()
 
 Contract.prototype = 
 {
+  //#region Asserts
+  assertIsOwner: function()
+  {
+    if(!this.isOwner())
+    {
+      throw new Error("This is an owner only call.");
+    }
+  },
+  //#endregion
+
   //#region Owner only
   init: function(starting_resources) 
   {
     this.lists.put("all_users", []);
     this.lists.put("all_items", []);
+    this.lists.put("active_icos", []);
+    
     if(!starting_resources)
     {
       starting_resources = 0;
@@ -95,7 +112,7 @@ Contract.prototype =
   
   setStartingResources : function(starting_resources)
   {
-    assertIsOwner(this);
+    this.assertIsOwner();
 
     this.starting_resources = new BigNumber(starting_resources);
     if(!this.starting_resources.isInteger()
@@ -107,7 +124,7 @@ Contract.prototype =
   
   setWorldResources : function(world_resources)
   {
-    assertIsOwner(this);
+    this.assertIsOwner();
 
     this.world_resources = new BigNumber(world_resources);
     if(!this.world_resources.isInteger())
@@ -118,7 +135,7 @@ Contract.prototype =
 
   setBuyPrice : function(nas_per_resource)
   {
-    assertIsOwner(this);
+    this.assertIsOwner();
 
     this.buy_price_nas_per_resource = nas_per_resource;
   },
@@ -130,7 +147,7 @@ Contract.prototype =
   
   changeOwner: function(new_owner_addr)
   {
-    assertIsOwner(this);
+    this.assertIsOwner();
 
     if(!Blockchain.verifyAddress(new_owner_addr))
     {
@@ -142,7 +159,7 @@ Contract.prototype =
   
   createItem: function(item)
   {
-    assertIsOwner(this);
+    this.assertIsOwner();
 
     if(!item || !item.name)
     {
@@ -167,29 +184,72 @@ Contract.prototype =
     if(!user)
     {
       user = {
-        resources: this.starting_resources, 
         nas_redeemed: new BigNumber(0), 
-        last_action_date: Date.now(), 
-        items: {}
+        active_ico: null,
+        retired_icos: []
       };
       this.addr_to_user.put(Blockchain.transaction.from, user);
-      var all_users = this.lists.get("all_users");
-      all_users.push(Blockchain.transaction.from);
-      this.lists.put("all_users", all_users);
-      this.total_resources = this.total_resources.plus(this.starting_resources);
+      addToList(this.lists, "all_users", Blockchain.transaction.from);
     }
     return user;
   },
   //#endregion
 
+  //#region ICO managment
+  createICO: function(name, ticker)
+  {
+    var user = this.getOrCreateUser();
+    if(user.active_ico)
+    {
+      throw new Error("You can only run one ICO at a time.");
+    }
+
+    var ico = {
+      id: Blockchain.transaction.hash,
+      name,
+      ticker,
+      resources: this.starting_resources, 
+      last_action_date: Date.now(), 
+      items: {}
+    }
+
+    this.total_resources = this.total_resources.plus(this.starting_resources);
+    
+    this.icohash_to_ico.put(ico.id, ico);
+    this.ticker_to_icohash.put(ticker, ico.id);
+    user.active_ico = ico.id;
+    this.addr_to_user.put(Blockchain.transaction.from, user);
+    addToList(this.lists, "active_icos", ico.id);
+
+    return ico.id;
+  },
+
+  getActiveICO: function()
+  {
+    var user = this.getOrCreateUser();
+    if(!user.active_ico)
+    {
+      throw new Error("Please start an ICO first.");
+    }
+
+    return this.getICO(user.active_ico);
+  },
+  
+  getICO: function(icohash)
+  {
+    return this.icohash_to_ico.get(icohash);
+  },
+  //#endregion
+
+
   //#region Resource and Money management
   accept: function() 
   {
-    var user = this.getOrCreateUser();
+    var ico = this.getActiveICO();
     var amount = Blockchain.transaction.value.div(this.buy_price_nas_per_resource);
     this.total_resources = this.total_resources.plus(amount);
-    user.resources = new BigNumber(user.resources).plus(amount);
-    this.addr_to_user.put(Blockchain.transaction.from, user);
+    ico.resources = new BigNumber(ico.resources).plus(amount);
+    this.icohash_to_ico.put(ico.id, ico);
     this.nas = this.nas.plus(Blockchain.transaction.value);
   }, 
 
@@ -218,14 +278,14 @@ Contract.prototype =
 
   getMyResources: function()
   {
-    var user = this.getOrCreateUser();
-    return new BigNumber(user.resources).plus(this.getMyPendingResources());
+    var ico = this.getActiveICO();
+    return new BigNumber(ico.resources).plus(this.getMyPendingResources());
   },
 
   getMyResourcesNasValue: function()
   {
-    var user = this.getOrCreateUser();
-    if(Object.keys(user.items).length < 1)
+    var ico = this.getActiveICO();
+    if(Object.keys(ico.items).length < 1)
     {
       return 0;
     }
@@ -247,8 +307,8 @@ Contract.prototype =
     {
       return null;
     }
-    var user = this.getOrCreateUser();
-    var count = user.items[name];
+    var ico = this.getActiveICO();
+    var count = ico.items[name];
     if(!count)
     {
       return new BigNumber(0);
@@ -276,9 +336,9 @@ Contract.prototype =
 
   getMyProductionSinceLastRedeem: function()
   {
-    var user = this.getOrCreateUser();
+    var ico = this.getActiveICO();
 
-    var time_passed = Date.now() - user.last_action_date;
+    var time_passed = Date.now() - ico.last_action_date;
     if(time_passed < 0)
     {
       time_passed = 0;
@@ -295,8 +355,8 @@ Contract.prototype =
     {
       return null;
     }
-    var user = this.getOrCreateUser();
-    var count = user.items[name];
+    var ico = this.getActiveICO();
+    var count = ico.items[name];
     if(!count)
     {
       return new BigNumber(0);
@@ -330,24 +390,26 @@ Contract.prototype =
   redeemResources: function()
   {
     var pending_resources = this.getMyPendingResources();
-    var user = this.getOrCreateUser();
-    user.last_action_date = Date.now();
-    user.resources = new BigNumber(user.resources).plus(pending_resources);
+    var ico = this.getActiveICO();
+    ico.last_action_date = Date.now();
+    ico.resources = new BigNumber(ico.resources).plus(pending_resources);
     this.total_resources = this.total_resources.plus(pending_resources);
-    this.addr_to_user.put(Blockchain.transaction.from, user);
+    this.icohash_to_ico.put(ico.id, ico);
 
-    return user.resources;
+    return ico.resources;
   },
 
   redeemNas: function()
   {
     var user = this.getOrCreateUser();
+    var ico = this.getActiveICO();
     var nas = new BigNumber(this.getMyResourcesNasValue().toFixed(0));
-    this.total_resources = this.total_resources.sub(user.resources).plus(this.starting_resources);
-    user.resources = new BigNumber(this.starting_resources);
-    user.items = {};
+    this.total_resources = this.total_resources.sub(ico.resources).plus(this.starting_resources);
+    ico.resources = new BigNumber(this.starting_resources);
+    ico.items = {};
     user.nas_redeemed = new BigNumber(user.nas_redeemed).plus(nas);
     this.addr_to_user.put(Blockchain.transaction.from, user);
+    this.icohash_to_ico.put(ico.id, ico);
     if(!Blockchain.transfer(Blockchain.transaction.from, nas))
     {
       throw new Error("Transfer failed!  Tried to send " + nas + ". The contract has " + this.getSmartContractBalance());
@@ -391,8 +453,8 @@ Contract.prototype =
   
   getMyItemCount: function(name)
   {
-    var user = this.getOrCreateUser();
-    var my_count = user.items[name];
+    var ico = this.getActiveICO();
+    var my_count = ico.items[name];
     if(!my_count)
     {
       return new BigNumber(0);
@@ -422,9 +484,9 @@ Contract.prototype =
   {
     this.redeemResources();
     var item = this.getItemRaw(name);
-    var user = this.getOrCreateUser();
+    var ico = this.getActiveICO();
 
-    var p = new BigNumber(user.resources);
+    var p = new BigNumber(ico.resources);
     var s = new BigNumber(item.start_price);
     var c = this.getMyItemCount(name);
 
@@ -446,7 +508,7 @@ Contract.prototype =
   buy: function(name, quantity)
   {
     this.redeemResources();
-    var user = this.getOrCreateUser();
+    var ico = this.getActiveICO();
 
     if(!quantity)
     { 
@@ -454,23 +516,23 @@ Contract.prototype =
     }
 
     var price = this.getMyItemPrice(name, quantity);
-    if(price.gt(user.resources))
+    if(price.gt(ico.resources))
     {
-      throw new Error("You can't afford that yet.  You have " + user.resources + " but it costs " + price);
+      throw new Error("You can't afford that yet.  You have " + ico.resources + " but it costs " + price);
     }
     
-    user.resources = new BigNumber(user.resources).sub(price); 
+    ico.resources = new BigNumber(ico.resources).sub(price); 
     this.total_resources = this.total_resources.sub(price);
-    if(!user.items[name])
+    if(!ico.items[name])
     {
-      user.items[name] = quantity;
+      ico.items[name] = quantity;
     }
     else
     {
-      user.items[name] = new BigNumber(user.items[name]).plus(quantity);
+      ico.items[name] = new BigNumber(ico.items[name]).plus(quantity);
     }
 
-    this.addr_to_user.put(Blockchain.transaction.from, user);
+    this.icohash_to_ico.put(ico.id, ico);
   },
   //#endregion
 
@@ -500,10 +562,10 @@ Contract.prototype =
 
 module.exports = Contract
 
-function assertIsOwner(contract)
+
+function addToList(lists, list_name, item)
 {
-  if(!contract.isOwner())
-  {
-    throw new Error("This is an owner only call.");
-  }
+  var list = lists.get(list_name);
+  list.push(item);
+  lists.put(list_name, list);
 }

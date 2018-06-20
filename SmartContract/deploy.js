@@ -81,9 +81,9 @@ async function run(){
         content += "neb_contract=" + toSource(obj) + ";";
         fs.writeFileSync('../static/settings.js', content);
         
-        await callMethod("setStartingResources", '[42]'); 
-        await callMethod("setWorldResources", '[555555555]'); 
-        await callMethod("setBuyPrice", '[10000000]'); 
+        await callMethod("setStartingResources", 42); 
+        await callMethod("setWorldResources", 555555555); 
+        await callMethod("setBuyPrice", 10000000); 
 
         var items = [
           // Raw production
@@ -109,7 +109,7 @@ async function run(){
 
         for(var i = 0; i < items.length; i++)
         {
-          await callMethod("createItem", '[' + JSON.stringify(items[i]) + ']'); 
+          await callMethod("createItem", items[i]); 
         }
 
         // for(var i = 0; i < items.length; i++)
@@ -118,7 +118,12 @@ async function run(){
         //   sleep(5000);
         // }
 
-        await callMethod("changeOwner", '["n1S5JNP13pnoyswKbGtrtE3Bexz6pbtKaPj"]');
+        await callMethod("changeOwner", "n1S5JNP13pnoyswKbGtrtE3Bexz6pbtKaPj");
+
+        // For testing: 
+        await callMethod("createICO", ["HardlyValuable", "HV"])
+        //await callMethod("getInfo", null);
+
       }
 
       return;
@@ -136,10 +141,14 @@ run();
 
 async function callMethod(method, args)
 {
+  if(!(args instanceof Array))
+  {
+    args = [args];
+  }
   options.to = receipt.contract_address;
   options.contract = {
     function: method,
-    args
+    args: JSON.stringify(args)
   };
   options.nonce++;
   var transaction = new Nebulas.Transaction(options);

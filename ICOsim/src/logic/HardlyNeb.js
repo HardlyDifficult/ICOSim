@@ -46,89 +46,89 @@ nebTest(method, args)
     
     nebWrite(method, args, listener, nas_to_send, receipt, error) 
     {
-    nebPay.call(neb_contract.contract, nas_to_send, method, global.JSON.stringify(args),
-    {
-        listener: (resp)=>
-        { 
-            if(!resp.txhash)
-            {
-                error(resp);
-                return;
+        nebPay.call(neb_contract.contract, nas_to_send, method, global.JSON.stringify(args),
+        {
+            listener: (resp) =>
+            { 
+                if(!resp.txhash)
+                {
+                    error(resp);
+                    return;
+                }
+                if(listener)
+                {
+                    listener(resp);
+                }         
+                if(receipt)
+                {
+                    this.nebGetTxStatus(resp.txhash, receipt, error);
+                }
             }
-            if(listener)
-            {
-                listener(resp);
-            }         
+        });
+    },
+
+    nebSend(to, listener, value, receipt, error)
+    {
+        nebPay.pay(to, value, {listener: function(resp)
+        {
+            listener(resp);
             if(receipt)
             {
-                this.nebGetTxStatus(resp.txhash, receipt, error);
+                nebGetTxStatus(resp.txhash, receipt, error);
             }
-        }
-    });
-},
+        }});           
+    },
 
-nebSend(to, listener, value, receipt, error)
-{
-    nebPay.pay(to, value, {listener: function(resp)
+    nebRead(method, args, listener, onError) 
     {
-        listener(resp);
-        if(receipt)
-        {
-            nebGetTxStatus(resp.txhash, receipt, error);
-        }
-    }});           
-},
+        nebPay.simulateCall(neb_contract.contract, 0, method, global.JSON.stringify(args), {
+            listener: function(resp) 
+            {
+                var error = resp.execute_err;
+                var result;
+                if(!error) 
+                {
+                    if(resp.result) 
+                    {
+                        result = global.JSON.parse(resp.result);
+                    }
+                } 
+                else 
+                {
+                    onError(error);
+                    console.log("Error: " + error);
+                    return;
+                }
+            
+                listener(result);
+            }
+        });
+    },
 
-nebRead(method, args, listener) 
-{
-    nebPay.simulateCall(neb_contract.contract, 0, method, global.JSON.stringify(args), {
-        listener: function(resp) 
+    nebReadAnon(method, args, listener) 
+    {
+        neb.api.call({
+            from: neb_contract.contract, // Using the contract here so this can be called without loggin on.
+            to: neb_contract.contract,
+            value: 0,
+            nonce: 0, // Nonce is irrelavant when read-only (there is no transaction charge)
+            gasPrice: gas_price,
+            gasLimit: gas_limit,
+            contract: {function: method, args: global.JSON.stringify(args)} 
+        }).then(function (resp) 
         {
             var error = resp.execute_err;
             var result;
-            if(!error) 
+            if(resp.result) 
             {
-                if(resp.result) 
-                {
-                    result = global.JSON.parse(resp.result);
-                }
-            } else 
+                result = global.JSON.parse(resp.result);
+            } 
+            else 
             {
                 console.log("Error: " + error);
             }
         
-            listener(result, error, args);
-        }
-    });
-},
-
-
-nebReadAnon(method, args, listener) 
-{
-     neb.api.call({
-         from: neb_contract.contract, // Using the contract here so this can be called without loggin on.
-         to: neb_contract.contract,
-         value: 0,
-         nonce: 0, // Nonce is irrelavant when read-only (there is no transaction charge)
-         gasPrice: gas_price,
-         gasLimit: gas_limit,
-         contract: {function: method, args: global.JSON.stringify(args)} 
-     }).then(function (resp) 
-     {
-        var error = resp.execute_err;
-        var result;
-        if(resp.result) 
-        {
-            result = global.JSON.parse(resp.result);
-        } 
-        else 
-        {
-            console.log("Error: " + error);
-        }
-    
-        listener(result, error, args);      
-     });        
- },
-
- 
+            listener(result, error, args);      
+        });        
+    },
 }

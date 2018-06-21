@@ -12,14 +12,15 @@ neb.setRequest(new nebulas.HttpRequest(neb_contract.apiUrl));
 
 module.exports = 
 {
-nebTest(method, args)
-{
-    nebRead(method, args, function(resp, error) 
+    nebTest(method, args)
     {
-        console.log("---------------------------------------------------");
-        console.log("resp: " + global.JSON.stringify(resp) + "; error: " + error);
-    });
-},
+        nebRead(method, args, function(resp, error) 
+        {
+            console.log("---------------------------------------------------");
+            console.log("resp: " + global.JSON.stringify(resp) + "; error: " + error);
+        });
+    },
+
     nebGetTxStatus(txhash, listener, error)
     {
         neb.api.getTransactionReceipt({hash: txhash}).then((resp) =>
@@ -46,13 +47,21 @@ nebTest(method, args)
     
     nebWrite(method, args, listener, nas_to_send, receipt, error) 
     {
+        if(!args)
+        {
+            args = null;
+        }
+
         nebPay.call(neb_contract.contract, nas_to_send, method, global.JSON.stringify(args),
         {
             listener: (resp) =>
             { 
                 if(!resp.txhash)
                 {
-                    error(resp);
+                    if(error)
+                    {
+                        error(resp);
+                    }
                     return;
                 }
                 if(listener)
@@ -69,20 +78,36 @@ nebTest(method, args)
 
     nebSend(to, listener, value, receipt, error)
     {
-        nebPay.pay(to, value, {listener: function(resp)
+        nebPay.pay(to, value, {listener: (resp) =>
         {
-            listener(resp);
+            if(!resp.txhash)
+            {
+                if(error)
+                {
+                    error(resp);
+                }
+                return;
+            }
+            if(listener)
+            {
+                listener(resp);
+            }
             if(receipt)
             {
-                nebGetTxStatus(resp.txhash, receipt, error);
+                this.nebGetTxStatus(resp.txhash, receipt, error);
             }
         }});           
     },
 
     nebRead(method, args, listener, onError) 
     {
+        if(!args)
+        {
+            args = null;
+        }
+
         nebPay.simulateCall(neb_contract.contract, 0, method, global.JSON.stringify(args), {
-            listener: function(resp) 
+            listener: (resp) =>
             {
                 var error = resp.execute_err;
                 var result;
@@ -107,6 +132,11 @@ nebTest(method, args)
 
     nebReadAnon(method, args, listener) 
     {
+        if(!args)
+        {
+            args = null;
+        }
+
         neb.api.call({
             from: neb_contract.contract, // Using the contract here so this can be called without loggin on.
             to: neb_contract.contract,
@@ -115,7 +145,7 @@ nebTest(method, args)
             gasPrice: gas_price,
             gasLimit: gas_limit,
             contract: {function: method, args: global.JSON.stringify(args)} 
-        }).then(function (resp) 
+        }).then((resp) =>
         {
             var error = resp.execute_err;
             var result;

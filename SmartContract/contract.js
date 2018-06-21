@@ -399,7 +399,7 @@ Contract.prototype =
     return ico.resources;
   },
 
-  redeemNas: function()
+  exitScam: function()
   {
     var user = this.getOrCreateUser();
     var ico = this.getActiveICO();

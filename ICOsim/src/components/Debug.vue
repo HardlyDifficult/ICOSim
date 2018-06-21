@@ -37,34 +37,47 @@
         </div>
 
         <div class="card mt-5 text-left">
-            <h5>Global</h5>
+            <h5>Your ICO</h5>
             <div class="row mt-2">
                 <div class="col-12">
-                    smart_contract_balance: {{ info.smart_contract_balance }}
+                    my_resources: {{ info.my_resources | count }}
                 </div>
                 <div class="col-12">
-                    buy_price_nas_per_resource: {{ info.buy_price_nas_per_resource }}
+                    my_production_rate: {{ info.my_production_rate | count }}
                 </div>
                 <div class="col-12">
-                    sell_price_resources_per_nas: {{ info.sell_price_resources_per_nas }}
+                    my_bonus: {{ info.my_bonus | percent }}
+                </div>
+                <div class="col-12">
+                    my_total_production_rate: {{ info.my_total_production_rate | count }}
                 </div>
             </div>
         </div>
 
         <div class="card mt-5 text-left">
-            <h5>Your ICO</h5>
+            <h5>NAS</h5>
             <div class="row mt-2">
                 <div class="col-12">
-                    my_resources: {{ info.my_resources }}
+                    buy_price_nas_per_resource: {{ info.buy_price_nas_per_resource | nas }}
                 </div>
                 <div class="col-12">
-                    my_resources_nas_value: {{ info.my_resources_nas_value }}
+                    Amount <input v-model="amount_to_invest" type="number" min="0.000001">
+                    <button @click="invest()">Invest</button>
                 </div>
                 <div class="col-12">
-                    my_production_rate: {{ info.my_production_rate }}
+                    <hr>
+                </div>
+                <div class="col-12 mt-3">
+                    smart_contract_balance: {{ info.smart_contract_balance | nas }}
                 </div>
                 <div class="col-12">
-                    my_bonus: {{ info.my_bonus }}
+                    sell_price_resources_per_nas: {{ info.sell_price_resources_per_nas | decimal }}
+                </div>
+                <div class="col-12">
+                    my_resources_nas_value: {{ info.my_resources_nas_value | nas }}
+                </div>
+                <div class="col-12">
+                    <button @click="exitScam()">Exit Scam</button>
                 </div>
             </div>
         </div>
@@ -73,31 +86,31 @@
             <h5>{{ item.name }}</h5>
             <div class="row mt-2">
                 <div class="col-12">
-                    start_price: {{ item.start_price }}
+                    start_price: {{ item.start_price | price }}
+                </div>
+                <div class="col-12" v-if="item.resources_per_s">
+                    resources_per_s: {{ item.resources_per_s | count }}/s
+                </div>
+                <div class="col-12" v-if="item.bonus_multiplier">
+                    bonus_multiplier: {{ item.bonus_multiplier | percent }}
                 </div>
                 <div class="col-12">
-                    resources_per_s: {{ item.resources_per_s }}
+                    user_holdings: {{ item.user_holdings | count }}
                 </div>
                 <div class="col-12">
-                    bonus_multiplier: {{ item.bonus_multiplier }}
+                    user_price: {{ item.user_price | price }}
+                </div>
+                <div class="col-12" v-if="item.user_item_production">
+                    user_item_production: {{ item.user_item_production | count }}
+                </div>
+                <div class="col-12" v-if="item.user_item_bonus">
+                    user_item_bonus: {{ item.user_item_bonus | percent }}
                 </div>
                 <div class="col-12">
-                    user_holdings: {{ item.user_holdings }}
+                    user_max_can_afford: {{ item.user_max_can_afford | count }}
                 </div>
                 <div class="col-12">
-                    user_price: {{ item.user_price }}
-                </div>
-                <div class="col-12">
-                    user_item_production: {{ item.user_item_production }}
-                </div>
-                <div class="col-12">
-                    user_item_bonus: {{ item.user_item_bonus }}
-                </div>
-                <div class="col-12">
-                    user_max_can_afford: {{ item.user_max_can_afford }}
-                </div>
-                <div class="col-12">
-                    <input type="range" v-model="selections[item.name].number_to_buy" @input="refreshSelections()" min="1" :max="item.user_max_can_afford">
+                    <input type="range" v-model="selections[item.name].number_to_buy" @input="$forceUpdate()" min="1" :max="item.user_max_can_afford">
                 </div>
                 <div class="col-12">
                     <button v-on:click="buy(item, selections[item.name].number_to_buy)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">
@@ -108,11 +121,29 @@
             </div>
         </div>
 
+
+        <div class="card mt-5 text-left">
+            <h5>Direct Calls</h5>
+            <div class="row mt-2">
+                <div class="col-12">
+                    Method: <input type="text" v-model="method_to_call">
+                </div>
+                <div class="col-12">
+                    Args: <input type="text" v-model="method_to_call_args">
+                </div>
+                <div class="col-12">
+                    <button @click="callMethodAsRead()">Read</button>
+                    <button @click="callMethodAsWrite()">Write</button>
+                </div>
+            </div>
+        </div>
+
   </div>
 </template>
 
 <script>
 var game = require("../logic/game.js");
+var neb = require("../logic/HardlyNeb.js");
 var refresh_count = 0;
 
 import Navbar from './Navbar.vue';
@@ -122,9 +153,11 @@ export default {
     name: 'Debug',
     data () {
         return {
-            dummy: null,
             info: {},
-            selections: {}
+            selections: {},
+            amount_to_invest: 0,
+            method_to_call: "",
+            method_to_call_args: ""
         }
     },
     components: {
@@ -139,10 +172,6 @@ export default {
             console.log("---------------------------------------");
             console.log(message);
             console.log("---------------------------------------");
-        },
-        refreshSelections()
-        {
-            this.$set(this.selections, refresh_count++, null);
         },
         startICO()
         {
@@ -163,11 +192,12 @@ export default {
                             number_to_buy: 0
                         };
                     }
+
                     if(item.user_max_can_afford <= 0)
                     {
                         this.selections[item.name].number_to_buy = 0;
                     }
-                    else if(!this.selections[item.name])
+                    else if(!this.selections[item.name].number_to_buy)
                     {
                         this.selections[item.name].number_to_buy = 1;
                     }
@@ -177,6 +207,26 @@ export default {
         buy(item, count)
         {
             game.buy(item.name, count, onTxPosted, onSuccess, onError);
+        },
+        invest()
+        {
+            game.invest(this.amount_to_invest, onTxPosted, onSuccess, onError);
+        },
+        callMethodAsWrite()
+        {
+            neb.nebWrite(this.method_to_call, this.method_to_call_args, onTxPosted, 0, onSuccess, onError);
+        },
+        callMethodAsRead()
+        {
+            if(this.method_to_call_args == "")
+            {
+                this.method_to_call_args = null;
+            }
+            neb.nebRead(this.method_to_call, this.method_to_call_args, onSuccess, onError);
+        },
+        exitScam()
+        {
+            game.exitScam(onTxPosted, onSuccess, onError);
         }
     },
     filters: {
@@ -188,7 +238,23 @@ export default {
             }
 
             return numberWithCommas(value);
-        }
+        },
+        percent(value)
+        {
+            return numberWithCommas(value);
+        },
+        decimal(value)
+        {
+            return numberWithCommas(value, 4);
+        },
+        price(value)
+        {
+            return numberWithCommas(value);
+        },
+        nas(value)
+        {
+            return formatCoins(value, 18);
+        },
     },
     mounted() {
         this.getInfo();
@@ -239,7 +305,7 @@ function onError(error)
 
 function onSuccess(resp)
 { // onSuccess
-    showStatus("Success", resp, 3000);
+    showStatus("Success", JSON.stringify(resp), 3000);
 }
 
 
@@ -255,13 +321,26 @@ const numberWithCommas = (x, decimals) =>
     return parts.join(".");
 }
 
+var token_denominator = 1000000000000000000;
+
+function formatCoins(number, digits, unit) 
+{
+    if(!unit)
+    {
+        unit = "nas";
+    }
+    if(!digits)
+    {
+        digits = 8;
+    }
+    var x = number / token_denominator;
+    return numberWithCommas(x, digits) + " " + unit;
+}
+
 
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-    .card
-    {
-        background-color: white;
-    }
+
 </style>

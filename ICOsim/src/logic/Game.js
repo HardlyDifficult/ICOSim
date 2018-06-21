@@ -1,4 +1,5 @@
 var neb = require("../logic/HardlyNeb.js");
+let settings = require("../static/settings.js");
 
 module.exports = 
 {
@@ -10,6 +11,7 @@ module.exports =
             {
                 return a.sort_id - b.sort_id;
             });
+            info.my_total_production_rate = info.my_production_rate * (1 + info.my_bonus / 100);
             onSuccess(info);
         }, onError);
     },
@@ -26,5 +28,15 @@ module.exports =
     buy(name, count, onTxPosted, onSuccess, onError)
     {
         neb.nebWrite("buy", [name, count], onTxPosted, 0, onSuccess, onError);
+    },
+
+    invest(amount, onTxPosted, onSuccess, onError)
+    {
+        neb.nebSend(neb_contract.contract, onTxPosted, amount, onSuccess, onError);
+    },
+
+    exitScam(onTxPosted, onSuccess, onError)
+    {
+        neb.nebWrite("exitScam", null, onTxPosted, 0, onSuccess, onError);
     }
 }

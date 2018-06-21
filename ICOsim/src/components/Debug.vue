@@ -97,12 +97,11 @@
                     user_max_can_afford: {{ item.user_max_can_afford }}
                 </div>
                 <div class="col-12">
-                    <input type="range" v-model="selections[item.name]" v-on:change="test(item.name)" 
-                        min="1" :max="item.user_max_can_afford">
+                    <input type="range" v-model="selections[item.name].number_to_buy" @input="refreshSelections()" min="1" :max="item.user_max_can_afford">
                 </div>
                 <div class="col-12">
-                    <button v-on:click="buy(item, selections[item.name])" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">
-                        Buy {{ selections[item.name] | count }}
+                    <button v-on:click="buy(item, selections[item.name].number_to_buy)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">
+                        Buy {{ selections[item.name].number_to_buy | count }}
                     </button>
                     <button v-on:click="buy(item, null)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">Buy Max</button>
                 </div>
@@ -114,6 +113,7 @@
 
 <script>
 var game = require("../logic/game.js");
+var refresh_count = 0;
 
 import Navbar from './Navbar.vue';
 import FundsContainer from './FundsDisplay';
@@ -132,9 +132,17 @@ export default {
         FundsContainer
     },
     methods: {
-        test(name, value)
+        log(message)
         {
-            this.$set(this.selections, name, this.selections[name]);
+            console.log("---------------------------------------");
+            console.log("---------------------------------------");
+            console.log("---------------------------------------");
+            console.log(message);
+            console.log("---------------------------------------");
+        },
+        refreshSelections()
+        {
+            this.$set(this.selections, refresh_count++, null);
         },
         startICO()
         {
@@ -151,15 +159,17 @@ export default {
                     var selection = this.selections[item.name];
                     if(selection == null)
                     {
-                        this.selections[item.name] = 0;
+                        this.selections[item.name] = {
+                            number_to_buy: 0
+                        };
                     }
                     if(item.user_max_can_afford <= 0)
                     {
-                        this.selections[item.name] = 0;
+                        this.selections[item.name].number_to_buy = 0;
                     }
                     else if(!this.selections[item.name])
                     {
-                        this.selections[item.name] = 1;
+                        this.selections[item.name].number_to_buy = 1;
                     }
                 }
             }, onError);

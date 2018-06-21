@@ -2,12 +2,14 @@
   <div class='container-fluid'>
       <Navbar/>
       <div class='row'>
-          <div class='col-lg-12'>
-              <h1 class="glow">ICOSim</h1>
-          </div>
-
           <div class='col-lg-6'>
               <FundsContainer :amount="user_funds"/>
+          </div>
+          <div class='col-lg-6'>
+              <h1 class="glow">ICOSim</h1>
+          </div>
+          <div class="col-lg-6">
+              <Roadmap/>
           </div>
       </div>
   </div>
@@ -16,6 +18,7 @@
 <script>
 import Navbar from './Navbar.vue';
 import FundsContainer from './FundsDisplay';
+import Roadmap from './Roadmap';
 
 export default {
   name: 'Home',
@@ -26,7 +29,8 @@ export default {
   },
   components: {
     Navbar,
-    FundsContainer
+    FundsContainer,
+    Roadmap
   }
 
 }

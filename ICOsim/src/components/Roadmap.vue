@@ -3,8 +3,8 @@
         <div class="col-sm-12">
             <h2>Roadmap</h2>
         </div>
-        <div class="col-6 roadmap-step" v-for="(step, index) in steps" :key="index" :class="[classes[index %4], (step.next_price > player_money) ? 'cant_afford' : '']">
-            <div class="roadmap-step-inner" @mouseover="step.mouseover=true">
+        <div class="col-6 roadmap-step" v-for="(step, index) in steps" :key="index" :class="getStepClasses(step, index)">
+            <div class="roadmap-step-inner" @mouseover="step.mouseover=true" :class="(step.next_price > player_money) ? 'glow-cant-afford' : 'glow-1'">
                 <div class="title">{{step.title}}</div>
             </div>
 
@@ -18,6 +18,16 @@
 <script>
   export default {
     name: "Roadmap",
+
+    methods : {
+      getStepClasses(step, index){
+        let classes = [];
+        classes.push(this.classes[index % 4]);
+        if(step.next_price > this.player_money)
+          classes.push('cant_afford_no_levels');
+        return classes;
+      }
+    },
 
     data (){
       return {
@@ -101,7 +111,7 @@
 <style scoped>
 
     .roadmap-step-inner{
-        background-color:rgba(54,141,215,0.6);
+        background-color:rgba(0,0,0,0.6);
 
         position:absolute;
         top : 30px;
@@ -109,8 +119,11 @@
         right: 30px;
         bottom: 30px;
         border-radius : 5px 5px 5px 5px;
-        border: 4px solid rgba(54,141,215,0.9);
     }
+    .roadmap-step-inner:hover{
+        background-color:rgba(0,0,0,0.8);
+    }
+
 
     .title{
         color: white;
@@ -129,9 +142,11 @@
         min-height: 150px;
     }
 
-    .cant_afford > .roadmap-step-inner{
-        border-color:rgba(150,150,150,0.9);
-        background-color:rgba(150,150,150,0.5);
+    .cant_afford_no_levels > .roadmap-step-inner{
+        opacity: 0.1;
+    }
+    .cant_afford_no_levels > .roadmap-step-inner:hover{
+        opacity: 0.3;
     }
 
     .circle{

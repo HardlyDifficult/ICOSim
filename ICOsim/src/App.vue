@@ -31,4 +31,20 @@
     color: #2c3e50;
     margin-top: 60px;
   }
+
+  .glow-1{
+    -webkit-box-shadow: 0px 0px 35px 1px rgba(46,255,255,0.22);
+    -moz-box-shadow: 0px 0px 35px 1px rgba(46,255,255,0.22);
+    box-shadow: 0px 0px 35px 1px rgba(46,255,255,0.22);
+
+  }
+
+  .glow-cant-afford{
+    -webkit-box-shadow: 0px 0px 35px 1px rgba(255,255,255,0.22);
+    -moz-box-shadow: 0px 0px 35px 1px rgba(255,255,255,0.22);
+    box-shadow: 0px 0px 35px 1px rgba(255,255,255,0.22);
+
+  }
+
+
 </style>

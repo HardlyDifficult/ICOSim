@@ -8,6 +8,9 @@
           <div class="col-lg-6">
               <Roadmap/>
           </div>
+          <div class="col-lg-12">
+              <Team/>
+          </div>
       </div>
   </div>
 </template>
@@ -16,6 +19,7 @@
 import Navbar from './Navbar.vue';
 import FundsContainer from './FundsDisplay';
 import Roadmap from './Roadmap';
+import Team from './Team';
 
 export default {
   name: 'Home',
@@ -27,7 +31,8 @@ export default {
   components: {
     Navbar,
     FundsContainer,
-    Roadmap
+    Roadmap,
+    Team
   }
 
 }
@@ -44,8 +49,9 @@ export default {
         font-size: 4em;
     }
     h1, h2 {
-      color: #0061FF;
-      font-weight: bold;
+        color: #0061FF;
+        font-weight: bold;
+        color:white;
     }
 
     body{

@@ -4,12 +4,12 @@
             <h2>Roadmap</h2>
         </div>
         <div class="col-6 roadmap-step" v-for="(step, index) in steps" :key="index" :class="[classes[index %4], (step.next_price > player_money) ? 'cant_afford' : '']">
-            <div class="roadmap-step-inner">
+            <div class="roadmap-step-inner" @mouseover="step.mouseover=true">
                 <div class="title">{{step.title}}</div>
             </div>
 
             <div class="circle"></div>
-            <div v-if="index < steps.length -1" class="connecting-line"></div>
+            <div v-if="index < steps.length -1" class="connecting-line" v-anime="line_animation"></div>
         </div>
 
     </div>
@@ -21,6 +21,12 @@
 
     data (){
       return {
+        line_animation: {
+            backgroundColor: ["#04B0C6", "#0093C4"],
+            duration:10000,
+            direction:'alternate',
+            loop:true,
+        } ,
         classes : [
           "step-1",
           "step-2",
@@ -113,8 +119,9 @@
 
     .connecting-line{
         position:absolute;
-        background-color:rgba(0,0,0,0.7);
+        background-color:#003430;
         z-index: -1;
+        opacity:0.4;
     }
 
     .roadmap-step{
@@ -140,21 +147,19 @@
 
     .step-1 > .connecting-line, .step-3 > .connecting-line{
         top : calc(50% - 5px);
-        right:-50%;
-        height:10px;
-        width:calc(100% + 5px);
-        color:yellow;
+        right:-30px;
+        height:5px;
+        width:60px;
     }
     .step-2 > .connecting-line, .step-4 > .connecting-line {
         left : calc(50% - 5px);
-        height:calc(100% + 10px);
-        width:10px;
-        bottom:calc(-50% - 5px);
-        color:orange;
+        height:60px;
+        width:5px;
+        bottom:-30px;
     }
 
     .step-3 > .connecting-line {
-        right:50%;
+        right:calc(100% - 30px);
     }
 
 </style>

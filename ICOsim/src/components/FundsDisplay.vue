@@ -3,7 +3,7 @@
         <div class="col">
             <div class="funds">
                 <span class="fund_part"><i class="fas fa-dollar-sign"></i></span>
-                <span class="fund_part" v-for="(part, index) in fund_parts" v-bind:key="index">{{part}}</span>
+                <span class="fund_part" v-for="(part, index) in fund_parts" :class="(part === '.' ? 'fund-dot' : '')" v-bind:key="index">{{part}}</span>
             </div>
         </div>
     </div>
@@ -74,8 +74,12 @@
         color : rgba(15,77,175,1);
         padding:10px;
         border-radius:15px;
-        margin:0px;
+        margin:0;
         font-size:4em;
+    }
+    .fund-dot{
+        padding-left : 0;
+        padding-right: 0;
     }
     .dollar{
         color : #0f4daf;

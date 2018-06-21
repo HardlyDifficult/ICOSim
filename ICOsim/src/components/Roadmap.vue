@@ -3,7 +3,7 @@
         <div class="col-sm-12">
             <h2>Roadmap</h2>
         </div>
-        <div class="col-sm-6 roadmap-step" v-for="(step, index) in steps" :key="index" :class="classes[index %4]">
+        <div class="col-6 roadmap-step" v-for="(step, index) in steps" :key="index" :class="[classes[index %4], (step.next_price > player_money) ? 'cant_afford' : '']">
             <div class="roadmap-step-inner">
                 <div class="title">{{step.title}}</div>
             </div>
@@ -27,13 +27,14 @@
           "step-3",
           "step-4"
         ],
+        player_money : 75,
         steps : [
           {
             title : "Hire Intern",
             producing : 8,
             current_num : 80,
             expected_return : 1,
-            next_price : 150
+            next_price : 50
           },
           {
             title : "Hire 2nd",
@@ -121,6 +122,11 @@
         min-height: 150px;
     }
 
+    .cant_afford > .roadmap-step-inner{
+        border-color:rgba(150,150,150,0.9);
+        background-color:rgba(150,150,150,0.5);
+    }
+
     .circle{
         position:absolute;
     }
@@ -131,6 +137,7 @@
     .step-4{
         right: 50%;
     }
+
     .step-1 > .connecting-line, .step-3 > .connecting-line{
         top : calc(50% - 5px);
         right:-50%;
@@ -149,6 +156,5 @@
     .step-3 > .connecting-line {
         right:50%;
     }
-
 
 </style>

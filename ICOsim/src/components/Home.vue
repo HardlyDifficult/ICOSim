@@ -5,9 +5,6 @@
           <div class='col-lg-6'>
               <FundsContainer :amount="user_funds"/>
           </div>
-          <div class='col-lg-6'>
-              <h1 class="glow">ICOSim</h1>
-          </div>
           <div class="col-lg-6">
               <Roadmap/>
           </div>

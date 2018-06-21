@@ -11,6 +11,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "bignumber.js": "^7.2.1",
     "bootstrap": "^4.1.1",
     "nebpay": "^0.0.6",
     "nebulas": "^0.5.2",

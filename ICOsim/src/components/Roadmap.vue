@@ -222,7 +222,7 @@
         position:absolute;
         left:50%;
         top:100px;
-        height:calc(100% - 100px);
+        height:100%;
         width:5px;
         background-color:#003430;
         z-index: -1;
@@ -235,7 +235,8 @@
     }
 
     .roadmap-step{
-        margin-top:80px;
+        margin-bottom:65px;
+        margin-top:15px;
         position:relative;
     }
 

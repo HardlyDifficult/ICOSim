@@ -20,15 +20,16 @@
 
 <style scoped>
     .fund_part{
+        font-family: monospace;
         background-color: rgba(30,30,30,0.7);
-        color : rgba(15,77,175,1);
+        color : rgba(7,190,215,1);
         padding:0;
         border-radius:15px;
         margin:0;
         font-size:4em;
     }
     .num{
-        font-family: monospace;
-        padding:0.1em;
+        padding-left:0.1em;
+        padding-right:0.1em;
     }
 </style>

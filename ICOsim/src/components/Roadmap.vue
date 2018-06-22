@@ -27,7 +27,7 @@
                         <p>
                             Current Price
                         </p>
-                        $<FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.0em', backgroundColor:'transparent'}" :target="step.next_price"/>
+                        $<FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="step.next_price"/>
                     </div>
 
                     <div class="col-12 line"></div>

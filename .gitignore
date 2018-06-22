@@ -2,3 +2,4 @@
 /SmartContract/config.json
 .bin
 SmartContract/node_modules
+/SmartContract/yarn.lock

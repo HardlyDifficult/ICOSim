@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "nebpay.js": "^0.2.0",
-    "nebulas": "^0.5.2"
+    "nebulas": "^0.5.2",
+    "tosource": "^1.0.0"
   }
 }

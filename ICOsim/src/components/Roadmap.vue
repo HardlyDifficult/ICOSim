@@ -203,6 +203,9 @@
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
+
+        margin-left:15px;
+        margin-right:15px;
     }
 
     .title{
@@ -254,12 +257,6 @@
 
     .step-2, .step-4{
         top: 100px;
-    }
-    .step-1 > .roadmap-step-inner, .step-3 > .roadmap-step-inner{
-        margin-right:15px;
-    }
-    .step-2 > .roadmap-step-inner, .step-4 > .roadmap-step-inner{
-        margin-left:15px;
     }
 
     .step-1 > .connecting-line, .step-3 > .connecting-line{

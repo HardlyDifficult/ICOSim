@@ -42,30 +42,44 @@
         player_money : 75,
         members: [
           {
-            name: "John McAfee",
+            name: "Tom Lee",
             description: "Full time paid shiller",
-            img: require('../assets/mcafee.png'),
+            img: require('../assets/lee.png'),
             is_bought : true,
             price : 5
           },
           {
-            name: "John McAfee",
+            name: "Craig Grant",
             description: "Full time paid shiller",
-            img: require('../assets/mcafee.png'),
+            img: require('../assets/grant.png'),
             is_bought : true,
             price : 5
           },
           {
-            name: "John McAfee",
+            name: "Ian Balina",
             description: "Full time paid shiller",
-            img: require('../assets/mcafee.png'),
+            img: require('../assets/balina.png'),
             is_bought : false,
             price : 5
           },
           {
-            name: "John McAfee",
+            name: "Suppoman",
             description: "Full time paid shiller",
-            img: require('../assets/mcafee.png'),
+            img: require('../assets/suppoman.png'),
+            is_bought : false,
+            price : 500
+          },
+          {
+            name: "Trevon James",
+            description: "Full time paid shiller",
+            img: require('../assets/trevon.png'),
+            is_bought : false,
+            price : 500
+          },
+          {
+            name: "Roger Ver",
+            description: "Full time paid shiller",
+            img: require('../assets/ver.png'),
             is_bought : false,
             price : 500
           },
@@ -77,12 +91,13 @@
             price : 500
           },
           {
-            name: "John McAfee",
+            name: "Carlos Matos",
             description: "Full time paid shiller",
-            img: require('../assets/mcafee.png'),
+            img: require('../assets/matos.png'),
             is_bought : false,
             price : 500
           }
+
         ]
       };
     }
@@ -107,6 +122,8 @@
         background-position:center;
         background-repeat:no-repeat;
         border-radius: 250px;
+        -webkit-filter: sepia(50%);
+        filter: sepia(50%);
     }
     .team-container{
         position:relative;

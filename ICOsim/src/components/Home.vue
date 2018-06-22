@@ -3,36 +3,45 @@
       <Navbar/>
       <div class='row'>
           <div class='col-lg-6'>
-              <FundsContainer :amount="user_funds"/>
+              <FundsContainer :target="user_funds"/>
+          </div>
+          <div class='col-lg-6'>
+              <Details/>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-lg-6">
+              <Team/>
           </div>
           <div class="col-lg-6">
               <Roadmap/>
-          </div>
-          <div class="col-lg-12">
-              <Team/>
           </div>
       </div>
   </div>
 </template>
 
 <script>
+import {BigNumber} from 'bignumber.js';
+
 import Navbar from './Navbar.vue';
 import FundsContainer from './FundsDisplay';
 import Roadmap from './Roadmap';
 import Team from './Team';
+import Details from './Details';
 
 export default {
   name: 'Home',
   data () {
     return {
-      user_funds : 1000000
+      user_funds : new BigNumber(1000000)
     }
   },
   components: {
     Navbar,
     FundsContainer,
     Roadmap,
-    Team
+    Team,
+    Details
   }
 
 }

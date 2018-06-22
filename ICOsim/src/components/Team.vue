@@ -11,7 +11,7 @@
 
                 <p v-if="member.is_bought" class="member-buy">Active Advisor!</p>
                 <p v-else-if="member.price <= player_money" class="member-buy">Buy For: $ {{member.price}}</p>
-                <p v-else="member.price <= player_money" class="member-buy">$ {{member.price}}</p>
+                <p v-else class="member-buy">$ {{member.price}}</p>
             </div>
         </div>
     </div>
@@ -101,7 +101,6 @@
     .image{
         margin: 0 auto;
         margin-bottom:10px;
-        background-color:red;
         height:150px;
         width:150px;
         background-size:cover;
@@ -124,7 +123,7 @@
     }
 
     .not_bought_can_afford{
-        opacity: 0.5;
+        opacity: 0.6;
         cursor:pointer;
     }
     .not_bought_can_afford:hover{

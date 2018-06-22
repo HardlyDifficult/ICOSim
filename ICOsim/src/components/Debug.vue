@@ -1,12 +1,12 @@
 <template>
-    <div class='container-fluid'>
+    <div class='container-fluid text-left'>
         <h1>Debug</h1>
       
         <div id="status-card" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="status-card-title">Modal title</h5>
+                    <h4 class="modal-title" id="status-card-title">Modal title</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
@@ -18,9 +18,22 @@
             </div>
         </div>
         </div>
+        
+       <div class="card">
+            <h4>Global Info</h4>
+                <div class="col-12">
+                    buy_price_nas_per_resource: {{ info.buy_price_nas_per_resource | nas }}
+                </div>
+                <div class="col-12">
+                    smart_contract_balance: {{ info.smart_contract_balance | nas }}
+                </div>
+                <div class="col-12">
+                    sell_price_resources_per_nas: {{ info.sell_price_resources_per_nas | decimal }}
+                </div>
+        </div> 
 
-        <div class="card">
-            <h5>Start ICO</h5>
+        <div class="card mt-5" v-if="!info.active_ico">
+            <h4>Start ICO</h4>
             <div class="row mt-2">
                 <div class="col">
                     Name: <input id="name" type="text">
@@ -36,42 +49,33 @@
             </div>
         </div>
 
-        <div class="card mt-5 text-left">
-            <h5>Your ICO</h5>
+        <div class="card mt-5 text-left" v-if="info.active_ico">
+            <h4>{{ info.active_ico.name }} ({{ info.active_ico.ticker }})</h4>
             <div class="row mt-2">
                 <div class="col-12">
-                    my_resources: {{ info.my_resources | count }}
+                    my_resources: {{ info.active_ico.my_resources | count }}
                 </div>
                 <div class="col-12">
-                    my_production_rate: {{ info.my_production_rate | count }}
+                    my_production_rate: {{ info.active_ico.my_production_rate | count }}
                 </div>
                 <div class="col-12">
-                    my_bonus: {{ info.my_bonus | percent }}
+                    my_bonus: {{ info.active_ico.my_bonus | percent }}
                 </div>
                 <div class="col-12">
-                    my_total_production_rate: {{ info.my_total_production_rate | count }}
+                    my_total_production_rate: {{ info.active_ico.my_total_production_rate | count }}
                 </div>
             </div>
         </div>
 
-        <div class="card mt-5 text-left">
-            <h5>NAS</h5>
+        <div class="card mt-5 text-left" v-if="info.my_resources">
+            <h4>NAS</h4>
             <div class="row mt-2">
-                <div class="col-12">
-                    buy_price_nas_per_resource: {{ info.buy_price_nas_per_resource | nas }}
-                </div>
                 <div class="col-12">
                     Amount <input v-model="amount_to_invest" type="number" min="0.000001">
                     <button @click="invest()">Invest</button>
                 </div>
                 <div class="col-12">
                     <hr>
-                </div>
-                <div class="col-12 mt-3">
-                    smart_contract_balance: {{ info.smart_contract_balance | nas }}
-                </div>
-                <div class="col-12">
-                    sell_price_resources_per_nas: {{ info.sell_price_resources_per_nas | decimal }}
                 </div>
                 <div class="col-12">
                     my_resources_nas_value: {{ info.my_resources_nas_value | nas }}
@@ -81,7 +85,6 @@
                 </div>
             </div>
         </div>
-
         <div class="card mt-5 text-left" v-for="item in info.items" :key="item.name">
             <h5>{{ item.name }}</h5>
             <div class="row mt-2">
@@ -95,35 +98,88 @@
                     bonus_multiplier: {{ item.bonus_multiplier | percent }}
                 </div>
                 <div class="col-12">
-                    user_holdings: {{ item.user_holdings | count }}
+                    price_multiple: {{ item.price_multiple | decimal }}
                 </div>
-                <div class="col-12">
-                    user_price: {{ item.user_price | price }}
-                </div>
-                <div class="col-12" v-if="item.user_item_production">
-                    user_item_production: {{ item.user_item_production | count }}
-                </div>
-                <div class="col-12" v-if="item.user_item_bonus">
-                    user_item_bonus: {{ item.user_item_bonus | percent }}
-                </div>
-                <div class="col-12">
-                    user_max_can_afford: {{ item.user_max_can_afford | count }}
-                </div>
-                <div class="col-12">
-                    <input type="range" v-model="selections[item.name].number_to_buy" @input="$forceUpdate()" min="1" :max="item.user_max_can_afford">
-                </div>
-                <div class="col-12">
-                    <button v-on:click="buy(item, selections[item.name].number_to_buy)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">
-                        Buy {{ selections[item.name].number_to_buy | count }}
-                    </button>
-                    <button v-on:click="buy(item, null)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">Buy Max</button>
-                </div>
+                <span v-if="info.active_ico">
+                    <div class="col-12">
+                        <hr>
+                    </div>
+                    <div class="col-12">
+                        user_holdings: {{ item.user_holdings | count }}
+                    </div>
+                    <div class="col-12">
+                        user_price: {{ item.user_price | price }}
+                    </div>
+                    <div class="col-12" v-if="item.user_item_production">
+                        user_item_production: {{ item.user_item_production | count }}
+                    </div>
+                    <div class="col-12" v-if="item.user_item_bonus">
+                        user_item_bonus: {{ item.user_item_bonus | percent }}
+                    </div>
+                    <div class="col-12">
+                        user_max_can_afford: {{ item.user_max_can_afford | count }}
+                    </div>
+                    <div class="col-12">
+                        <input type="range" v-model="selections[item.name].number_to_buy" @input="$forceUpdate()" min="1" :max="item.user_max_can_afford">
+                    </div>
+                    <div class="col-12">
+                        <button v-on:click="buy(item, selections[item.name].number_to_buy)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">
+                            Buy {{ selections[item.name].number_to_buy | count }}
+                        </button>
+                        <button v-on:click="buy(item, null)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">Buy Max</button>
+                        {{ getBuyPrice(item) | price }}
+                    </div>
+                </span>
             </div>
         </div>
 
+        <div class="card mt-5">
+            <h4>Best Known Scammers</h4>
+            <div class="row mt-2" v-for="scammer in best_known_scammers" v-bind:key="scammer.addr">
+                <div class="col-12">
+                    Addr: {{ scammer.addr }}
+                </div>
+                <div class="col-12">
+                    NAS redeemed: {{ scammer.nas_redeemed }}
+                </div>
+                <div class="col-12" v-if="scammer.active_ico">
+                    Active ICO: {{ scammer.active_ico }}
+                </div>
+                <div class="col-12" v-if="scammer.retired_icos.length > 0">
+                    Retired ICOs: {{ scammer.retired_icos }}
+                </div>
+            </div>
+        </div> 
+
+        <div class="card mt-5">
+            <h4>Coin Market Caps:</h4>
+            <div class="row mt-2" v-for="ico in coin_market_caps" v-bind:key="ico.ticker">
+                <h5 class="col-12">
+                    {{ ico.name }} ({{ ico.ticker }})
+                </h5>
+                <div class="col-12">
+                    id: {{ ico.id }}
+                </div>
+                <div class="col-12">
+                    Player: {{ ico.player_addr }}
+                </div>
+                <div class="col-12">
+                    last_action_date: {{ ico.last_action_date | date }}
+                </div>
+                <div class="col-12">
+                    market_cap: {{ ico.market_cap }}
+                </div>
+                <div class="col-12">
+                    resources: {{ ico.resources }}
+                </div>
+                <div class="col-12">
+                    total_production_rate: {{ ico.total_production_rate }}
+                </div>
+            </div>
+        </div> 
 
         <div class="card mt-5 text-left">
-            <h5>Direct Calls</h5>
+            <h4>Direct Calls</h4>
             <div class="row mt-2">
                 <div class="col-12">
                     Method: <input type="text" v-model="method_to_call">
@@ -157,7 +213,9 @@ export default {
             selections: {},
             amount_to_invest: 0,
             method_to_call: "",
-            method_to_call_args: ""
+            method_to_call_args: "",
+            best_known_scammers: [],
+            coin_market_caps: []
         }
     },
     components: {
@@ -202,7 +260,7 @@ export default {
                         this.selections[item.name].number_to_buy = 1;
                     }
                 }
-            }, onError);
+            }, this.log);
         },
         buy(item, count)
         {
@@ -214,7 +272,16 @@ export default {
         },
         callMethodAsWrite()
         {
-            neb.nebWrite(this.method_to_call, this.method_to_call_args, onTxPosted, 0, onSuccess, onError);
+            if(this.method_to_call_args == "")
+            {
+                this.method_to_call_args = null;
+            }
+            var args = null;
+            if(this.method_to_call_args)
+            {
+                args = this.method_to_call_args.split(",");
+            }
+            neb.nebWrite(this.method_to_call, args, onTxPosted, 0, onSuccess, onError);
         },
         callMethodAsRead()
         {
@@ -222,11 +289,34 @@ export default {
             {
                 this.method_to_call_args = null;
             }
-            neb.nebRead(this.method_to_call, this.method_to_call_args, onSuccess, onError);
+            var args = null;
+            if(this.method_to_call_args)
+            {
+                args = this.method_to_call_args.split(",");
+            }
+            neb.nebRead(this.method_to_call, args, onSuccess, onError);
         },
         exitScam()
         {
             game.exitScam(onTxPosted, onSuccess, onError);
+        },
+        getBuyPrice(item)
+        {
+            return game.getBuyPrice(item, this.selections[item.name].number_to_buy);
+        },
+        getBestKnownScammers()
+        {
+            game.getBestKnownScammers(null, null, (resp) =>
+            {
+                this.best_known_scammers = resp;
+            }, onError);
+        },
+        getCoinMarketCaps()
+        {
+            game.getCoinMarketCaps(null, null, (resp) =>
+            {
+                this.coin_market_caps = resp;
+            }, onError);
         }
     },
     filters: {
@@ -238,6 +328,10 @@ export default {
             }
 
             return numberWithCommas(value);
+        },
+        date(value)
+        {
+            return new Date(value).toString();
         },
         percent(value)
         {
@@ -259,6 +353,9 @@ export default {
     mounted() {
         this.getInfo();
         setInterval(this.getInfo, 10000);
+
+        this.getBestKnownScammers();
+        this.getCoinMarketCaps();
     }
 }
 
@@ -342,5 +439,8 @@ function formatCoins(number, digits, unit)
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-
+/* .card
+{
+    background-color: black;
+} */
 </style>

@@ -1,17 +1,19 @@
 BigNumber.config({ DECIMAL_PLACES: 10, ROUNDING_MODE: 1 })
 
+// TODO input validation
+
 var Contract = function() 
 {
   // all_users, all_items, active_icos
-  LocalContractStorage.defineMapProperty(this, "lists");
+  LocalContractStorage.defineMapProperty(this, "lists"); 
 
   // {nas_redeemed, active_ico: txhash, retired_icos: [txhash]}
-  LocalContractStorage.defineMapProperty(this, "addr_to_user");
+  LocalContractStorage.defineMapProperty(this, "addr_to_user"); 
   
-  // {name, ticker, resources, last_action_date, items: {'Pick Axe': 2, 'Shield': 1}}  
+  // {name, ticker, resources, total_production_rate, last_action_date, items: {'Pick Axe': 2, 'Shield': 1}}  
   LocalContractStorage.defineMapProperty(this, "icohash_to_ico");
 
-  LocalContractStorage.defineMapProperty(this, "ticker_to_icohash");
+  LocalContractStorage.defineMapProperty(this, "ticker_to_icohash"); 
   
   // {name: "Tom Lee", start_price: 1, resources_per_s: 1 (or bonus_multiplier)} 
   LocalContractStorage.defineMapProperty(this, "name_to_item");
@@ -184,6 +186,7 @@ Contract.prototype =
     if(!user)
     {
       user = {
+        addr: Blockchain.transaction.from,
         nas_redeemed: new BigNumber(0), 
         active_ico: null,
         retired_icos: []
@@ -193,22 +196,37 @@ Contract.prototype =
     }
     return user;
   },
+
+  getUser: function(addr)
+  {
+    return this.addr_to_user.get(addr);
+  },
   //#endregion
 
   //#region ICO managment
-  createICO: function(name, ticker)
+  launchICO: function(name, ticker)
   {
     var user = this.getOrCreateUser();
     if(user.active_ico)
     {
       throw new Error("You can only run one ICO at a time.");
     }
+    if(!ticker)
+    {
+      throw new Error("Please specify a ticker!");
+    }
+    if(this.ticker_to_icohash.get(ticker))
+    {
+      throw new Error("There was already an ICO by that name, choose something unique.");
+    }
 
     var ico = {
       id: Blockchain.transaction.hash,
+      player_addr: Blockchain.transaction.from,
       name,
       ticker,
       resources: this.starting_resources, 
+      total_production_rate: 0,
       last_action_date: Date.now(), 
       items: {}
     }
@@ -239,8 +257,12 @@ Contract.prototype =
   {
     return this.icohash_to_ico.get(icohash);
   },
-  //#endregion
 
+  getICOId: function(ticker)
+  {
+    return this.ticker_to_icohash.get(ticker);
+  },
+  //#endregion
 
   //#region Resource and Money management
   accept: function() 
@@ -334,16 +356,26 @@ Contract.prototype =
     return total_rate;
   },
 
-  getMyProductionSinceLastRedeem: function()
+  getTimePassed: function(icohash)
   {
-    var ico = this.getActiveICO();
+    var ico = this.getICO(icohash);
+    if(!ico)
+    {
+      return new BigNumber(0);
+    }
 
     var time_passed = Date.now() - ico.last_action_date;
     if(time_passed < 0)
     {
       time_passed = 0;
     }
-    time_passed = new BigNumber(time_passed).div(1000); // to seconds
+    return new BigNumber(time_passed).div(1000); // to seconds
+  },
+
+  getMyProductionSinceLastRedeem: function()
+  {
+    var user = this.getOrCreateUser();
+    var time_passed = this.getTimePassed(user.active_ico);
 
     return this.getMyProductionRate().mul(time_passed);
   },
@@ -441,12 +473,16 @@ Contract.prototype =
   getItem: function(name)
   {
     var item = this.getItemRaw(name);
+    var user = this.getOrCreateUser();
 
-    item.user_holdings = this.getMyItemCount(name);
-    item.user_price = this.getMyItemPrice(name, 1);
-    item.user_item_production = this.getMyItemProductionRate(name);
-    item.user_item_bonus = this.getMyItemBonus(name);
-    item.user_max_can_afford = this.getMaxICanAfford(name);
+    if(user.active_ico)
+    {
+      item.user_holdings = this.getMyItemCount(name);
+      item.user_price = this.getMyItemPrice(name, 1);
+      item.user_item_production = this.getMyItemProductionRate(name);
+      item.user_item_bonus = this.getMyItemBonus(name);
+      item.user_max_can_afford = this.getMaxICanAfford(name);
+    }
 
     return item;
   },
@@ -477,7 +513,8 @@ Contract.prototype =
     var item_count = this.getMyItemCount(name);
     var max = item_count.plus(quantity);
     var multiple = max.mul(max.plus(1)).sub(item_count.mul(item_count.plus(1))).div(2);
-    return new BigNumber(item.start_price).mul(multiple);
+    // TODO rename price_multiple to exponent?
+    return new BigNumber(item.start_price).mul(multiple.pow(item.price_multiple));
   },
 
   getMaxICanAfford: function(name)
@@ -489,6 +526,8 @@ Contract.prototype =
     var p = new BigNumber(ico.resources);
     var s = new BigNumber(item.start_price);
     var c = this.getMyItemCount(name);
+
+    // TODO solve for the square change
 
     var a = c.mul(2);
     a = a.plus(1);
@@ -532,6 +571,8 @@ Contract.prototype =
       ico.items[name] = new BigNumber(ico.items[name]).plus(quantity);
     }
 
+    ico.total_production_rate = this.getMyProductionRate();
+
     this.icohash_to_ico.put(ico.id, ico);
   },
   //#endregion
@@ -546,18 +587,84 @@ Contract.prototype =
       items.push(this.getItem(all_items[i]));
     }
 
-    return {
+    var data = {
       smart_contract_balance: this.getSmartContractBalance(),
       buy_price_nas_per_resource: this.getBuyPriceNasPerResource(),
       sell_price_resources_per_nas: this.getSellPriceResourcesPerNas(),
-      my_resources: this.getMyResources(),
-      my_resources_nas_value: this.getMyResourcesNasValue(),
-      my_production_rate: this.getMyProductionRate(),
-      my_bonus: this.getMyBonus(),
       items
+    };
+
+    var user = this.getOrCreateUser();
+    if(user.active_ico)
+    {
+      data.active_ico = this.getICO(user.active_ico);
+
+      data.active_ico.my_resources = this.getMyResources();
+      data.active_ico.my_resources_nas_value = this.getMyResourcesNasValue();
+      data.active_ico.my_production_rate = this.getMyProductionRate();
+      data.active_ico.my_bonus = this.getMyBonus();
     }
+
+    return data;
   },
   //#endregion
+
+  //#region Leaderboard
+  getBestKnownScammers(start_index, count)
+  {
+    var all_users = this.lists.get("all_users");
+    var user_list = [];
+    for(var i = 0; i < all_users.length; i++)
+    {
+      var user = this.getUser(all_users[i]);
+      if(!user.nas_redeemed)
+      {
+        continue;
+      }
+      user_list.push(user);
+    }
+    user_list.sort(function(a, b)
+    {
+      return a.nas_redeemed - b.nas_redeemed
+    });
+
+    return user_list.slice(start_index, count);
+  },
+
+  getICOStats(icohash)
+  {
+    var ico = this.getICO(icohash);
+    var time_passed = this.getTimePassed(icohash);
+
+    delete ico.items;
+    ico.market_cap = new BigNumber(ico.resources).plus(new BigNumber(ico.total_production_rate).mul(time_passed));
+    
+    return ico;
+  },
+
+  getCoinMarketCaps(start_index, count)
+  {
+    var active_icos = this.lists.get("active_icos");
+    var ico_list = [];
+    for(var i = 0; i < active_icos.length; i++)
+    {
+      ico_list.push(this.getICOStats(active_icos[i]));
+    }
+    ico_list.sort(function(a, b)
+    {
+      return a.market_cap - b.market_cap;
+    });
+
+    return ico_list.slice(start_index, count);
+  },
+  //#endregion 
+
+  //#region Debug
+  getList: function(list_name)
+  {
+    return this.lists.get(list_name);
+  },
+  //#endregion 
 }
 
 module.exports = Contract

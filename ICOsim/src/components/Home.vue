@@ -58,7 +58,6 @@ export default {
         background-color: #202022;
     }
 
-
     .glow {
         -webkit-animation-duration: 1s;
         -webkit-animation-name: glow;

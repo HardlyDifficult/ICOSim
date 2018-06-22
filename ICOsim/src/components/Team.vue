@@ -4,10 +4,14 @@
             <h2>Team</h2>
         </div>
         <div class="team-container">
-            <div class="team-member glow-1" v-for="(member, index) in members" v-bind:key="index">
+            <div class="team-member" v-for="(member, index) in members" :key="index" :class="getClasses(member)">
                 <div class="image" :style="{backgroundImage:'url(' + member.img + ')'}"></div>
                 <p class="member-name">{{member.name}}</p>
                 <p class="member-description">{{member.description}}</p>
+
+                <p v-if="member.is_bought" class="member-buy">Active Advisor!</p>
+                <p v-else-if="member.price <= player_money" class="member-buy">Buy For: $ {{member.price}}</p>
+                <p v-else="member.price <= player_money" class="member-buy">$ {{member.price}}</p>
             </div>
         </div>
     </div>
@@ -16,38 +20,68 @@
 <script>
   export default {
     name: "Team",
+
+    methods: {
+      getClasses(member){
+        let classes = [];
+        if(!member.is_bought){
+          if(member.price <= this.player_money){
+            classes.push('not_bought_can_afford');
+          }else{
+            classes.push('not_bought_cannot_afford');
+          }
+        }else{
+          classes.push('glow-1');
+        }
+        return classes;
+      }
+    },
+
     data() {
       return {
+        player_money : 75,
         members: [
           {
             name: "John McAfee",
             description: "Full time paid shiller",
-            img: require('../assets/mcafee.png')
+            img: require('../assets/mcafee.png'),
+            is_bought : true,
+            price : 5
           },
           {
             name: "John McAfee",
             description: "Full time paid shiller",
-            img: require('../assets/mcafee.png')
+            img: require('../assets/mcafee.png'),
+            is_bought : true,
+            price : 5
           },
           {
             name: "John McAfee",
             description: "Full time paid shiller",
-            img: require('../assets/mcafee.png')
+            img: require('../assets/mcafee.png'),
+            is_bought : false,
+            price : 5
           },
           {
             name: "John McAfee",
             description: "Full time paid shiller",
-            img: require('../assets/mcafee.png')
+            img: require('../assets/mcafee.png'),
+            is_bought : false,
+            price : 500
           },
           {
             name: "John McAfee",
             description: "Full time paid shiller",
-            img: require('../assets/mcafee.png')
+            img: require('../assets/mcafee.png'),
+            is_bought : false,
+            price : 500
           },
           {
             name: "John McAfee",
             description: "Full time paid shiller",
-            img: require('../assets/mcafee.png')
+            img: require('../assets/mcafee.png'),
+            is_bought : false,
+            price : 500
           }
         ]
       };
@@ -57,13 +91,11 @@
 
 <style scoped>
     .member-name{
-        text-align:left;
         font-size:1.5em;
         padding:0;
     }
     .member-description{
         font-size:0.9em;
-        text-align: left;
         padding:0;
     }
     .image{
@@ -89,6 +121,20 @@
         background-color:rgba(0,0,0,0.5);
         margin:15px;
         width: 200px;
+    }
+
+    .not_bought_can_afford{
+        opacity: 0.5;
+        cursor:pointer;
+    }
+    .not_bought_can_afford:hover{
+        opacity: 0.9;
+    }
+
+    .not_bought_cannot_afford{
+        opacity: 0.3;
+        -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+        filter: grayscale(100%);
     }
 
 </style>

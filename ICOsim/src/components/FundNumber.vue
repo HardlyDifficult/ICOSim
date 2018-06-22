@@ -29,6 +29,6 @@
     }
     .num{
         font-family: monospace;
-        padding:10px;
+        padding:0.1em;
     }
 </style>

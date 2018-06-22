@@ -7,7 +7,7 @@
                     GrowthRate
                 </div>
                 <div class="col-lg-12 growth-container">
-                    <FundsContainer :style="{fontSize:'0.5em'}" style="display:inline-block"/> per second
+                    <FundsContainer :mystyle="{fontSize:'2em'}" style="display:inline-block"/> per second
                 </div>
             </div>
         </div>

@@ -2,7 +2,6 @@
     <div class="row">
         <div class="col">
             <div class="funds">
-                <FundNumber :mystyle="mystyle" class="fas fa-dollar-sign dollar" content=""></FundNumber>
                 <FundNumber v-for="(part, index) in fund_parts" :class="(part === '.' ? 'fund-dot' : '')" v-bind:key="index" :mystyle="mystyle" :content="part"/>
             </div>
         </div>
@@ -15,7 +14,7 @@
 
     export default {
     name: "FundsDisplay",
-    props : ['target', 'mystyle'],
+    props : ['target', 'mystyle', 'instant'],
     components : {
       FundNumber
     },
@@ -37,15 +36,24 @@
           this.step = this.target.minus(this.value).div(50);
           let diff = this.getDiff(this.value, this.target);
 
-          if(diff.lt(0.1)){
-            this.value = this.target;
-          }else{
-            this.value = this.value.plus(this.step);
-          }
+          if(this.instant !== undefined){
+            if(diff.gt(0))
+              this.value = this.target;
 
-          setTimeout(()=>{
-            this.lerp();
-          }, 10);
+            setTimeout(()=>{
+              this.lerp();
+            }, 10);
+          }else{
+            if(diff.lt(0.1)){
+              this.value = this.target;
+            }else{
+              this.value = this.value.plus(this.step);
+            }
+
+            setTimeout(()=>{
+              this.lerp();
+            }, 10);
+          }
         }
       }
     },
@@ -70,14 +78,6 @@
 
 <style scoped>
     .funds {
-
-    }
-    .fund-dot{
-        padding-left : 0;
-        padding-right: 0;
-    }
-    .dollar{
-        color : white !important;
-        font-size: 3em !important;
+        pointer-events:none;
     }
 </style>

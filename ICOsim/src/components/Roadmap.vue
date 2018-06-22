@@ -6,11 +6,14 @@
         <div class="col-6 roadmap-step" v-for="(step, index) in steps" :key="index" :class="getStepClasses(step, index)">
             <div class="roadmap-step-inner" @mouseover="step.mouseover=true" :class="(step.next_price > player_money) ? 'glow-cant-afford' : 'glow-1'">
                 <div class="title">{{step.title}}</div>
+                <div class="expected">{{step.expected_return}}</div>
+                <div class="next_price">{{step.next_price}}</div>
+                <div class="next_price">{{step.next_price}}</div>
             </div>
 
-            <div class="circle"></div>
-            <div v-if="index < steps.length -1" class="connecting-line" v-anime="line_animation"></div>
+            <div class="connecting-line" v-anime="line_animation"></div>
         </div>
+        <div class="middle-line" :style="{height:(steps.length*100 - 55) + 'px'}"></div>
 
     </div>
 </template>
@@ -32,10 +35,7 @@
     data (){
       return {
         line_animation: {
-            backgroundColor: ["#04B0C6", "#0093C4"],
-            duration:10000,
-            direction:'alternate',
-            loop:true,
+
         } ,
         classes : [
           "step-1",
@@ -124,7 +124,6 @@
         background-color:rgba(0,0,0,0.8);
     }
 
-
     .title{
         color: white;
         font-size: 1.5em;
@@ -134,12 +133,20 @@
         position:absolute;
         background-color:#003430;
         z-index: -1;
-        opacity:0.4;
+    }
+
+    .middle-line{
+        position:absolute;
+        left:50%;
+        top:100px;
+        width:5px;
+        background-color:#003430;
+        z-index: -1;
     }
 
     .roadmap-step{
         position:relative;
-        min-height: 150px;
+        height: 200px;
     }
 
     .cant_afford_no_levels > .roadmap-step-inner{
@@ -153,28 +160,22 @@
         position:absolute;
     }
 
-    .step-3{
-        right: -50%;
-    }
-    .step-4{
-        right: 50%;
+    .step-2, .step-4{
+        top: 100px;
     }
 
     .step-1 > .connecting-line, .step-3 > .connecting-line{
         top : calc(50% - 5px);
-        right:-30px;
+        right:0;
         height:5px;
-        width:60px;
+        width:30px;
     }
     .step-2 > .connecting-line, .step-4 > .connecting-line {
-        left : calc(50% - 5px);
-        height:60px;
-        width:5px;
-        bottom:-30px;
+        top : calc(50% - 5px);
+        right:calc(100% - 30px);
+        height:5px;
+        width:30px;
     }
 
-    .step-3 > .connecting-line {
-        right:calc(100% - 30px);
-    }
 
 </style>

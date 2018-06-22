@@ -222,7 +222,7 @@
         position:absolute;
         left:50%;
         top:100px;
-        height:calc(100% - 130px);
+        height:calc(100% - 100px);
         width:5px;
         background-color:#003430;
         z-index: -1;
@@ -235,8 +235,8 @@
     }
 
     .roadmap-step{
+        margin-top:80px;
         position:relative;
-        height: 250px;
     }
 
     .locked.cannot_afford > .roadmap-step-inner{

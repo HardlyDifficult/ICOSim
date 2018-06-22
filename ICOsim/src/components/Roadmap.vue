@@ -81,7 +81,7 @@
         classes.push(this.classes[index % 4]);
 
 
-        if(step.producing <= 0){
+        if(step.current_num <= 0){
           classes.push('locked');
         }else{
           classes.push('unlocked');
@@ -134,7 +134,7 @@
             num_can_afford : 3,
             num_to_buy : 0,
             producing : 0,
-            current_num : 80,
+            current_num : 0,
             expected_return : 1,
             next_price : new BigNumber(20)
           },
@@ -143,7 +143,7 @@
             num_can_afford : 3,
             num_to_buy : 0,
             producing : 0,
-            current_num : 80,
+            current_num : 0,
             expected_return : 1,
             next_price : new BigNumber(150)
           },
@@ -152,7 +152,7 @@
             num_can_afford : 3,
             num_to_buy : 0,
             producing : 0,
-            current_num : 80,
+            current_num : 0,
             expected_return : 1,
             next_price : new BigNumber(150)
           },
@@ -161,7 +161,7 @@
             num_can_afford : 3,
             num_to_buy : 0,
             producing : 0,
-            current_num : 80,
+            current_num : 0,
             expected_return : 1,
             next_price : new BigNumber(150)
           },
@@ -170,7 +170,7 @@
             num_can_afford : 3,
             num_to_buy : 0,
             producing : 0,
-            current_num : 80,
+            current_num : 0,
             expected_return : 1,
             next_price : new BigNumber(150)
           },
@@ -179,7 +179,7 @@
             num_can_afford : 3,
             num_to_buy : 0,
             producing : 0,
-            current_num : 80,
+            current_num : 0,
             expected_return : 1,
             next_price : new BigNumber(150)
           }
@@ -197,6 +197,12 @@
 
         border-radius : 5px 5px 5px 5px;
         padding:15px;
+
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
     }
 
     .title{
@@ -235,6 +241,7 @@
 
     .locked.cannot_afford > .roadmap-step-inner{
         opacity: 0.1;
+        pointer-events: none;
     }
 
     .locked.can_afford> .roadmap-step-inner{

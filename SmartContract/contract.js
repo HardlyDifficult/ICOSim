@@ -36,14 +36,24 @@ class SafeNumber
     
     var result = new SafeNumber(this.value.plus(b));
 
-    assert(result.value.gte(this.value))
+    assert(result.value.gte(this.value), "Plus: Result is less than the original. Result " + result + ", original" + this.value);
+    return result;
+  }
+
+  sub(b)
+  {
+    assert(b.isPositiveWholeNumber(), "Sub: Not a valid SafeNumber value: " + b);
+    
+    var result = new SafeNumber(this.value.sub(b));
+
+    assert(result.value.lte(this.value), "Sub: Result is greater than the original. Result " + result + ", original" + this.value);
     return result;
   }
 
   div(b)
   {
     assert(b.isPositiveWholeNumber(), "div: Not a valid SafeNumber value: " + b);
-    assert(b.gt(0), "Divide by 0? b:" + b);
+    assert(b.value.gt(0), "Divide by 0? b:" + b);
 
     var result = new SafeNumber(this.value.div(b));
 
@@ -57,7 +67,7 @@ class SafeNumber
     
     var result = new SafeNumber(this.value.mul(b));
 
-    assert(result.value.gte(this.value) || b.eq(0), "Mul: Result is less than original.  Result: " + result + ", original: " + this.value);
+    assert(result.value.gte(this.value) || b.value.eq(0), "Mul: Result is less than original.  Result: " + result + ", original: " + this.value);
     return result;
   }
 
@@ -75,6 +85,12 @@ class SafeNumber
   {
     assert(b.isPositiveWholeNumber(), "gt: Not a valid SafeNumber value: " + b);
     return this.value.gt(b);
+  }
+
+  gte(b)
+  {
+    assert(b.isPositiveWholeNumber(), "gte: Not a valid SafeNumber value: " + b);
+    return this.value.gte(b);
   }
 
   eq(b)
@@ -104,10 +120,16 @@ class SafeNumber
   }
 }
 
+SafeNumber.prototype.toJSON = function() 
+{
+  return this.toString();
+};
+
 class User 
 {
   constructor(value)
   {
+    this.addr = value.addr;
     this.nas_redeemed = new SafeNumber(value.nas_redeemed);
     this.active_ico_id = value.active_ico_id;
     this.retired_icos = value.retired_icos;
@@ -145,7 +167,6 @@ class ICO
     assert(isString(this.id, 200), "Invalid ICO ID: " + this.id);
     assert(isString(this.name, 100), "Please specify a valid name: " + this.name);
     assert(isString(this.ticker, 5), "Please specify a valid ticker: " + this.ticker);
-    assert(isDate(this.last_action_date), "ICO, last_action_date is not a date: " + this.last_action_date);
   }
 
   toString() 
@@ -476,7 +497,7 @@ Contract.prototype =
     return this.buy_price_nas_per_resource;
   },
 
-  getSellPriceResourcesPerNas: function()
+  getSellPriceNasPerResource: function()
   {
     var balance = this.getSmartContractBalance(); 
     if(!balance.gt(new SafeNumber(0)))
@@ -484,7 +505,7 @@ Contract.prototype =
       return new SafeNumber(0);
     }
 
-    return this.total_resources.plus(this.world_resources).mul(new SafeNumber(10)).div(balance);
+    return new SafeNumber(balance.value.div(this.total_resources.value.plus(this.world_resources.value)).plus(0.001).toFixed(0));
   },
 
   getMyResources: function(ico_id)
@@ -495,14 +516,13 @@ Contract.prototype =
 
   getMyResourcesNasValue: function(ico_id)
   {
-    this.redeemResources(ico_id);
-    var resources_per_nas = this.getSellPriceResourcesPerNas();
+    var nas_per_resource = this.getSellPriceNasPerResource();
     var my_resources = this.getMyResources(ico_id);
-    if(resources_per_nas.eq(0))
+    if(nas_per_resource.eq(new SafeNumber(0)))
     {
-      return 0;
+      return new SafeNumber(0);
     }
-    return my_resources.div(resources_per_nas);
+    return my_resources.mul(nas_per_resource);
   },
 
   getMyItemProductionRate: function(item_name, ico_id)
@@ -551,7 +571,9 @@ Contract.prototype =
     {
       time_passed = 0;
     }
-    return new SafeNumber(time_passed).div(new SafeNumber(1000)); // to seconds
+    time_passed = new SafeNumber(time_passed);
+    const ms_to_s = new SafeNumber(1000);
+    return time_passed.div(ms_to_s); // to seconds
   },
 
   getMyProductionSinceLastRedeem: function(ico_id)
@@ -597,7 +619,7 @@ Contract.prototype =
   {
     var base = this.getMyProductionSinceLastRedeem(ico_id);
     var bonus = this.getMyBonus(ico_id);
-    return base.mul(bonus.plus(new SafeNumber(100))).div(new SafeNumber(100));
+    return new SafeNumber(base.value.mul(bonus.value.plus(100)).div(100).plus(.001).toFixed(0));
   },
   
   redeemResources: function(ico_id)
@@ -617,13 +639,31 @@ Contract.prototype =
     return ico.resources;
   },
 
+  getTotalPlayerResources()
+  {
+    return this.total_resources;
+  },
+
+  getWorldResources()
+  {
+    return this.world_resources;
+  },
+
   exitScam: function()
   {
+    this.redeemResources();
     var user = this.getOrCreateUser();
     var ico = this.getActiveICO();
     var nas = this.getMyResourcesNasValue();
-    this.total_resources = this.total_resources.plus(this.starting_resources).sub(ico.resources);
+    if(nas.gt(this.nas))
+    { // Just in case a rounding issue
+      nas = this.nas;
+    }
+    this.total_resources = this.total_resources.sub(ico.resources);
     user.nas_redeemed = user.nas_redeemed.plus(nas);
+    user.retired_icos.push(ico.id);
+    user.active_ico_id = null;
+    removeFromList(this.lists, "active_icos", ico.id);
     this.addr_to_user.put(Blockchain.transaction.from, user);
     if(!Blockchain.transfer(Blockchain.transaction.from, nas))
     {
@@ -691,10 +731,13 @@ Contract.prototype =
   getTotalCostFor: function(name, quantity)
   {
     var item = this.getItemRaw(name);
-    quantity = new SafeNumber(quantity);
-    // sum = t^3/3+t^2/2+t/6 sum to t=target_item_count subtract sum to t=start_item_count
-    return item.start_price.mul(quantity.pow(new SafeNumber(3)).div(new SafeNumber(3))
-      .plus(quantity.pow(new SafeNumber(2)).div(new SafeNumber(2))).plus(quantity.div(new SafeNumber(6))));
+    if(!quantity)
+    {
+      quantity = 1;
+    }
+    quantity = new BigNumber(quantity);
+    // sum = p * c^2
+    return new SafeNumber(item.start_price.value.mul(quantity.pow(2)).plus(0.001).toFixed(0));
   },
 
   getMyItemPrice: function(name, quantity, ico_id)
@@ -708,7 +751,7 @@ Contract.prototype =
       quantity = new SafeNumber(1);
     }
     var item_count = this.getMyItemCount(name, ico_id);
-    var max_count = plus(item_count, quantity);
+    var max_count = item_count.plus(quantity);
 
     return this.getTotalCostFor(name, max_count).sub(this.getTotalCostFor(name, item_count));
   },
@@ -716,16 +759,28 @@ Contract.prototype =
   getMaxICanAfford: function(name, ico_id)
   {
     var ico = this.getICO(ico_id);
-    this.redeemResources(ico_id);
+    var item = this.getItemRaw(name);
 
-    var max = new SafeNumber(0);
-    const one = new SafeNumber(1);
-    while(ico.resources.gte(this.getMyItemPrice(name, max.plus(one))))
+    var x = ico.resources.value;
+    var c = this.getMyItemCount(name, ico_id).value;
+    var p = item.start_price.value;
+    
+    var sq = (p.mul(c.pow(2).mul(p).plus(x))).sqrt();
+    var cp = c.mul(p);
+
+    var count1 = sq.plus(cp).div(p).mul(-1);
+    var count2 = sq.sub(cp).div(p);
+    var count;
+    if(count1.gt(count2))
     {
-      max = max.plus(one);
+      count = count1;
     }
-
-    return max;
+    else
+    {
+      count = count2;
+    }
+    
+    return new SafeNumber(count.plus(.001).toFixed(0));
   },
 
   buy: function(name, quantity)
@@ -759,15 +814,16 @@ Contract.prototype =
       ico.items[name] = new SafeNumber(ico.items[name]).plus(quantity);
     }
 
-    ico.total_production_rate = this.getMyProductionRate();
-
+    
     Event.Trigger("buy", {
       ico,
       name,
       quantity,
       price
     });
-
+    
+    this.ico_id_to_ico.put(ico.id, ico);
+    ico.total_production_rate = this.getMyProductionRate();
     this.ico_id_to_ico.put(ico.id, ico);
   },
   //#endregion
@@ -775,8 +831,6 @@ Contract.prototype =
   //#region Dapp calls
   getInfo: function(ticker)
   {
-    var items = [];
-    var all_items = this.lists.get("all_items");
     var ico_id;
     if(ticker)
     {
@@ -788,19 +842,26 @@ Contract.prototype =
       ico_id = user.active_ico_id;
     }
 
+    if(ico_id)
+    {
+      this.redeemResources(ico_id);
+    }
+
+    var items = [];
+    var all_items = this.lists.get("all_items");
+    
     for(var i = 0; i < all_items.length; i++)
     {
       items.push(this.getItem(all_items[i], ico_id));
     }
-
+    
     var data = {
       smart_contract_balance: this.getSmartContractBalance(),
-      buy_price_nas_per_resource: this.getBuyPriceNasPerResource(),
-      sell_price_resources_per_nas: this.getSellPriceResourcesPerNas(),
+      buy_price_nas_per_resource: this.getBuyPriceNasPerResource(), // TODO replace with buy per item
+      sell_price_nas_per_resource: this.getSellPriceNasPerResource(),
       items
     };
-
-   
+    
     if(ico_id)
     {
       data.active_ico = this.getICO(ico_id);
@@ -823,7 +884,7 @@ Contract.prototype =
     for(var i = 0; i < all_users.length; i++)
     {
       var user = this.getUser(all_users[i]);
-      if(user.nas_redeemed.lte(0))
+      if(user.nas_redeemed.lte(new SafeNumber(0)))
       {
         continue;
       }
@@ -843,7 +904,7 @@ Contract.prototype =
     var time_passed = this.getTimePassed(ico_id);
 
     delete ico.items;
-    ico.market_cap = ico.resources.plus(ico.total_production_rate).mul(time_passed);
+    ico.market_cap = ico.resources.plus(ico.total_production_rate.mul(time_passed));
     
     return ico;
   },
@@ -894,6 +955,22 @@ function addToList(lists, list_name, item)
   lists.put(list_name, list);
 }
 
+function removeFromList(lists, list_name, item)
+{
+  if(item == null)
+  {
+    throw new Error("Removing null from a list? hmmm: " + item);
+  }
+  var list = lists.get(list_name);
+  var index = list.indexOf(item);
+  if(index < 0)
+  {
+    throw new Error("Item not found?");
+  }
+  list.splice(index, 1);
+  lists.put(list_name, list);
+}
+
 function isString(value, max_length)
 {
   if(value == null)
@@ -912,12 +989,6 @@ function isString(value, max_length)
   }
 
   return value.length <= max_length;
-}
-
-
-function isDate(value)
-{
-  return value instanceof Date && !isNaN(value);
 }
 
 function isArray(value) 

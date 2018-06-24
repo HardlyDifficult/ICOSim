@@ -23,13 +23,13 @@
        <div class="card">
             <h4>Global Info</h4>
                 <div class="col-12">
-                    buy_price_nas_per_resource: {{ info.buy_price_nas_per_resource | nas }}
-                </div>
-                <div class="col-12">
                     smart_contract_balance: {{ info.smart_contract_balance | nas }}
                 </div>
                 <div class="col-12">
-                    sell_price_resources_per_nas: {{ info.sell_price_resources_per_nas | decimal }}
+                    buy_price_nas_per_resource: {{ info.buy_price_nas_per_resource | nas }}
+                </div>
+                <div class="col-12">
+                    sell_price_nas_per_resource: {{ info.sell_price_nas_per_resource | nas }}
                 </div>
         </div> 
 
@@ -74,6 +74,7 @@
                 <div class="col-12">
                     Amount <input v-model="amount_to_invest" type="number" min="0.000001">
                     <button @click="invest()">Invest</button>
+                    {{ getBuyInResourceValue(amount_to_invest) | count }}
                 </div>
                 <div class="col-12">
                     <hr>
@@ -82,7 +83,7 @@
                     my_resources_nas_value: {{ info.active_ico.my_resources_nas_value | nas }} 
                 </div>
                 <div class="col-12">
-                    <button @click="exitScam()">Exit Scam</button>
+                    <button @click="exitScam()" class="btn btn-primary">Exit Scam</button>
                 </div>
             </div>
         </div>
@@ -138,7 +139,7 @@
                     Addr: {{ scammer.addr }}
                 </div>
                 <div class="col-12">
-                    NAS redeemed: {{ scammer.nas_redeemed }}
+                    NAS redeemed: {{ scammer.nas_redeemed | nas }}
                 </div>
                 <div class="col-12" v-if="scammer.active_ico">
                     Active ICO: {{ scammer.active_ico }}
@@ -165,13 +166,13 @@
                     last_action_date: {{ ico.last_action_date | date }}
                 </div>
                 <div class="col-12">
-                    market_cap: {{ ico.market_cap }}
+                    market_cap: {{ ico.market_cap | count }}
                 </div>
                 <div class="col-12">
-                    resources: {{ ico.resources }}
+                    resources: {{ ico.resources | count }}
                 </div>
                 <div class="col-12">
-                    total_production_rate: {{ ico.total_production_rate }}
+                    total_production_rate: {{ ico.total_production_rate | count }}
                 </div>
             </div>
         </div> 
@@ -193,6 +194,7 @@
             </div>
         </div>
 
+    <a v-bind:href="explorer_smart_contract_url">View Smart Contract ({{ smart_contract_address }})</a>
 
   </div>
 </template>
@@ -215,7 +217,9 @@ export default {
             method_to_call: "",
             method_to_call_args: "",
             best_known_scammers: [],
-            coin_market_caps: []
+            coin_market_caps: [],
+            explorer_smart_contract_url: null,
+            smart_contract_address: null
         }
     },
     components: {
@@ -321,12 +325,16 @@ export default {
         getBuyProductionGain(item)
         {
             return this.selections[item.name].number_to_buy * item.resources_per_s;
+        },
+        getBuyInResourceValue(nas_amount)
+        {
+            return this.info.buy_price_nas_per_resource * nas_amount;
         }
     },
     filters: {
         count(value) 
         {
-            return numberWithCommas(value.value);
+            return numberWithCommas(value);
         },
         date(value)
         {
@@ -334,32 +342,25 @@ export default {
         },
         percent(value)
         {
-            if(value.value)
-            {
-                value = value.value;
-            }
-
             return numberWithCommas(value) + "%";
         },
         decimal(value)
         {
-            if(value.value)
-            {
-                value = value.value;
-            }
-
             return numberWithCommas(value, 4);
         },
         price(value)
         {
-            return numberWithCommas(value.value);
+            return numberWithCommas(value);
         },
         nas(value)
         {
-            return formatCoins(value.value, 18);
+            return formatCoins(value, 18);
         },
     },
     mounted() {
+        this.smart_contract_address = game.getSmartContractAddress();
+        this.explorer_smart_contract_url = 
+            "https://explorer.nebulas.io/#" + (game.getIsTestnet() ? '/testnet' : '') + "/address/" + this.smart_contract_address;
         var index = window.location.hash.lastIndexOf("?");
         if(index >= 0)
         {

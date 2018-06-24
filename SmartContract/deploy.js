@@ -82,12 +82,13 @@ async function run(){
         fs.writeFileSync('../ICOSim/src/static/settings.js', content);
         
         await callMethod("setStartingResources", 42); 
-        await callMethod("setWorldResources", 555555555); 
-        await callMethod("setBuyPrice", 10000000); 
+        await callMethod("setWorldResources", 5555555555); 
+        await callMethod("setBuyPrice", 10000000000); 
 
+        var item_make_a_commit = "Make a Commit on Github";
         var items = [
           // Raw production
-          {name: "Make a Commit on Github", sort_id: 0, start_price: 1, resources_per_s: 1},
+          {name: item_make_a_commit, sort_id: 0, start_price: 1, resources_per_s: 1},
           {name: "Announce an Announcement", sort_id: 1, start_price: 30, resources_per_s: 5},
           {name: "Publish Performance Numbers", sort_id: 2, start_price: 500, resources_per_s: 10},
           {name: "Do a Giveaway on Twitter", sort_id: 3, start_price: 15000, resources_per_s: 25},
@@ -117,13 +118,47 @@ async function run(){
         //   nebWrite("createItem", [items[i]]); 
         //   sleep(5000);
         // }
-
-        await callMethod("changeOwner", "n1S5JNP13pnoyswKbGtrtE3Bexz6pbtKaPj");
+        var my_wallet = "n1S5JNP13pnoyswKbGtrtE3Bexz6pbtKaPj";
+        await callMethod("changeOwner", my_wallet);
 
         // For testing: 
-        //await callMethod("launchICO", ["HardlyValuable", "HV"])
-        //await callMethod("getInfo", null);
-
+        await callMethod("isOwner");
+        await callMethod("getOrCreateUser");
+        await callMethod("getUser", ["n1S5JNP13pnoyswKbGtrtE3Bexz6pbtKaPj"]);
+        await callMethod("launchICO", ["HardlyValuable", "HV1"])
+        await callMethod("getActiveICO");
+        await callMethod("getICO");
+        await callMethod("getICOId", ["HV"]);
+        await callMethod("getSmartContractBalance");
+        await callMethod("getBuyPriceNasPerResource");
+        await callMethod("getSellPriceResourcesPerNas");
+        await callMethod("getMyResources");
+        await callMethod("getMyResourcesNasValue");
+        await callMethod("getMyItemProductionRate", item_make_a_commit);
+        await callMethod("getMyProductionRate");
+        await callMethod("getTimePassed");
+        await callMethod("getMyProductionSinceLastRedeem");
+        await callMethod("getMyItemBonus", item_make_a_commit);
+        await callMethod("getMyBonus");
+        await callMethod("getMyPendingResources");
+        await callMethod("redeemResources");
+        await callMethod("exitScam");
+        //await callMethod("launchICO", ["HardlyValuable", "HV2"])
+        await callMethod("getAllItemNames");
+        await callMethod("getItemRaw", item_make_a_commit);
+        await callMethod("getItem", item_make_a_commit);
+        await callMethod("getMyItemCount", item_make_a_commit);
+        await callMethod("getTotalCostFor", [item_make_a_commit, 10000]);
+        await callMethod("getMyItemPrice", [item_make_a_commit, 10000]);
+        await callMethod("getMaxICanAfford", [item_make_a_commit]);
+        await callMethod("buy", ["Make a Commit on Github", 3]);
+        await callMethod("getInfo");
+        await callMethod("getBestKnownScammers");
+        await callMethod("getBestKnownScammers", [1, 10]);
+        await callMethod("getICOStats");
+        await callMethod("getCoinMarketCaps");
+        await callMethod("getCoinMarketCaps", [1, 10]);
+        await callMethod("getList", "all_items");
       }
 
       return;

@@ -5,6 +5,16 @@ var ticker;
 
 module.exports = 
 {
+    getIsTestnet()
+    {
+        return neb_contract.apiUrl.indexOf("testnet") >= 0;
+    },
+
+    getSmartContractAddress()
+    {
+        return neb_contract.contract;
+    },
+
     // TODO check write calls before posting
     // Consider using sub
     // TODO is ticker name available?

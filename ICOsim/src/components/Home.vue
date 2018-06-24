@@ -1,6 +1,8 @@
 <template>
   <div class='container-fluid'>
       <Navbar/>
+      <NoExtensionWarning/>
+      <LaunchIco/>
       <div class='row'>
           <div class='col-lg-6'>
               <FundsContainer :target="user_funds"/>
@@ -28,6 +30,8 @@ import FundsContainer from './FundsDisplay';
 import Roadmap from './Roadmap';
 import Team from './Team';
 import Details from './Details';
+import NoExtensionWarning from './NoExtensionWarning';
+import LaunchIco from './LaunchIco';
 
 export default {
   name: 'Home',
@@ -41,7 +45,9 @@ export default {
     FundsContainer,
     Roadmap,
     Team,
-    Details
+    Details,
+    NoExtensionWarning,
+    LaunchIco
   }
 
 }

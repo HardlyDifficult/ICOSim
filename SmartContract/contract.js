@@ -27,7 +27,7 @@ class SafeNumber
   toString()
   {
     this.validate();
-    return JSON.stringify(this.value);
+    return this.value.toString();
   }
   
   plus(b)
@@ -57,7 +57,7 @@ class SafeNumber
     
     var result = new SafeNumber(this.value.mul(b));
 
-    assert(result.value.gte(this.value), "Mul: Result is less than original.  Result: " + result + ", original: " + this.value);
+    assert(result.value.gte(this.value) || b.eq(0), "Mul: Result is less than original.  Result: " + result + ", original: " + this.value);
     return result;
   }
 
@@ -130,6 +130,7 @@ class ICO
 {
   constructor(value)
   {
+    this.id = value.id;
     this.name = value.name;
     this.ticker = value.ticker;
     this.resources = new SafeNumber(value.resources);
@@ -141,10 +142,10 @@ class ICO
   
   validate()
   {
+    assert(isString(this.id, 200), "Invalid ICO ID: " + this.id);
     assert(isString(this.name, 100), "Please specify a valid name: " + this.name);
     assert(isString(this.ticker, 5), "Please specify a valid ticker: " + this.ticker);
     assert(isDate(this.last_action_date), "ICO, last_action_date is not a date: " + this.last_action_date);
-    assert(isArray(this.items), "ICO: items is not an array: " + this.items);
   }
 
   toString() 
@@ -367,7 +368,7 @@ Contract.prototype =
       user = new User({
         addr: Blockchain.transaction.from,
         nas_redeemed: new SafeNumber(0), 
-        active_ico: null,
+        active_ico_id: null,
         retired_icos: []
       });
             
@@ -392,7 +393,7 @@ Contract.prototype =
     assert(!this.ticker_to_ico_id.get(ticker), "There was already an ICO by that name, choose something unique.  You entered: " + ticker);
 
     var user = this.getOrCreateUser();
-    assert(!user.active_ico, "You can only run one ICO at a time.  Please finish: " + user.active_ico);
+    assert(!user.active_ico_id, "You can only run one ICO at a time.  Please finish: " + user.active_ico_id);
 
     var ico = new ICO({
       id: Blockchain.transaction.hash,
@@ -407,9 +408,9 @@ Contract.prototype =
 
     this.total_resources = this.total_resources.plus(ico.resources);
     this.ico_id_to_ico.put(ico.id, ico);
-    this.ticker_to_ico_id.put(ticker, ico.id);
+    this.ticker_to_ico_id.put(ico.ticker, ico.id);
     addToList(this.lists, "active_icos", ico.id);
-    user.active_ico = ico.id;
+    user.active_ico_id = ico.id;
     this.addr_to_user.put(Blockchain.transaction.from, user);
 
     Event.Trigger("newICO", ico);
@@ -420,9 +421,9 @@ Contract.prototype =
   getActiveICO: function()
   {
     var user = this.getOrCreateUser();
-    assert(user.active_ico, "Please start an ICO first.");
+    assert(user.active_ico_id, "Please start an ICO first.");
 
-    return this.getICO(user.active_ico);
+    return this.getICO(user.active_ico_id);
   },
   
   getICO: function(ico_id)
@@ -430,7 +431,7 @@ Contract.prototype =
     if(!ico_id)
     {
       var user = this.getOrCreateUser();
-      ico_id = user.active_ico;
+      ico_id = user.active_ico_id;
     }
 
     var ico = this.ico_id_to_ico.get(ico_id);
@@ -467,20 +468,20 @@ Contract.prototype =
   {
     // this does not work on mainnet... tracking ourselves as a workaround
     //return new SafeNumber(Blockchain.getAccountState(Blockchain.transaction.to).balance);
-    return this.nas.value;
+    return this.nas;
   },  
 
   getBuyPriceNasPerResource : function() 
   {
-    return this.buy_price_nas_per_resource.value;
+    return this.buy_price_nas_per_resource;
   },
 
   getSellPriceResourcesPerNas: function()
   {
     var balance = this.getSmartContractBalance(); 
-    if(!balance.gt(0))
+    if(!balance.gt(new SafeNumber(0)))
     {
-      return 0;
+      return new SafeNumber(0);
     }
 
     return this.total_resources.plus(this.world_resources).mul(new SafeNumber(10)).div(balance);
@@ -550,7 +551,7 @@ Contract.prototype =
     {
       time_passed = 0;
     }
-    return new SafeNumber(time_passed).div(1000); // to seconds
+    return new SafeNumber(time_passed).div(new SafeNumber(1000)); // to seconds
   },
 
   getMyProductionSinceLastRedeem: function(ico_id)
@@ -784,7 +785,7 @@ Contract.prototype =
     else
     {
       var user = this.getOrCreateUser();
-      ico_id = user.active_ico;
+      ico_id = user.active_ico_id;
     }
 
     for(var i = 0; i < all_items.length; i++)
@@ -876,7 +877,7 @@ module.exports = Contract
 
 function assert(value, message)
 {
-  if(value !== true)
+  if(!value)
   {
     throw new Error("Failed assert: " + message);
   }
@@ -884,6 +885,10 @@ function assert(value, message)
 
 function addToList(lists, list_name, item)
 {
+  if(item == null)
+  {
+    throw new Error("Adding null to a list? hmmm: " + item);
+  }
   var list = lists.get(list_name);
   list.push(item);
   lists.put(list_name, list);
@@ -891,7 +896,12 @@ function addToList(lists, list_name, item)
 
 function isString(value, max_length)
 {
-  if(typeof(value) !== 'string')
+  if(value == null)
+  {
+    return false;
+  }
+
+  if(!value instanceof String)
   {
     return false;
   }
@@ -907,7 +917,7 @@ function isString(value, max_length)
 
 function isDate(value)
 {
-  return value instanceof Date && !isNaN(d);
+  return value instanceof Date && !isNaN(value);
 }
 
 function isArray(value) 

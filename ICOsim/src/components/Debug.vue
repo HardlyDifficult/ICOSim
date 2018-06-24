@@ -19,6 +19,7 @@
         </div>
         </div>
         
+        <span v-if="info != null">
        <div class="card">
             <h4>Global Info</h4>
                 <div class="col-12">
@@ -78,7 +79,7 @@
                     <hr>
                 </div>
                 <div class="col-12">
-                    my_resources_nas_value: {{ info.active_ico.my_resources_nas_value | nas }}
+                    my_resources_nas_value: {{ info.active_ico.my_resources_nas_value | nas }} 
                 </div>
                 <div class="col-12">
                     <button @click="exitScam()">Exit Scam</button>
@@ -96,9 +97,6 @@
                 </div>
                 <div class="col-12" v-if="item.bonus_multiplier">
                     bonus_multiplier: {{ item.bonus_multiplier | percent }}
-                </div>
-                <div class="col-12">
-                    price_exponent: {{ item.price_exponent | decimal }}
                 </div>
                 <span v-if="info.active_ico">
                     <div class="col-12">
@@ -177,6 +175,7 @@
                 </div>
             </div>
         </div> 
+        </span>
 
         <div class="card mt-5 text-left">
             <h4>Direct Calls</h4>
@@ -194,6 +193,7 @@
             </div>
         </div>
 
+
   </div>
 </template>
 
@@ -209,7 +209,7 @@ export default {
     name: 'Debug',
     data () {
         return {
-            info: {},
+            info: null,
             selections: {},
             amount_to_invest: 0,
             method_to_call: "",
@@ -326,12 +326,7 @@ export default {
     filters: {
         count(value) 
         {
-            if(!value)
-            {
-                return "0";
-            }
-
-            return numberWithCommas(value);
+            return numberWithCommas(value.value);
         },
         date(value)
         {
@@ -339,19 +334,29 @@ export default {
         },
         percent(value)
         {
-            return numberWithCommas(value);
+            if(value.value)
+            {
+                value = value.value;
+            }
+
+            return numberWithCommas(value) + "%";
         },
         decimal(value)
         {
+            if(value.value)
+            {
+                value = value.value;
+            }
+
             return numberWithCommas(value, 4);
         },
         price(value)
         {
-            return numberWithCommas(value);
+            return numberWithCommas(value.value);
         },
         nas(value)
         {
-            return formatCoins(value, 18);
+            return formatCoins(value.value, 18);
         },
     },
     mounted() {

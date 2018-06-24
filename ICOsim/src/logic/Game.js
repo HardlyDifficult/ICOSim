@@ -5,6 +5,9 @@ var ticker;
 
 module.exports = 
 {
+    // TODO check write calls before posting
+    // Consider using sub
+    // TODO is ticker name available?
     setTicker(_ticker)
     {
         ticker = _ticker;

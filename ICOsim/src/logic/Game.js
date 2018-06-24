@@ -1,10 +1,14 @@
 var neb = require("../logic/HardlyNeb.js");
 let settings = require("../static/settings.js");
 
+var ticker;
+
 module.exports = 
 {
-    // TODO getICOLeaderboard
-    // TODO view someone elses ICO
+    setTicker(_ticker)
+    {
+        ticker = _ticker;
+    },
 
     getCoinMarketCaps(start_index, count, onSuccess, onError)
     {
@@ -14,6 +18,11 @@ module.exports =
     getBestKnownScammers(start_index, count, onSuccess, onError)
     {
         neb.nebRead("getBestKnownScammers", null, onSuccess, onError);
+    },
+
+    getTotalCostFor(item, quantity)
+    {
+        return item.start_price * (Math.pow(quantity, 3) / 3 + Math.pow(quantity, 2) / 2 + quantity / 6);
     },
 
     getBuyPrice(item, quantity)
@@ -27,28 +36,12 @@ module.exports =
         }
         var item_count = parseInt(item.user_holdings);
         var max = item_count + quantity;
-        var multiple = (max * (max + 1) - item_count * (item_count + 1)) / 2;
-        return item.start_price * Math.pow(multiple, item.price_multiple);
-    },
-
-    getBuyPriceOld(item, quantity)
-    {
-        if(!quantity)
-        {
-            quantity = 1;
-        } else
-        {
-            quantity = parseInt(quantity);
-        }
-        var item_count = parseInt(item.user_holdings);
-        var max = item_count + quantity;
-        var multiple = (max * (max + 1) - item_count * (item_count + 1)) / 2;
-        return item.start_price * multiple;
+        return this.getTotalCostFor(item, max) - this.getTotalCostFor(item, item_count);
     },
 
     getInfo(onSuccess, onError)
     {
-        neb.nebRead("getInfo", null, function(info) 
+        neb.nebRead("getInfo", [ticker], function(info) 
         {
             info.items.sort(function(a, b)
             {

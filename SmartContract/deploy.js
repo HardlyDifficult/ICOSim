@@ -87,24 +87,24 @@ async function run(){
 
         var items = [
           // Raw production
-          {name: "Make a Commit on Github", sort_id: 0, start_price: 1, price_multiple: 2, resources_per_s: 1},
-          {name: "Announce an Announcement", sort_id: 1, start_price: 30, price_multiple: 2, resources_per_s: 5},
-          {name: "Publish Performance Numbers", sort_id: 2, start_price: 500, price_multiple: 2, resources_per_s: 10},
-          {name: "Do a Giveaway on Twitter", sort_id: 3, start_price: 15000, price_multiple: 2, resources_per_s: 25},
-          {name: "Incite FOMO", sort_id: 4, start_price: 420000, price_multiple: 2, resources_per_s: 50},
-          {name: "Buy Exchange Listing", sort_id: 5, start_price: 20000000, price_multiple: 2, resources_per_s: 100},
-          {name: "Air Drop", sort_id: 6, start_price: 3000000000, price_multiple: 2, resources_per_s: 500},
-          {name: "Announce Partnership", sort_id: 7, start_price: 2000000000000, price_multiple: 2, resources_per_s: 10000},
+          {name: "Make a Commit on Github", sort_id: 0, start_price: 1, resources_per_s: 1},
+          {name: "Announce an Announcement", sort_id: 1, start_price: 30, resources_per_s: 5},
+          {name: "Publish Performance Numbers", sort_id: 2, start_price: 500, resources_per_s: 10},
+          {name: "Do a Giveaway on Twitter", sort_id: 3, start_price: 15000, resources_per_s: 25},
+          {name: "Incite FOMO", sort_id: 4, start_price: 420000, resources_per_s: 50},
+          {name: "Buy Exchange Listing", sort_id: 5, start_price: 20000000, resources_per_s: 100},
+          {name: "Air Drop", sort_id: 6, start_price: 3000000000, resources_per_s: 500},
+          {name: "Announce Partnership", sort_id: 7, start_price: 2000000000000, resources_per_s: 10000},
 
           // Bonuses
-          {name: "Tom Lee", sort_id: 8, start_price: 500000, price_multiple: 2, bonus_multiplier: 1},
-          {name: "Craig Grant", sort_id: 9, start_price: 35000000, price_multiple: 2, bonus_multiplier: 5},
-          {name: "Ian Balina", sort_id: 10, start_price: 1000000000, price_multiple: 2, bonus_multiplier: 20},
-          {name: "Suppoman", sort_id: 11, start_price: 1000000000, price_multiple: 2, bonus_multiplier: 20},
-          {name: "Trevon James", sort_id: 12, start_price: 1000000000, price_multiple: 2, bonus_multiplier: 20},
-          {name: "Roger Ver", sort_id: 13, start_price: 1000000000, price_multiple: 2, bonus_multiplier: 20},
-          {name: "John McAfee", sort_id: 14, start_price: 1000000000, price_multiple: 2, bonus_multiplier: 20},
-          {name: "Carlos Matos", sort_id: 15, start_price: 1, price_multiple: 2, bonus_multiplier: 20},
+          {name: "Tom Lee", sort_id: 8, start_price: 500000, bonus_multiplier: 1},
+          {name: "Craig Grant", sort_id: 9, start_price: 35000000, bonus_multiplier: 2},
+          {name: "Ian Balina", sort_id: 10, start_price: 1000000000, bonus_multiplier: 5},
+          {name: "Suppoman", sort_id: 11, start_price: 10000000000, bonus_multiplier: 10},
+          {name: "Trevon James", sort_id: 12, start_price: 100000000000, bonus_multiplier: 15},
+          {name: "Roger Ver", sort_id: 13, start_price: 100000000000, bonus_multiplier: 20},
+          {name: "John McAfee", sort_id: 14, start_price: 10000000000000, bonus_multiplier: 25},
+          {name: "Carlos Matos", sort_id: 15, start_price: 999000000000000, bonus_multiplier: 50},
         ]
 
         for(var i = 0; i < items.length; i++)
@@ -121,7 +121,7 @@ async function run(){
         await callMethod("changeOwner", "n1S5JNP13pnoyswKbGtrtE3Bexz6pbtKaPj");
 
         // For testing: 
-        await callMethod("launchICO", ["HardlyValuable", "HV"])
+        //await callMethod("launchICO", ["HardlyValuable", "HV"])
         //await callMethod("getInfo", null);
 
       }

@@ -67,7 +67,7 @@
             </div>
         </div>
 
-        <div class="card mt-5 text-left" v-if="info.my_resources">
+        <div class="card mt-5 text-left" v-if="info.active_ico">
             <h4>NAS</h4>
             <div class="row mt-2">
                 <div class="col-12">
@@ -78,7 +78,7 @@
                     <hr>
                 </div>
                 <div class="col-12">
-                    my_resources_nas_value: {{ info.my_resources_nas_value | nas }}
+                    my_resources_nas_value: {{ info.active_ico.my_resources_nas_value | nas }}
                 </div>
                 <div class="col-12">
                     <button @click="exitScam()">Exit Scam</button>
@@ -98,7 +98,7 @@
                     bonus_multiplier: {{ item.bonus_multiplier | percent }}
                 </div>
                 <div class="col-12">
-                    price_multiple: {{ item.price_multiple | decimal }}
+                    price_exponent: {{ item.price_exponent | decimal }}
                 </div>
                 <span v-if="info.active_ico">
                     <div class="col-12">
@@ -127,7 +127,7 @@
                             Buy {{ selections[item.name].number_to_buy | count }}
                         </button>
                         <button v-on:click="buy(item, null)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">Buy Max</button>
-                        {{ getBuyPrice(item) | price }}
+                        +{{ getBuyProductionGain(item) | count }}/s for {{ getBuyPrice(item) | price }}
                     </div>
                 </span>
             </div>
@@ -317,6 +317,10 @@ export default {
             {
                 this.coin_market_caps = resp;
             }, onError);
+        },
+        getBuyProductionGain(item)
+        {
+            return this.selections[item.name].number_to_buy * item.resources_per_s;
         }
     },
     filters: {
@@ -351,6 +355,16 @@ export default {
         },
     },
     mounted() {
+        var index = window.location.hash.lastIndexOf("?");
+        if(index >= 0)
+        {
+            var ticker = window.location.hash.substring(window.location.hash.lastIndexOf("?") + 1);
+            if(ticker)
+            { // TODO
+                game.setTicker(ticker);
+            }
+        }
+
         this.getInfo();
         setInterval(this.getInfo, 10000);
 

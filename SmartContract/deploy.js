@@ -80,14 +80,14 @@ async function run(){
         };
         content += "neb_contract=" + toSource(obj) + ";";
         fs.writeFileSync('../ICOSim/src/static/settings.js', content);
-        
+
         await callMethod("setStartingResources", "42"); 
         await callMethod("setWorldResources", "5555555555"); 
         await callMethod("setEventConfig", {
-          interval: "100", 
+          interval: "15", 
           min_reward: "10000", max_reward: "9999999999", 
           min_reward_percent: "0.1", max_reward_percent: "100", 
-          min_length: "3", max_length: "50"});
+          min_length: "3", max_length: "10"});
 
         var item_make_a_commit = "Make a Commit on Github";
         var items = [

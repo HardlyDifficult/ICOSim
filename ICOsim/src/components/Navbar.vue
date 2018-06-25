@@ -1,15 +1,15 @@
 <template>
     <div class="row navbar">
         <div class="col-sm-2">
-            <router-link class="navbar-icosim" to="/">
+            <router-link class="navbar-icosim" :style="{color : color}" to="/">
                 ICOSim
             </router-link>
         </div>
         <div class="col-sm-8">
-            <router-link class="navbar-item" to="/">
+            <router-link class="navbar-item" :style="{color : color}" to="/">
                 Home
             </router-link>
-            <router-link class="navbar-item" to="/icos">
+            <router-link class="navbar-item" :style="{color : color}" to="/icos">
                 ICos
             </router-link>
         </div>
@@ -19,7 +19,8 @@
 
 <script>
 export default {
-    name: "Navbar"
+  name: "Navbar",
+  props : ['color']
 }
 </script>
 

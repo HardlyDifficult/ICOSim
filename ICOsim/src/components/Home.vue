@@ -1,7 +1,7 @@
 <template>
   <div class='container-fluid'>
       <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
-      <Navbar/>
+      <Navbar :color="'rgba(7,190,215,1)'"/>
       <!--<NoExtensionWarning/>-->
       <LaunchIco/>
       <div class='row'>

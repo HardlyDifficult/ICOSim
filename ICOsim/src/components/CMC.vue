@@ -3,27 +3,24 @@
     <div class="row">
         <div class="fixed-bg"></div><!--super stupid workaround-->
         <div class="col-12">
-            <Navbar/>
+            <Navbar :color="'black'"/>
             <div class="row">
                 <div class="col-12 hl"></div>
-                <div class="col-4">
-                </div>
-                <div class="col-4">
+                <div class="col-12">
                     <h3 class="title" v-if="show_exits">Top successful exit scams</h3>
                     <h3 class="title" v-if="!show_exits">Top running ICOs</h3>
                 </div>
-                <div class="col-4"></div>
             </div>
         </div>
         <div class="col-12 table-container">
             <div class="row">
                 <div class="col-lg-1"></div>
                 <div class="col-lg-10">
-                    <div class="table-header">
-                        <div class="table-header-el" :class="show_exits ? '' : 'active'" @click="show_exits=false">
+                    <div class="row table-header">
+                        <div class="col-2 table-header-el" :class="show_exits ? '' : 'active'" @click="show_exits=false">
                             Active ICOs
                         </div>
-                        <div class="table-header-el" :class="show_exits ?  'active' : ''" @click="show_exits=true">
+                        <div class="col-2 table-header-el" :class="show_exits ?  'active' : ''" @click="show_exits=true">
                             Successful Exit Scams
                         </div>
                     </div>
@@ -40,8 +37,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(ico, index) in icos" v-bind:key="index">
-                                <template v-if="(show_exits && ico.exit) || (!show_exits && !ico.exit)">
+                            <template v-for="(ico, index) in icos">
+                                <tr v-if="(show_exits && ico.exit) || (!show_exits && !ico.exit)" v-bind:key="index">
                                     <td scope="row" class="border-right" >{{index + 1}}</td>
                                     <td scope="row" ><span v-bind:style="{backgroundColor:randomColor(ico.coin), borderColor:randomColor(ico.coin + ico.ticker)}" class="ticker">{{ico.ticker}}</span></td>
                                     <td scope="row" >{{ico.coin}}</td>
@@ -49,8 +46,8 @@
                                     <td scope="row" class="num" v-if="!show_exits">$ {{ico.cap.toString()}}</td>
                                     <td scope="row" class="num" v-if="!show_exits">$ {{ico.growth_per_s.toString()}}</td>
                                     <td scope="row" >{{ico.user}}</td>
-                                </template>
-                            </tr>
+                                </tr>
+                            </template>
                         </tbody>
                     </table>
                 </div>
@@ -128,9 +125,7 @@
         let s = rng.intBetween(42, 98);
         let l = rng.intBetween(40, 90);
 
-        let out = `hsl(${h},${s}%,${l}%)`;
-        console.log(out);
-        return out;
+        return `hsl(${h},${s}%,${l}%)`;
       }
     }
 
@@ -138,6 +133,10 @@
 </script>
 
 <style scoped>
+    .table-header > [class*='col-'] {
+        display: flex;
+        flex-direction: column;
+    }
 
     body{
         background-color: white;
@@ -171,15 +170,9 @@
         border-left:1px solid grey;
         padding-bottom:1px;
     }
-    .table-header{
-        width:100%;
-        background-color:red;
-    }
     .table-header-el{
-        float:left;
-        width:20%;
+        margin-left:15px;
         font-size:1.3em;
-        box-sizing: border-box !important;
         cursor: pointer;
         border-radius: 5px 5px 0 0;
     }

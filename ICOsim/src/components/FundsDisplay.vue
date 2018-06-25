@@ -3,6 +3,8 @@
         <div class="col">
             <div class="funds">
                 <FundNumber v-for="(part, index) in fund_parts" :class="(part === '.' ? 'fund-dot' : '')" v-bind:key="index" :mystyle="mystyle" :content="part"/>
+                <i class="fas fa-caret-down" :class="(part === '.' ? 'fund-dot' : '')" :style="mystyle"></i>
+
             </div>
         </div>
     </div>

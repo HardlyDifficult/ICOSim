@@ -42,6 +42,27 @@
         player_money : 75,
         members: [
           {
+            name: "Roger Ver",
+            description: "Full time paid shiller",
+            img: require('../assets/ver.png'),
+            is_bought : true,
+            price : 500
+          },
+          {
+            name: "John McAfee",
+            description: "Full time paid shiller",
+            img: require('../assets/mcafee.png'),
+            is_bought : true,
+            price : 500
+          },
+          {
+            name: "Carlos Matos",
+            description: "Full time paid shiller",
+            img: require('../assets/matos.png'),
+            is_bought : true,
+            price : 500
+          },
+          {
             name: "Tom Lee",
             description: "Full time paid shiller",
             img: require('../assets/lee.png'),
@@ -73,27 +94,6 @@
             name: "Trevon James",
             description: "Full time paid shiller",
             img: require('../assets/trevon.png'),
-            is_bought : false,
-            price : 500
-          },
-          {
-            name: "Roger Ver",
-            description: "Full time paid shiller",
-            img: require('../assets/ver.png'),
-            is_bought : false,
-            price : 500
-          },
-          {
-            name: "John McAfee",
-            description: "Full time paid shiller",
-            img: require('../assets/mcafee.png'),
-            is_bought : false,
-            price : 500
-          },
-          {
-            name: "Carlos Matos",
-            description: "Full time paid shiller",
-            img: require('../assets/matos.png'),
             is_bought : false,
             price : 500
           }

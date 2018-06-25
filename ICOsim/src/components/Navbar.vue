@@ -1,10 +1,8 @@
 <template>
     <div class="row navbar">
         <div class="col-sm-2">
-            <router-link to="/">
-                <router-link class="navbar-icosim" to="/">
-                    ICOSim
-                </router-link>
+            <router-link class="navbar-icosim" to="/">
+                ICOSim
             </router-link>
         </div>
         <div class="col-sm-8">
@@ -26,13 +24,14 @@ export default {
 </script>
 
 <style scoped>
+    *{
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
     .navbar-item{
         margin-right: 10px;
         margin-left: 10px;
-        color:white;
     }
     .navbar-icosim{
-        color:white;
         font-size:2em;
     }
 

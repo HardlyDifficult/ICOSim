@@ -1,13 +1,34 @@
 var neb = require("../logic/HardlyNeb.js");
 let settings = require("../static/settings.js");
+const token_denominator = 1000000000000000000;
 
 var ticker;
 
 module.exports = 
 {
+    getIsTestnet()
+    {
+        return neb_contract.apiUrl.indexOf("testnet") >= 0;
+    },
+
+    getSmartContractAddress()
+    {
+        return neb_contract.contract;
+    },
+
+    // TODO is ticker name available?
+    // TODO can we get user's balance?
+
+    // TODO check write calls before posting
+    // Consider using sub
     setTicker(_ticker)
     {
         ticker = _ticker;
+    },
+
+    isMyGame()
+    {
+        return ticker == null;
     },
 
     getCoinMarketCaps(start_index, count, onSuccess, onError)
@@ -22,7 +43,7 @@ module.exports =
 
     getTotalCostFor(item, quantity)
     {
-        return item.start_price * (Math.pow(quantity, 3) / 3 + Math.pow(quantity, 2) / 2 + quantity / 6);
+        return item.start_price * (quantity * quantity);
     },
 
     getBuyPrice(item, quantity)
@@ -30,13 +51,27 @@ module.exports =
         if(!quantity)
         {
             quantity = 1;
-        } else
+        } 
+        else
         {
             quantity = parseInt(quantity);
         }
         var item_count = parseInt(item.user_holdings);
         var max = item_count + quantity;
         return this.getTotalCostFor(item, max) - this.getTotalCostFor(item, item_count);
+    },
+    
+    getBuyWithNasCost(item, quantity)
+    {
+        if(!quantity)
+        {
+            quantity = 1;
+        } 
+        else
+        {
+            quantity = parseInt(quantity);
+        }
+        return item.nas_price * quantity;
     },
 
     getInfo(onSuccess, onError)
@@ -66,6 +101,12 @@ module.exports =
     buy(name, count, onTxPosted, onSuccess, onError)
     {
         neb.nebWrite("buy", [name, count], onTxPosted, 0, onSuccess, onError);
+    },
+
+    buyWithNas(item, count, onTxPosted, onSuccess, onError)
+    {
+        var cost = this.getBuyWithNasCost(item, count) / token_denominator;
+        neb.nebWrite("buyWithNas", [item.name, count], onTxPosted, cost, onSuccess, onError);
     },
 
     invest(amount, onTxPosted, onSuccess, onError)

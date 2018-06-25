@@ -26,9 +26,6 @@
                     smart_contract_balance: {{ info.smart_contract_balance | nas }}
                 </div>
                 <div class="col-12">
-                    buy_price_nas_per_resource: {{ info.buy_price_nas_per_resource | nas }}
-                </div>
-                <div class="col-12">
                     sell_price_nas_per_resource: {{ info.sell_price_nas_per_resource | nas }}
                 </div>
         </div> 
@@ -67,22 +64,26 @@
                 </div>
             </div>
         </div>
+        
+        <div class="card mt-5" v-if="info.active_ico">
+            <h4>Event</h4>
+            <div class="row mt-2">
+                <div class="col" v-if="!info.current_event">
+                    Next Event starts in: {{ info.blocks_till_next_event | count }}
+                </div>
+                <div class="col">
+                    
+                </div>
+            </div>
+        </div>
 
         <div class="card mt-5 text-left" v-if="info.active_ico">
             <h4>NAS</h4>
-            <div class="row mt-2">
-                <div class="col-12">
-                    Amount <input v-model="amount_to_invest" type="number" min="0.000001">
-                    <button @click="invest()">Invest</button>
-                    {{ getBuyInResourceValue(amount_to_invest) | count }}
-                </div>
-                <div class="col-12">
-                    <hr>
-                </div>
+            <div class="row">
                 <div class="col-12">
                     my_resources_nas_value: {{ info.active_ico.my_resources_nas_value | nas }} 
                 </div>
-                <div class="col-12">
+                <div class="col-12 mt-2" v-if="isMyGame()">
                     <button @click="exitScam()" class="btn btn-primary">Exit Scam</button>
                 </div>
             </div>
@@ -118,15 +119,22 @@
                     <div class="col-12">
                         user_max_can_afford: {{ item.user_max_can_afford | count }}
                     </div>
-                    <div class="col-12">
+                    <div class="col-12" v-if="isMyGame()">
                         <input type="range" v-model="selections[item.name].number_to_buy" @input="$forceUpdate()" min="1" :max="item.user_max_can_afford">
                     </div>
-                    <div class="col-12">
+                    <div class="col-12" v-if="isMyGame()">
                         <button v-on:click="buy(item, selections[item.name].number_to_buy)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">
                             Buy {{ selections[item.name].number_to_buy | count }}
                         </button>
                         <button v-on:click="buy(item, null)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">Buy Max</button>
                         +{{ getBuyProductionGain(item) | count }}/s for {{ getBuyPrice(item) | price }}
+                    </div>
+                    <div class="col-12" v-if="isMyGame()">
+                        <input type="number" v-model="selections[item.name].number_to_buy_with_nas" @input="$forceUpdate()">
+                        <button v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-secondary">
+                            Buy for {{ getBuyWithNasCost(item) | nas }}
+                        </button>
+                        Buy {{ selections[item.name].number_to_buy_with_nas | count }} for +{{ getBuyProductionGainWithNas(item) | count }}/s 
                     </div>
                 </span>
             </div>
@@ -194,9 +202,13 @@
             </div>
         </div>
 
-    <a v-bind:href="explorer_smart_contract_url">View Smart Contract ({{ smart_contract_address }})</a>
+        <div class="row">
+            <div class="col">
+                <a v-bind:href="explorer_smart_contract_url">View Smart Contract ({{ smart_contract_address }})</a>
+            </div>
+        </div>
 
-  </div>
+    </div>
 </template>
 
 <script>
@@ -235,6 +247,10 @@ export default {
             console.log(message);
             console.log("---------------------------------------");
         },
+        isMyGame()
+        {
+            return game.isMyGame();
+        },
         startICO()
         {
             game.startICO($("#name").val(), $("#ticker").val(), onTxPosted, onSuccess, onError);
@@ -244,6 +260,13 @@ export default {
             game.getInfo((resp) =>
             {
                 this.info = resp;
+                if(!this.info.active_ico && !game.isMyGame())
+                {
+                    game.setTicker(null);
+                    // use router
+                    window.location.hash = window.location.hash.substring(window.location.hash.indexOf("?"));
+                }
+
                 for(var i = 0; i < this.info.items.length; i++)
                 {
                     var item = this.info.items[i];
@@ -253,6 +276,11 @@ export default {
                         this.selections[item.name] = {
                             number_to_buy: 0
                         };
+                    }
+
+                    if(this.selections[item.name].number_to_buy_with_nas == null)
+                    {
+                        this.selections[item.name].number_to_buy_with_nas = 1;
                     }
 
                     if(item.user_max_can_afford <= 0)
@@ -269,6 +297,10 @@ export default {
         buy(item, count)
         {
             game.buy(item.name, count, onTxPosted, onSuccess, onError);
+        },
+        buyWithNas(item, count)
+        {
+            game.buyWithNas(item, count, onTxPosted, onSuccess, onError);
         },
         invest()
         {
@@ -308,6 +340,10 @@ export default {
         {
             return game.getBuyPrice(item, this.selections[item.name].number_to_buy);
         },
+        getBuyWithNasCost(item)
+        {
+            return game.getBuyWithNasCost(item, this.selections[item.name].number_to_buy_with_nas);
+        },
         getBestKnownScammers()
         {
             game.getBestKnownScammers(null, null, (resp) =>
@@ -326,9 +362,9 @@ export default {
         {
             return this.selections[item.name].number_to_buy * item.resources_per_s;
         },
-        getBuyInResourceValue(nas_amount)
+        getBuyProductionGainWithNas(item)
         {
-            return this.info.buy_price_nas_per_resource * nas_amount;
+            return this.selections[item.name].number_to_buy_with_nas * item.resources_per_s;
         }
     },
     filters: {
@@ -366,7 +402,7 @@ export default {
         {
             var ticker = window.location.hash.substring(window.location.hash.lastIndexOf("?") + 1);
             if(ticker)
-            { // TODO
+            {
                 game.setTicker(ticker);
             }
         }

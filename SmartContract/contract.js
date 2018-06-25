@@ -1,5 +1,4 @@
 BigNumber.config({ DECIMAL_PLACES: 10, ROUNDING_MODE: 1 })
-
 class SafeNumber
 {
   constructor(value)
@@ -8,12 +7,13 @@ class SafeNumber
     {
       this.value = value.value;
     }
-    else if(value.value)
+    else if(value.value != null)
     {
       this.value = new BigNumber(value.value);
     }
     else
     {
+      assert(typeof(value) == "string" || typeof(value) == "object" || value == 0, "SafeNumber must be constructed from a string: " + value + " type " + typeof(value) + " json: " + JSON.stringify(value));
       this.value = new BigNumber(value);
     }
     this.validate();
@@ -119,12 +119,10 @@ class SafeNumber
     return true;
   }
 }
-
 SafeNumber.prototype.toJSON = function() 
 {
   return this.toString();
 };
-
 class User 
 {
   constructor(value)
@@ -147,12 +145,12 @@ class User
     return JSON.stringify(this);
   }
 }
-
 class ICO 
 {
   constructor(value)
   {
     this.id = value.id;
+    this.player_addr = value.player_addr;
     this.name = value.name;
     this.ticker = value.ticker;
     this.resources = new SafeNumber(value.resources);
@@ -175,7 +173,6 @@ class ICO
     return JSON.stringify(this);
   }
 }
-
 class Item 
 {
   constructor(value)
@@ -185,6 +182,7 @@ class Item
     this.start_price = new SafeNumber(value.start_price);
     this.resources_per_s = value.resources_per_s ? new SafeNumber(value.resources_per_s) : null;
     this.bonus_multiplier = value.bonus_multiplier ? new SafeNumber(value.bonus_multiplier) : null;
+    this.nas_price = new SafeNumber(value.nas_price);
     this.validate();
   }
   
@@ -206,7 +204,34 @@ class Item
     return JSON.stringify(this);
   }
 }
+class EventConfig 
+{
+  constructor(value)
+  {
+    this.interval = new BigNumber(value.interval);
+    this.min_reward = new BigNumber(value.min_reward);
+    this.max_reward = new BigNumber(value.max_reward);
+    this.min_reward_percent = new BigNumber(value.min_reward_percent);
+    this.max_reward_percent = new BigNumber(value.max_reward_percent);
+    this.min_length = new BigNumber(value.min_length);
+    this.max_length = new BigNumber(value.max_length);
+    this.validate();
+  }
+  
+  validate()
+  {
+    assert(this.interval.gt(2), "Interval is too small.  Got: " + this.interval + ", from " + JSON.stringify(this));
+    assert(this.max_reward.gte(this.min_reward), "max reward must be greater than min");
+    assert(this.max_length.gte(this.min_length), "max length must be greater than min");
+    assert(this.max_length.lt(this.interval), "max must be less than the interval");
+  }
 
+  toString() 
+  {
+    this.validate();
+    return JSON.stringify(this);
+  }
+}
 var Contract = function() 
 {
   // all_users, all_items, active_icos
@@ -257,7 +282,7 @@ var Contract = function()
   {
     parse: function(str)
     {
-      return new SafeNumber(JSON.parse(str));
+      return new SafeNumber(str);
     },
     stringify: function(obj)
     {
@@ -269,7 +294,7 @@ var Contract = function()
   {
     parse: function(str)
     {
-      return new SafeNumber(JSON.parse(str));
+      return new SafeNumber(str);
     },
     stringify: function(obj)
     {
@@ -281,7 +306,7 @@ var Contract = function()
   {
     parse: function(str)
     {
-      return new SafeNumber(JSON.parse(str));
+      return new SafeNumber(str);
     },
     stringify: function(obj)
     {
@@ -293,19 +318,7 @@ var Contract = function()
   {
     parse: function(str)
     {
-      return new SafeNumber(JSON.parse(str));
-    },
-    stringify: function(obj)
-    {
-      return obj.toString();
-    },
-  });
-
-  LocalContractStorage.defineProperty(this, "buy_price_nas_per_resource",
-  {
-    parse: function(str)
-    {
-      return new SafeNumber(JSON.parse(str));
+      return new SafeNumber(str);
     },
     stringify: function(obj)
     {
@@ -314,8 +327,19 @@ var Contract = function()
   });
   
   LocalContractStorage.defineProperty(this, "owner_addr");
-}
 
+  LocalContractStorage.defineProperty(this, "event_config",
+  {
+    parse: function(str)
+    {
+      return new EventConfig(str);
+    },
+    stringify: function(obj)
+    {
+      return obj.toString();
+    },
+  });
+}
 Contract.prototype = 
 {
   //#region Owner only
@@ -329,7 +353,6 @@ Contract.prototype =
     this.starting_resources = new SafeNumber(0);
     this.total_resources = new SafeNumber(0);
     this.world_resources = new SafeNumber(0);
-    this.buy_price_nas_per_resource = new SafeNumber(1);
     this.owner_addr = Blockchain.transaction.from;
   },
 
@@ -345,13 +368,6 @@ Contract.prototype =
     assert(this.isOwner(), "This is an owner only call.");
 
     this.world_resources = new SafeNumber(world_resources);
-  },
-
-  setBuyPrice : function(nas_per_resource)
-  {
-    assert(this.isOwner(), "This is an owner only call.");
-
-    this.buy_price_nas_per_resource = new SafeNumber(nas_per_resource);
   },
   
   isOwner: function()
@@ -374,8 +390,20 @@ Contract.prototype =
     addToList(this.lists, "all_items", item.name);
     this.name_to_item.put(item.name, item);
   },
-  //#endregion
+  
+  setEventConfig: function(event_config)
+  {
+    assert(this.isOwner(), "This is an owner only call.");
+    
+    this.event_config = new EventConfig(event_config);
+    return this.event_config;
+  },
 
+  getEventConfig: function()
+  {
+    return this.event_config;
+  },
+  //#endregion
   //#region User management
   getOrCreateUser: function()
   {
@@ -407,7 +435,6 @@ Contract.prototype =
     return this.addr_to_user.get(addr);
   },
   //#endregion
-
   //#region ICO managment
   launchICO: function(name, ticker)
   {
@@ -435,8 +462,6 @@ Contract.prototype =
     this.addr_to_user.put(Blockchain.transaction.from, user);
 
     Event.Trigger("newICO", ico);
-
-    return ico.id;
   },
 
   getActiveICO: function()
@@ -466,22 +491,38 @@ Contract.prototype =
     return this.ticker_to_ico_id.get(ticker);
   },
   //#endregion
-
   //#region Resource and Money management
-  accept: function() 
+  buyWithNas: function(name, count)
   {
-    var ico = this.getActiveICO();
+    var item = this.getItemRaw(name);
+    count = new SafeNumber(count);
+    var cost = item.nas_price.mul(count);
+    if(cost.gt(new SafeNumber(Blockchain.transaction.value)))
+    {
+      throw new Error("You didn't send enough nas. " + count + " of " + name + " costs " + cost + " but you sent " + Blockchain.transaction.value);
+    }
     var nas_value = new SafeNumber(Blockchain.transaction.value);
-    var amount = nas_value.div(this.buy_price_nas_per_resource);
-    this.total_resources = this.total_resources.plus(amount);
-    ico.resources = ico.resources.plus(amount);
     this.nas = this.nas.plus(nas_value);
+    var ico = this.getActiveICO();
+
+    if(!ico.items[name])
+    {
+      ico.items[name] = count;
+    }
+    else
+    {
+      ico.items[name] = new SafeNumber(ico.items[name]).plus(count);
+    }
+
+    this.ico_id_to_ico.put(ico.id, ico);
+    ico.total_production_rate = this.getMyProductionRate();
     this.ico_id_to_ico.put(ico.id, ico);
 
-    Event.Trigger("buyIn", {
+    Event.Trigger("buyWithNas", {
       ico,
       nas_value,
-      amount
+      name,
+      count
     });
   }, 
 
@@ -492,11 +533,6 @@ Contract.prototype =
     return this.nas;
   },  
 
-  getBuyPriceNasPerResource : function() 
-  {
-    return this.buy_price_nas_per_resource;
-  },
-
   getSellPriceNasPerResource: function()
   {
     var balance = this.getSmartContractBalance(); 
@@ -505,7 +541,12 @@ Contract.prototype =
       return new SafeNumber(0);
     }
 
-    return new SafeNumber(balance.value.div(this.total_resources.value.plus(this.world_resources.value)).plus(0.001).toFixed(0));
+    var sell_price = new SafeNumber(balance.value.div(this.total_resources.value.plus(this.world_resources.value)).plus(0.001).toFixed(0));
+    if(sell_price.lte(1))
+    {
+      sell_price = new SafeNumber("1");
+    }
+    return sell_price;
   },
 
   getMyResources: function(ico_id)
@@ -571,8 +612,8 @@ Contract.prototype =
     {
       time_passed = 0;
     }
-    time_passed = new SafeNumber(time_passed);
-    const ms_to_s = new SafeNumber(1000);
+    time_passed = new SafeNumber(time_passed.toString());
+    const ms_to_s = new SafeNumber("1000");
     return time_passed.div(ms_to_s); // to seconds
   },
 
@@ -652,39 +693,53 @@ Contract.prototype =
   exitScam: function()
   {
     this.redeemResources();
-    var user = this.getOrCreateUser();
-    var ico = this.getActiveICO();
     var nas = this.getMyResourcesNasValue();
     if(nas.gt(this.nas))
     { // Just in case a rounding issue
       nas = this.nas;
     }
-    this.total_resources = this.total_resources.sub(ico.resources);
+
+    var user = this.getOrCreateUser();
     user.nas_redeemed = user.nas_redeemed.plus(nas);
-    user.retired_icos.push(ico.id);
-    user.active_ico_id = null;
-    removeFromList(this.lists, "active_icos", ico.id);
-    this.addr_to_user.put(Blockchain.transaction.from, user);
     if(!Blockchain.transfer(Blockchain.transaction.from, nas))
     {
       throw new Error("Transfer failed!  Tried to send " + nas + ". The contract has " + this.getSmartContractBalance());
     }
     
     this.nas = this.nas.sub(nas);
+
+    var ico = this.getActiveICO();
+    this.total_resources = this.total_resources.sub(ico.resources);
+    user.retired_icos.push(ico.id);
+    user.active_ico_id = null;
+    removeFromList(this.lists, "active_icos", ico.id);
+    this.addr_to_user.put(Blockchain.transaction.from, user);
     
     Event.Trigger("exitScam", {
       ico,
       nas,
     });
     
-    ico.resources = this.starting_resources;
-    ico.items = {};
-    this.ico_id_to_ico.put(ico.id, ico);
-    
     return nas;
   },
-  //#endregion
 
+  forceExit: function(ico_id)
+  {
+    assert(this.isOwner());
+
+    var ico = this.getICO(ico_id);
+    this.total_resources = this.total_resources.sub(ico.resources);
+    var user = this.getUser(ico.player_addr);
+    user.retired_icos.push(ico.id);
+    user.active_ico_id = null;
+    removeFromList(this.lists, "active_icos", ico.id);
+    this.addr_to_user.put(user.addr, user);
+    
+    Event.Trigger("forceExis", {
+      ico,
+    });
+  },
+  //#endregion
   //#region Item management
   getAllItemNames: function()
   {
@@ -706,7 +761,7 @@ Contract.prototype =
     if(ico_id)
     {
       item.user_holdings = this.getMyItemCount(name, ico_id);
-      item.user_price = this.getMyItemPrice(name, 1, ico_id);
+      item.user_price = this.getMyItemPrice(name, "1", ico_id);
       item.user_item_production = this.getMyItemProductionRate(name, ico_id);
       item.user_item_bonus = this.getMyItemBonus(name, ico_id);
       item.user_max_can_afford = this.getMaxICanAfford(name, ico_id);
@@ -748,7 +803,7 @@ Contract.prototype =
     }
     else
     {
-      quantity = new SafeNumber(1);
+      quantity = new SafeNumber("1");
     }
     var item_count = this.getMyItemCount(name, ico_id);
     var max_count = item_count.plus(quantity);
@@ -814,7 +869,6 @@ Contract.prototype =
       ico.items[name] = new SafeNumber(ico.items[name]).plus(quantity);
     }
 
-    
     Event.Trigger("buy", {
       ico,
       name,
@@ -827,7 +881,60 @@ Contract.prototype =
     this.ico_id_to_ico.put(ico.id, ico);
   },
   //#endregion
+  //#region Events
+  getBlocksTillNextEvent: function()
+  {
+    return Blockchain.block.height.mod(this.event_config.interval);
+  },
 
+  // {reward_percent, min_reward, max_reward, number_of_blocks_remaining}
+  getCurrentEvent: function()
+  {
+    var offset = Blockchain.block.height.mod(this.event_config.interval);
+    var seed = Blockchain.getPreBlockSeed(offset);
+    Math.random.seed(seed);
+    var number_of_blocks = (this.event_config.max_length.sub(this.event_config.min_length)).plus(this.event_config.min_length).mul(Math.random());
+    if(number_of_blocks.gt(offset))
+    {
+      throw new Error("Too late, that event has ended.  Sit tight, another will begin in " + this.getBlocksTillNextEvent() + " blocks.");
+    }
+
+    var reward_percent = (this.event_config.max_reward_percent.sub(this.event_config.min_reward_percent)).plus(this.event_config.min_reward_percent).mul(Math.random());
+    return {
+      reward_percent,
+      min_reward: this.event_config.min_reward,
+      max_reward: this.event_config.max_reward,
+      number_of_blocks_remaining: number_of_blocks - offset
+    }
+  },
+
+  redeemEvent: function()
+  {
+    var event = this.getCurrentEvent();
+    var ico = this.getActiveICO();
+    var reward = ico.resources.value.mul(event.reward_percent);
+    if(reward.lt(event.min_reward))
+    {
+      reward = event.min_reward;
+    }
+    else if(reward.gt(event.max_reward))
+    {
+      reward = event.max_reward;
+    }
+    reward = new SafeNumber(reward.toFixed(0));
+    ico.resources = ico.resources.plus(reward);
+    this.ico_id_to_ico.put(ico.id, ico);
+    this.total_resources = this.total_resources.plus(reward);
+
+    Event.Trigger("redeemEvent", {
+      ico,
+      event,
+      reward
+    });
+
+    return reward;
+  },
+  //#endregion
   //#region Dapp calls
   getInfo: function(ticker)
   {
@@ -857,8 +964,9 @@ Contract.prototype =
     
     var data = {
       smart_contract_balance: this.getSmartContractBalance(),
-      buy_price_nas_per_resource: this.getBuyPriceNasPerResource(), // TODO replace with buy per item
       sell_price_nas_per_resource: this.getSellPriceNasPerResource(),
+      currentEvent: this.getCurrentEvent(),
+      blocksTillNextEvent: this.getBlocksTillNextEvent(),
       items
     };
     
@@ -875,7 +983,6 @@ Contract.prototype =
     return data;
   },
   //#endregion
-
   //#region Leaderboard
   getBestKnownScammers(start_index, count)
   {
@@ -925,7 +1032,6 @@ Contract.prototype =
     return ico_list.slice(start_index, count);
   },
   //#endregion 
-
   //#region Debug
   getList: function(list_name)
   {
@@ -936,14 +1042,7 @@ Contract.prototype =
 
 module.exports = Contract
 
-function assert(value, message)
-{
-  if(!value)
-  {
-    throw new Error("Failed assert: " + message);
-  }
-}
-
+//#region Helpers
 function addToList(lists, list_name, item)
 {
   if(item == null)
@@ -971,6 +1070,14 @@ function removeFromList(lists, list_name, item)
   lists.put(list_name, list);
 }
 
+function assert(value, message)
+{
+  if(!value)
+  {
+    throw new Error("Failed assert: " + message);
+  }
+}
+
 function isString(value, max_length)
 {
   if(value == null)
@@ -995,3 +1102,4 @@ function isArray(value)
 {
   return value instanceof Array;
 }
+//#endregion

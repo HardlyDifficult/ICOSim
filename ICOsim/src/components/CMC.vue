@@ -1,4 +1,5 @@
 <template>
+    <div class='container-fluid'>
     <div class="row">
         <div class="fixed-bg"></div><!--super stupid workaround-->
         <div class="col-12">
@@ -29,7 +30,7 @@
                     <table class="table cmc-table">
                         <thead>
                             <tr>
-                                <th scope="col">#</th>
+                                <th scope="col" class="border-right">#</th>
                                 <th scope="col">Ticker</th>
                                 <th scope="col">Name</th>
                                 <th scope="col" class="num" v-if="show_exits">Exit</th>
@@ -39,9 +40,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(ico, index) in icos">
+                            <tr v-for="(ico, index) in icos" v-bind:key="index">
                                 <template v-if="(show_exits && ico.exit) || (!show_exits && !ico.exit)">
-                                    <td scope="row" >{{index + 1}}</td>
+                                    <td scope="row" class="border-right" >{{index + 1}}</td>
                                     <td scope="row" ><span v-bind:style="{backgroundColor:randomColor(ico.coin), borderColor:randomColor(ico.coin + ico.ticker)}" class="ticker">{{ico.ticker}}</span></td>
                                     <td scope="row" >{{ico.coin}}</td>
                                     <td scope="row" class="num" v-if="show_exits">$ {{ico.exit.toString()}}</td>
@@ -57,6 +58,7 @@
         </div>
 
         <div class="col-lg-1"></div>
+    </div>
     </div>
 </template>
 
@@ -156,20 +158,11 @@
         color:black;
     }
 
-    .cmc-row{
-        border-top:1px solid grey;
-    }
     .cmc-row > div{
         padding-top:6px;
         padding-bottom:6px;
         overflow: hidden;
         text-align:left;
-    }
-
-    .table-cell{
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow:hidden;
     }
 
     .cmc-table{
@@ -226,5 +219,8 @@
         left:0;
         right:0;
         background-color:white;
+    }
+    .border-right{
+        border-right: 1px solid grey;
     }
 </style>

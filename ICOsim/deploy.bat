@@ -1,0 +1,1 @@
+yarn run build && firebase deploy && pause

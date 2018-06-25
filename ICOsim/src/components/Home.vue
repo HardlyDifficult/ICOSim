@@ -1,7 +1,8 @@
 <template>
   <div class='container-fluid'>
+      <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
       <Navbar/>
-      <NoExtensionWarning/>
+      <!--<NoExtensionWarning/>-->
       <LaunchIco/>
       <div class='row'>
           <div class='col-lg-6'>
@@ -54,7 +55,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
     *{
         color : #eee;
         font-family: 'Montserrat', sans-serif;
@@ -87,5 +88,13 @@ export default {
     @-webkit-keyframes glow {
         from { text-shadow: 0 0 20px black; }
         to { text-shadow: 0 0 5px black; }
+    }
+
+    .particles_bg{
+        position: absolute;
+        top:0;
+        left:0;
+        right:0;
+        height:100%;
     }
 </style>

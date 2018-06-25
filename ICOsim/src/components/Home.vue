@@ -1,5 +1,6 @@
 <template>
   <div class='container-fluid'>
+      <div class="fixed-bg"></div><!--super stupid workaround-->
       <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
       <Navbar :color="'rgba(7,190,215,1)'"/>
       <!--<NoExtensionWarning/>-->
@@ -96,5 +97,13 @@ export default {
         left:0;
         right:0;
         height:100%;
+    }
+    .fixed-bg{
+        position:fixed;
+        top:0;
+        bottom:0;
+        left:0;
+        right:0;
+        background-color: #202022;
     }
 </style>

@@ -13,9 +13,6 @@
 </script>
 
 <style>
-  body{
-    background-color: #202022;
-  }
 
 
   #app {

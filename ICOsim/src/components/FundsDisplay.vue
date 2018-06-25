@@ -3,8 +3,9 @@
         <div class="col">
             <div class="funds">
                 <FundNumber v-for="(part, index) in fund_parts" :class="(part === '.' ? 'fund-dot' : '')" v-bind:key="index" :mystyle="mystyle" :content="part"/>
-                <i class="fas fa-caret-down" :class="(part === '.' ? 'fund-dot' : '')" :style="mystyle"></i>
 
+                <i v-if="showdirection && step.gt(0)" style="color:green" class="fas fa-caret-up" :style="mystyle ? mystyle : {fontSize : '4em'}"></i>
+                <i v-if="showdirection && step.lt(0)" style="color:red" class="fas fa-caret-down" :style="mystyle ? mystyle : {fontSize : '4em'}"></i>
             </div>
         </div>
     </div>
@@ -16,7 +17,7 @@
 
     export default {
     name: "FundsDisplay",
-    props : ['target', 'mystyle', 'instant'],
+    props : ['target', 'mystyle', 'instant', 'showdirection'],
     components : {
       FundNumber
     },
@@ -48,6 +49,7 @@
           }else{
             if(diff.lt(0.1)){
               this.value = this.target;
+              this.step = new BigNumber(0);
             }else{
               this.value = this.value.plus(this.step);
             }

@@ -6,7 +6,7 @@
       <LaunchIco/>
       <div class='row'>
           <div class='col-lg-6'>
-              <FundsContainer :target="user_funds"/>
+              <FundsContainer :showdirection=1 :target="user_funds"/>
           </div>
           <div class='col-lg-6'>
               <Details/>

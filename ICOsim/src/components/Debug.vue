@@ -68,12 +68,29 @@
         <div class="card mt-5" v-if="info.active_ico">
             <h4>Event</h4>
             <div class="row mt-2">
-                <div class="col" v-if="!info.current_event">
-                    Next Event starts in: {{ info.blocks_till_next_event | count }}
+                <div class="col" v-if="!info.current_event || info.current_event.number_of_blocks_remaining == 0 || info.current_event.user_has_redeemed">
+                    Next Event starts in: {{ info.blocks_till_next_event | count }} blocks
                 </div>
-                <div class="col">
-                    
-                </div>
+                <span v-else>
+                    <div class="col-12">
+                        Reward: {{ info.current_event.reward_percent | percent }}
+                    </div>
+                    <div class="col-12">
+                        Min Reward: {{ info.current_event.min_reward | count }}
+                    </div>
+                    <div class="col-12">
+                        Max Reward: {{ info.current_event.max_reward | count }}
+                    </div>
+                    <div class="col-12">
+                        Number of blocks this event: {{ info.current_event.number_of_blocks | count }}
+                    </div>
+                    <div class="col-12">
+                        Blocks Remaining: {{ info.current_event.number_of_blocks_remaining | count }}
+                    </div>
+                    <div class="col-12">
+                        <button @click="redeemEvent()">Redeem</button>
+                    </div>
+                </span>
             </div>
         </div>
 
@@ -365,7 +382,11 @@ export default {
         getBuyProductionGainWithNas(item)
         {
             return this.selections[item.name].number_to_buy_with_nas * item.resources_per_s;
-        }
+        },
+        redeemEvent()
+        {
+            game.redeemEvent(onTxPosted, onSuccess, onError);
+        },
     },
     filters: {
         count(value) 

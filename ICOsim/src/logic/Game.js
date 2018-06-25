@@ -117,5 +117,10 @@ module.exports =
     exitScam(onTxPosted, onSuccess, onError)
     {
         neb.nebWrite("exitScam", null, onTxPosted, 0, onSuccess, onError);
+    },
+
+    redeemEvent(onTxPosted, onSuccess, onError)
+    {
+        neb.nebWrite("redeemEvent", null, onTxPosted, 0, onSuccess, onError);
     }
 }

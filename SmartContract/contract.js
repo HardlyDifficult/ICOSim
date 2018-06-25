@@ -131,6 +131,7 @@ class User
     this.nas_redeemed = new SafeNumber(value.nas_redeemed);
     this.active_ico_id = value.active_ico_id;
     this.retired_icos = value.retired_icos;
+    this.last_event_redeemed = value.last_event_redeemed;
     this.validate();
   }
   
@@ -332,7 +333,7 @@ var Contract = function()
   {
     parse: function(str)
     {
-      return new EventConfig(str);
+      return new EventConfig(JSON.parse(str));
     },
     stringify: function(obj)
     {
@@ -418,7 +419,8 @@ Contract.prototype =
         addr: Blockchain.transaction.from,
         nas_redeemed: new SafeNumber(0), 
         active_ico_id: null,
-        retired_icos: []
+        retired_icos: [],
+        last_event_redeemed: null
       });
             
       this.addr_to_user.put(Blockchain.transaction.from, user);
@@ -884,33 +886,70 @@ Contract.prototype =
   //#region Events
   getBlocksTillNextEvent: function()
   {
-    return Blockchain.block.height.mod(this.event_config.interval);
+    var height = new BigNumber(Blockchain.block.height);
+    var offset = height.mod(this.event_config.interval);
+    return new BigNumber(this.event_config.interval).sub(offset);
   },
-
+  
   // {reward_percent, min_reward, max_reward, number_of_blocks_remaining}
   getCurrentEvent: function()
   {
-    var offset = Blockchain.block.height.mod(this.event_config.interval);
-    var seed = Blockchain.getPreBlockSeed(offset);
-    Math.random.seed(seed);
-    var number_of_blocks = (this.event_config.max_length.sub(this.event_config.min_length)).plus(this.event_config.min_length).mul(Math.random());
-    if(number_of_blocks.gt(offset))
+    var height = new BigNumber(Blockchain.block.height);
+    var offset = height.mod(this.event_config.interval);
+    var current_event_source_block_height = height - offset;
+    var user = this.getOrCreateUser();
+    var user_has_redeemed = user.last_event_redeemed == current_event_source_block_height;
+    var seed;
+    if(offset > 0)
     {
-      throw new Error("Too late, that event has ended.  Sit tight, another will begin in " + this.getBlocksTillNextEvent() + " blocks.");
+      seed = Blockchain.getPreBlockSeed(offset);
+    }  
+    else 
+    {
+      seed = Blockchain.block.seed;
+    }
+    var random = new Random(seed.hashCode);
+
+    var number_of_blocks = (this.event_config.max_length.sub(this.event_config.min_length)).mul(random.nextFloat().toString()).plus(this.event_config.min_length);
+    number_of_blocks = new BigNumber(number_of_blocks.toFixed(0));
+    if(number_of_blocks.lt(this.event_config.min_length))
+    { // Just in case of rounding issue
+      number_of_blocks = this.event_config.min_length; 
+    }
+    if(number_of_blocks.lt(offset))
+    {
+      return null;
     }
 
-    var reward_percent = (this.event_config.max_reward_percent.sub(this.event_config.min_reward_percent)).plus(this.event_config.min_reward_percent).mul(Math.random());
+    var reward_percent = (this.event_config.max_reward_percent.sub(this.event_config.min_reward_percent)).mul(random.nextFloat().toString()).plus(this.event_config.min_reward_percent);
     return {
       reward_percent,
       min_reward: this.event_config.min_reward,
       max_reward: this.event_config.max_reward,
-      number_of_blocks_remaining: number_of_blocks - offset
+      number_of_blocks,
+      number_of_blocks_remaining: number_of_blocks.sub(offset),
+      user_has_redeemed
     }
   },
 
   redeemEvent: function()
   {
     var event = this.getCurrentEvent();
+    if(!event)
+    {
+      throw new Error("Too late, that event has ended.  Sit tight, another will begin in " + this.getBlocksTillNextEvent() + " blocks.");
+    }
+ 
+    if(event.user_has_redeemed)
+    {
+      throw new Error("You already redeemed this event!  Wait for the next one to start.");
+    }
+    var user = this.getUser(Blockchain.transaction.from);
+    var height = new BigNumber(Blockchain.block.height);
+    var offset = height.mod(this.event_config.interval);
+    var current_event_source_block_height = height - offset;
+    user.last_event_redeemed = current_event_source_block_height;
+    this.addr_to_user.put(user.addr, user);
     var ico = this.getActiveICO();
     var reward = ico.resources.value.mul(event.reward_percent);
     if(reward.lt(event.min_reward))
@@ -965,8 +1004,8 @@ Contract.prototype =
     var data = {
       smart_contract_balance: this.getSmartContractBalance(),
       sell_price_nas_per_resource: this.getSellPriceNasPerResource(),
-      currentEvent: this.getCurrentEvent(),
-      blocksTillNextEvent: this.getBlocksTillNextEvent(),
+      current_event: this.getCurrentEvent(),
+      blocks_till_next_event: this.getBlocksTillNextEvent(),
       items
     };
     
@@ -1103,3 +1142,42 @@ function isArray(value)
   return value instanceof Array;
 }
 //#endregion
+
+
+/**
+ * Creates a pseudo-random value generator. The seed must be an integer.
+ *
+ * Uses an optimized version of the Park-Miller PRNG.
+ * http://www.firstpr.com.au/dsp/rand31/
+ */
+function Random(seed) {
+  this._seed = seed % 2147483647;
+  if (this._seed <= 0) this._seed += 2147483646;
+}
+
+/**
+ * Returns a pseudo-random value between 1 and 2^32 - 2.
+ */
+Random.prototype.next = function () {
+  return this._seed = this._seed * 16807 % 2147483647;
+};
+
+
+/**
+ * Returns a pseudo-random floating point number in range [0, 1).
+ */
+Random.prototype.nextFloat = function (opt_minOrMax, opt_max) {
+  // We know that result of next() will be 1 to 2147483646 (inclusive).
+  return (this.next() - 1) / 2147483646;
+};
+
+String.prototype.hashCode = function(){
+	var hash = 0;
+	if (this.length == 0) return hash;
+	for (i = 0; i < this.length; i++) {
+		char = this.charCodeAt(i);
+		hash = ((hash<<5)-hash)+char;
+		hash = hash & hash; // Convert to 32bit integer
+	}
+	return hash;
+}

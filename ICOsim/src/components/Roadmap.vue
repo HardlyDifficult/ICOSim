@@ -3,59 +3,61 @@
         <div class="col-sm-12">
             <h2>Roadmap</h2>
         </div>
-        <div class="col-6 roadmap-step" v-for="(step, index) in steps" :key="index" :class="getStepClasses(step, index)">
-            <div class="row roadmap-step-inner" @mouseover="step.mouseover=true" :class="(step.next_price > player_money) ? 'glow-cant-afford' : 'glow-1'">
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-12">
-                            </div>
-                            <div class="col-12">
-                                <p class="title">{{step.name}}</p>
+        <template v-for="(step, index) in steps">
+            <div class="col-6 roadmap-step" :key="index" :class="getStepClasses(step, index)">
+                <div v-if="step.resources_per_s !== null" class="row roadmap-step-inner" @mouseover="step.mouseover=true" :class="(step.next_price > player_money) ? 'glow-cant-afford' : 'glow-1'">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-12">
+                                </div>
+                                <div class="col-12">
+                                    <p class="title">{{step.name}}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-12 line"></div>
+                        <div class="col-12 line"></div>
 
-                    <div class="col-4">
-                        <p>Count: {{step.user_holdings}}</p>
-                        <p>Production: {{step.user_item_production.toString()}}</p>
-                    </div>
-                    <div class="col-8">
-                        <p>
-                            Current Price
-                        </p>
-                        $<FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="step.user_price"/>
-                    </div>
+                        <div class="col-4">
+                            <p>Count: {{step.user_holdings}}</p>
+                            <p>Production: {{step.user_item_production.toString()}}</p>
+                        </div>
+                        <div class="col-8">
+                            <p>
+                                Current Price
+                            </p>
+                            $<FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="step.user_price"/>
+                        </div>
 
-                    <div class="col-12 line"></div>
+                        <div class="col-12 line"></div>
 
-                    <div class="col-12">
-                        <div class="row cols-same-height">
-                            <div class="col-4">
-                                <button @click="onBuy(step, step.number_to_buy.toString())" class="btn btn-buy">BUY</button>
-                            </div>
-                            <div class="col-8">
-                                <div class="row">
-                                    <div class="col-12">
-                                        BUY {{step.number_to_buy}} FOR $ {{getBuyPrice(step)}}
-                                    </div>
-                                    <div class="col-12">
-                                        <VueSlider
-                                                ref="slider"
-                                                v-model="step.number_to_buy"
-                                                :speed="0"
-                                                :min="1"
-                                                :max="step.user_max_can_afford"
-                                        ></VueSlider>
+                        <div class="col-12">
+                            <div class="row cols-same-height">
+                                <div class="col-4">
+                                    <button @click="onBuy(step, step.number_to_buy.toString())" class="btn btn-buy">BUY</button>
+                                </div>
+                                <div class="col-8">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            BUY {{numbers_to_buy[step.name]}} FOR $ {{getBuyPrice(step)}}
+                                        </div>
+                                        <div class="col-12">
+                                            <VueSlider
+                                                    ref="slider"
+                                                    v-model="numbers_to_buy[step.name]"
+                                                    :speed="0"
+                                                    :min="1"
+                                                    :max="step.user_max_can_afford"
+                                            ></VueSlider>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                </div>
+                <div class="connecting-line" v-anime="line_animation"></div>
             </div>
-            <div class="connecting-line" v-anime="line_animation"></div>
-        </div>
+        </template>
         <div class="middle-line"></div>
     </div>
 </template>
@@ -68,7 +70,7 @@
   export default {
     name: "Roadmap",
 
-    props : ['items', 'onBuy'],
+    props : ['steps', 'onBuy'],
 
     components : {
       FundsContainer,
@@ -101,23 +103,6 @@
       }
     },
 
-    computed : {
-      steps : function(){
-        let output = [];
-        console.log(this.items);
-        for(let i in this.items){
-          let item = this.items[i];
-          if(item.resources_per_s !== null)
-            output.push({
-              ...item,
-              number_to_buy : 1
-            });
-        }
-        console.log('output');
-        console.log(output);
-        return output;
-      }
-    },
 
     data (){
       return {
@@ -131,7 +116,10 @@
           "step-3",
           "step-4"
         ],
-        player_money : 75
+        player_money : 75,
+        numbers_to_buy : {
+
+        }
       };
     },
 
@@ -231,6 +219,10 @@
     }
     .can_afford .btn-buy{
         background-color:rgba(0,147,196,0.5);
+        cursor:pointer;
+    }
+    .can_afford .btn-buy:hover{
+        background-color:rgba(0,177,193,0.5);
         cursor:pointer;
     }
 

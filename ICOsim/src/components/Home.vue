@@ -18,7 +18,7 @@
               <Team :items="game ? game.items : []" :onBuy="buy"/>
           </div>
           <div class="col-lg-6">
-              <Roadmap :items="game ? game.items : []" :onBuy="buy"/>
+              <Roadmap :steps="this.game ? this.game.items : []" :onBuy="buy"/>
           </div>
       </div>
   </div>
@@ -95,7 +95,6 @@ export default {
     playerResources(){
       return (this.game && this.game.active_ico) ? new BigNumber(this.game.active_ico.resources) : new BigNumber(0);
     }
-
   },
 
   methods: {
@@ -155,6 +154,8 @@ export default {
           window.location.search = "";
         }
 
+        this.game.roadmap_steps = [];
+
         for(let i = 0; i < this.game.items.length; i++)
         { // Init default user selections
           let item = this.game.items[i];
@@ -182,7 +183,8 @@ export default {
 
           //every number is a bignumber
           item.start_price = new BigNumber(item.start_price);
-          item.resources_per_s = new BigNumber(item.resources_per_s);
+          if(item.resources_per_s)
+              item.resources_per_s = new BigNumber(item.resources_per_s);
           item.nas_price = new BigNumber(item.nas_price);
           item.user_holdings = parseInt(item.user_holdings);
           item.user_price = new BigNumber(item.user_price);
@@ -190,6 +192,10 @@ export default {
           if(item.user_item_bonus)
             item.user_item_bonus = new BigNumber(item.user_item_bonus);
           item.user_max_can_afford = parseInt(item.user_max_can_afford);
+
+          //roadmap
+          if(item.resources_per_s !== null)
+            this.game.roadmap_steps.push(item);
         }
       });
     },

@@ -9,7 +9,7 @@
         :game="game" 
         :redeemEvent="redeemEvent" 
         :isMyGame="isMyGame"
-        v-if="game !== null && game.current_event !== null" />
+        v-if="game !== null && (game.current_event !== null || game.blocks_till_next_event)" />
       <div class='row'>
           <div class='col-lg-6'>
               <FundsContainer :showdirection=1 :target="playerResources"/>

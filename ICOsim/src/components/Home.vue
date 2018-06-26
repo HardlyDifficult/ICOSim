@@ -10,7 +10,7 @@
               <FundsContainer :showdirection=1 :target="playerResources"/>
           </div>
           <div class='col-lg-6'>
-              <Details/>
+              <Details :game="game"/>
           </div>
       </div>
       <div class="row">

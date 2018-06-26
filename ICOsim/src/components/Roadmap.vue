@@ -45,7 +45,7 @@
                                                 ref="slider"
                                                 v-model="step.number_to_buy"
                                                 :speed="0"
-                                                :min="0"
+                                                :min="1"
                                                 :max="step.user_max_can_afford"
                                         ></VueSlider>
                                     </div>
@@ -87,7 +87,7 @@
           classes.push('unlocked');
         }
 
-        if(step.user_price.lte(this.player_money)){
+        if(step.user_max_can_afford > 0){
           classes.push('can_afford');
         }else{
           classes.push('cannot_afford');

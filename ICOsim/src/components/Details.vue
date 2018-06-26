@@ -7,7 +7,7 @@
                     GrowthRate
                 </div>
                 <div class="col-lg-12 growth-container">
-                    <FundsContainer :mystyle="{fontSize:'2em'}" style="display:inline-block"/> per second
+                    <FundsContainer :mystyle="{fontSize:'2em'}" :target="production_rate" style="display:inline-block"/> per second
                 </div>
             </div>
         </div>
@@ -16,12 +16,23 @@
 
 <script>
   import FundsContainer from './FundsDisplay';
+  import {BigNumber} from 'bignumber.js';
 
   export default {
     name: "Details",
 
+    props : ['game'],
+
     components : {
       FundsContainer
+    },
+
+    computed : {
+      production_rate(){
+        if(this.game && this.game.active_ico)
+          return new BigNumber(this.game.active_ico.my_production_rate);
+        return new BigNumber(0);
+      }
     }
 
   }

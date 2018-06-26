@@ -1,4 +1,5 @@
 BigNumber.config({ DECIMAL_PLACES: 10, ROUNDING_MODE: 1 })
+//#region Types
 class SafeNumber
 {
   constructor(value)
@@ -80,30 +81,6 @@ class SafeNumber
     assert(result.value.gte(this.value), "Pow: Result is less than original.  Result: " + result + ", original: " + this.value);
     return result;
   }
-
-  gt(b)
-  {
-    assert(b.isPositiveWholeNumber(), "gt: Not a valid SafeNumber value: " + b);
-    return this.value.gt(b);
-  }
-
-  gte(b)
-  {
-    assert(b.isPositiveWholeNumber(), "gte: Not a valid SafeNumber value: " + b);
-    return this.value.gte(b);
-  }
-
-  eq(b)
-  {
-    assert(b.isPositiveWholeNumber(), "eq: Not a valid SafeNumber value: " + b);
-    return this.value.eq(b);
-  }
-
-  lte(b)
-  {
-    assert(b.isPositiveWholeNumber(), "lte: Not a valid SafeNumber value: " + b);
-    return this.value.lte(b);
-  }
   
   isPositiveWholeNumber()
   {
@@ -164,8 +141,8 @@ class ICO
   validate()
   {
     assert(isString(this.id, 200), "Invalid ICO ID: " + this.id);
-    assert(isString(this.name, 100), "Please specify a valid name: " + this.name);
-    assert(isString(this.ticker, 5), "Please specify a valid ticker: " + this.ticker);
+    assert(isString(this.name, 200), "Please specify a valid name: " + this.name);
+    validateTicker(this.ticker);
   }
 
   toString() 
@@ -233,6 +210,7 @@ class EventConfig
     return JSON.stringify(this);
   }
 }
+//#endregion
 var Contract = function() 
 {
   // all_users, all_items, active_icos
@@ -438,6 +416,12 @@ Contract.prototype =
   },
   //#endregion
   //#region ICO managment
+  getIsTickerAvailable: function(ticker)
+  {
+    validateTicker(ticker);
+    return this.ticker_to_ico_id.get(ticker) == null;
+  },
+
   launchICO: function(name, ticker)
   {
     assert(!this.ticker_to_ico_id.get(ticker), "There was already an ICO by that name, choose something unique.  You entered: " + ticker);
@@ -497,9 +481,9 @@ Contract.prototype =
   buyWithNas: function(name, count)
   {
     var item = this.getItemRaw(name);
-    count = new SafeNumber(count);
+    count = new SafeNumber(count.toString());
     var cost = item.nas_price.mul(count);
-    if(cost.gt(new SafeNumber(Blockchain.transaction.value)))
+    if(cost.value.gt(Blockchain.transaction.value))
     {
       throw new Error("You didn't send enough nas. " + count + " of " + name + " costs " + cost + " but you sent " + Blockchain.transaction.value);
     }
@@ -538,13 +522,13 @@ Contract.prototype =
   getSellPriceNasPerResource: function()
   {
     var balance = this.getSmartContractBalance(); 
-    if(!balance.gt(new SafeNumber(0)))
+    if(!balance.value.gt(0))
     {
-      return new SafeNumber(0);
+      return new SafeNumber("0");
     }
 
     var sell_price = new SafeNumber(balance.value.div(this.total_resources.value.plus(this.world_resources.value)).plus(0.001).toFixed(0));
-    if(sell_price.lte(1))
+    if(sell_price.value.lte(1))
     {
       sell_price = new SafeNumber("1");
     }
@@ -554,14 +538,14 @@ Contract.prototype =
   getMyResources: function(ico_id)
   {
     var ico = this.getICO(ico_id);
-    return ico.resources.plus(this.getMyPendingResources(ico_id));
+    return ico.resources;
   },
 
   getMyResourcesNasValue: function(ico_id)
   {
     var nas_per_resource = this.getSellPriceNasPerResource();
     var my_resources = this.getMyResources(ico_id);
-    if(nas_per_resource.eq(new SafeNumber(0)))
+    if(nas_per_resource.value.eq(0))
     {
       return new SafeNumber(0);
     }
@@ -696,7 +680,7 @@ Contract.prototype =
   {
     this.redeemResources();
     var nas = this.getMyResourcesNasValue();
-    if(nas.gt(this.nas))
+    if(nas.value.gt(this.nas.value))
     { // Just in case a rounding issue
       nas = this.nas;
     }
@@ -855,7 +839,7 @@ Contract.prototype =
     }
 
     var price = this.getMyItemPrice(name, quantity);
-    if(price.gt(ico.resources))
+    if(price.value.gt(ico.resources.value))
     {
       throw new Error("You can't afford that yet.  You have " + ico.resources + " but it costs " + price);
     }
@@ -884,50 +868,98 @@ Contract.prototype =
   },
   //#endregion
   //#region Events
-  getBlocksTillNextEvent: function()
+  getRng: function()
+  {
+    return new Random(this.getNextEventBlockSource()).nextFloat();
+  },
+
+  getNextEventBlockSource: function()
   {
     var height = new BigNumber(Blockchain.block.height);
     var offset = height.mod(this.event_config.interval);
-    return new BigNumber(this.event_config.interval).sub(offset);
+    return height.sub(offset);
+  },
+
+  getEventStartOffset: function()
+  {
+    var random = new Random(this.getNextEventBlockSource());
+    var max_start_offset = this.event_config.interval.sub(this.event_config.max_length).sub("2");
+    var rng = max_start_offset.mul(random.nextFloat().toString());
+    rng = new BigNumber(rng.toFixed(0));
+    rng = rng.plus("1");
+    assert(rng.gt(0));
+    return rng;
+  },
+
+  getEventStartHeight: function()
+  {
+    return this.getNextEventBlockSource().plus(this.getEventStartOffset());    
+  },
+  
+  getEventLength: function()
+  {
+    var random = new Random(this.getNextEventBlockSource());
+    var rng = (this.event_config.max_length.sub(this.event_config.min_length)).mul(random.nextFloat().toString()).plus(this.event_config.min_length);
+    rng = new BigNumber(rng.toFixed(0));
+    if(rng.lt(this.event_config.min_length))
+    {
+      rng = this.event_config.min_length;
+    }
+    return rng;
+  },
+
+  getBlocksTillEventIsOver: function()
+  {
+    var height = new BigNumber(Blockchain.block.height);
+    var offset = height.mod(this.event_config.interval);
+    var start_offset = this.getEventStartOffset();
+    if(start_offset.gt(offset))
+    {
+      return null;
+    }
+    var end_offset = start_offset.plus(this.getEventLength());
+    var blocks_remaining = end_offset.sub(offset);
+    if(blocks_remaining.gt(0))
+    {
+      return blocks_remaining;
+    }
+
+    return null;
+  },
+
+  getBlocksTillNextEvent: function()
+  {
+    var height = new BigNumber(Blockchain.block.height);
+    var start_height = this.getEventStartHeight();
+    if(height.gte(start_height)) 
+    {
+      return null;
+    }
+
+    return start_height.sub(height);
   },
   
   // {reward_percent, min_reward, max_reward, number_of_blocks_remaining}
   getCurrentEvent: function()
   {
-    var height = new BigNumber(Blockchain.block.height);
-    var offset = height.mod(this.event_config.interval);
-    var current_event_source_block_height = height - offset;
-    var user = this.getOrCreateUser();
-    var user_has_redeemed = user.last_event_redeemed == current_event_source_block_height;
-    var seed;
-    if(offset > 0)
-    {
-      seed = Blockchain.getPreBlockSeed(offset);
-    }  
-    else 
-    {
-      seed = Blockchain.block.seed;
-    }
-    var random = new Random(seed.hashCode);
-
-    var number_of_blocks = (this.event_config.max_length.sub(this.event_config.min_length)).mul(random.nextFloat().toString()).plus(this.event_config.min_length);
-    number_of_blocks = new BigNumber(number_of_blocks.toFixed(0));
-    if(number_of_blocks.lt(this.event_config.min_length))
-    { // Just in case of rounding issue
-      number_of_blocks = this.event_config.min_length; 
-    }
-    if(number_of_blocks.lt(offset))
+    var number_of_blocks_remaining = this.getBlocksTillEventIsOver();
+    if(number_of_blocks_remaining == null)
     {
       return null;
     }
+
+    var random = new Random(this.getNextEventBlockSource());
+    var user = this.getOrCreateUser();
+    var block_source = this.getNextEventBlockSource();
+    var user_has_redeemed = user.last_event_redeemed == block_source;
 
     var reward_percent = (this.event_config.max_reward_percent.sub(this.event_config.min_reward_percent)).mul(random.nextFloat().toString()).plus(this.event_config.min_reward_percent);
     return {
       reward_percent,
       min_reward: this.event_config.min_reward,
       max_reward: this.event_config.max_reward,
-      number_of_blocks,
-      number_of_blocks_remaining: number_of_blocks.sub(offset),
+      length: this.getEventLength(),
+      number_of_blocks_remaining,
       user_has_redeemed
     }
   },
@@ -937,7 +969,7 @@ Contract.prototype =
     var event = this.getCurrentEvent();
     if(!event)
     {
-      throw new Error("Too late, that event has ended.  Sit tight, another will begin in " + this.getBlocksTillNextEvent() + " blocks.");
+      throw new Error("Too late, that event has ended.  Sit tight, another will begin shortly.");
     }
  
     if(event.user_has_redeemed)
@@ -1013,6 +1045,7 @@ Contract.prototype =
     {
       data.active_ico = this.getICO(ico_id);
 
+      data.active_ico.is_you = Blockchain.transaction.from == data.active_ico.player_addr;
       data.active_ico.my_resources = this.getMyResources(ico_id);
       data.active_ico.my_resources_nas_value = this.getMyResourcesNasValue(ico_id);
       data.active_ico.my_production_rate = this.getMyProductionRate(ico_id);
@@ -1030,7 +1063,7 @@ Contract.prototype =
     for(var i = 0; i < all_users.length; i++)
     {
       var user = this.getUser(all_users[i]);
-      if(user.nas_redeemed.lte(new SafeNumber(0)))
+      if(user.nas_redeemed.value.lte(0))
       {
         continue;
       }
@@ -1117,6 +1150,11 @@ function assert(value, message)
   }
 }
 
+function validateTicker(ticker)
+{
+  assert(isString(ticker, 50), "Please specify a valid ticker: " + ticker);
+}
+
 function isString(value, max_length)
 {
   if(value == null)
@@ -1141,8 +1179,6 @@ function isArray(value)
 {
   return value instanceof Array;
 }
-//#endregion
-
 
 /**
  * Creates a pseudo-random value generator. The seed must be an integer.
@@ -1151,7 +1187,7 @@ function isArray(value)
  * http://www.firstpr.com.au/dsp/rand31/
  */
 function Random(seed) {
-  this._seed = seed % 2147483647;
+  this._seed = (seed * 7919 * 4651) % 2147483647;
   if (this._seed <= 0) this._seed += 2147483646;
 }
 
@@ -1162,7 +1198,6 @@ Random.prototype.next = function () {
   return this._seed = this._seed * 16807 % 2147483647;
 };
 
-
 /**
  * Returns a pseudo-random floating point number in range [0, 1).
  */
@@ -1170,14 +1205,4 @@ Random.prototype.nextFloat = function (opt_minOrMax, opt_max) {
   // We know that result of next() will be 1 to 2147483646 (inclusive).
   return (this.next() - 1) / 2147483646;
 };
-
-String.prototype.hashCode = function(){
-	var hash = 0;
-	if (this.length == 0) return hash;
-	for (i = 0; i < this.length; i++) {
-		char = this.charCodeAt(i);
-		hash = ((hash<<5)-hash)+char;
-		hash = hash & hash; // Convert to 32bit integer
-	}
-	return hash;
-}
+//#endregion

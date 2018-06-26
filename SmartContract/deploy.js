@@ -16,7 +16,7 @@ if(conf.version !==  consts.CONF_VERSION){
 }
 
 const contractSource = fs.readFileSync('./contract.js').toString();
-const apiUrl = "https://testnet.nebulas.io";
+const apiUrl = "https://testnet.nebulas.io";//"http://localhost:8685";
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -57,6 +57,7 @@ async function run(){
   };
   let response = await neb.api.sendRawTransaction(payload);
   console.log(response);
+  await sleep(2000);
 
   let attempt = 0;
   while(1===1){
@@ -84,10 +85,10 @@ async function run(){
         await callMethod("setStartingResources", "42"); 
         await callMethod("setWorldResources", "5555555555"); 
         await callMethod("setEventConfig", {
-          interval: "15", 
+          interval: "10", 
           min_reward: "10000", max_reward: "9999999999", 
           min_reward_percent: "0.1", max_reward_percent: "100", 
-          min_length: "3", max_length: "10"});
+          min_length: "2", max_length: "2"});
 
         var item_make_a_commit = "Make a Commit on Github";
         var items = [
@@ -194,6 +195,6 @@ async function callMethod(method, args)
   let payload = {
     data : transaction.toProtoString()
   };
-  let response = await neb.api.sendRawTransaction(payload);
-  console.log(response);
+  await neb.api.sendRawTransaction(payload);
+  console.log("sent: " + JSON.stringify(payload));
 }

@@ -1,7 +1,7 @@
 <template>
     <div class='container-fluid text-left'>
         <h1>Debug</h1>
-      
+
         <div id="status-card" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -18,94 +18,105 @@
             </div>
         </div>
         </div>
-        
-        <span v-if="info != null">
-       <div class="card">
-            <h4>Global Info</h4>
+
+         <div class="card" v-if="is_wallet_missing">
+            <h4>Missing Wallet Extension!</h4>
                 <div class="col-12">
-                    smart_contract_balance: {{ info.smart_contract_balance | nas }}
+                    Panic 
+                </div>
+        </div> 
+        
+        <span v-if="game != null">
+       <div class="card">
+            <h4>Global game</h4>
+                <div class="col-12">
+                    smart_contract_balance: {{ game.smart_contract_balance | nas }}
                 </div>
                 <div class="col-12">
-                    sell_price_nas_per_resource: {{ info.sell_price_nas_per_resource | nas }}
+                    sell_price_nas_per_resource: {{ game.sell_price_nas_per_resource | nas }}
                 </div>
         </div> 
 
-        <div class="card mt-5" v-if="!info.active_ico">
-            <h4>Start ICO</h4>
+        <div class="card mt-5" v-if="!game.active_ico">
+            <h4>Launch ICO</h4>
             <div class="row mt-2">
                 <div class="col">
-                    Name: <input id="name" type="text">
+                    Name: <input type="text" v-model="launch_ico_name">
                 </div>
                 <div class="col">
-                    Ticker: <input id="ticker" type="text">
+                    Ticker: <input v-model="launch_ico_ticker" type="text" @change="checkTicker()" @input="checkTicker()">
+                    {{ ticker_is_available }}
                 </div>
             </div>
             <div class="row mt-2">
                 <div class="col">
-                    <button v-on:click="startICO()">Start ICO</button>
+                    <button v-on:click="launchICO()">Start ICO</button>
                 </div>
             </div>
         </div>
 
-        <div class="card mt-5 text-left" v-if="info.active_ico">
-            <h4>{{ info.active_ico.name }} ({{ info.active_ico.ticker }})</h4>
+        <div class="card mt-5 text-left" v-if="game.active_ico">
+            <h4>{{ game.active_ico.name }} ({{ game.active_ico.ticker }})</h4>
             <div class="row mt-2">
                 <div class="col-12">
-                    my_resources: {{ info.active_ico.my_resources | count }}
+                    my_resources: {{ game.active_ico.my_resources | count }}
                 </div>
                 <div class="col-12">
-                    my_production_rate: {{ info.active_ico.my_production_rate | count }}
+                    my_production_rate: {{ game.active_ico.my_production_rate | count }}
                 </div>
                 <div class="col-12">
-                    my_bonus: {{ info.active_ico.my_bonus | percent }}
+                    my_bonus: {{ game.active_ico.my_bonus | percent }}
                 </div>
                 <div class="col-12">
-                    my_total_production_rate: {{ info.active_ico.my_total_production_rate | count }}
+                    my_total_production_rate: {{ game.active_ico.my_total_production_rate | count }}
                 </div>
             </div>
         </div>
         
-        <div class="card mt-5" v-if="info.active_ico">
+        <div class="card mt-5" v-if="game.active_ico && (game.current_event || game.blocks_till_next_event)">
             <h4>Event</h4>
             <div class="row mt-2">
-                <div class="col" v-if="!info.current_event || info.current_event.number_of_blocks_remaining == 0 || info.current_event.user_has_redeemed">
-                    Next Event starts in: {{ info.blocks_till_next_event | count }} blocks
+                <div class="col" v-if="!game.current_event || game.current_event.number_of_blocks_remaining == 0 || game.current_event.user_has_redeemed">
+                    Next Event starts in: {{ game.blocks_till_next_event | count }} blocks
                 </div>
                 <span v-else>
                     <div class="col-12">
-                        Reward: {{ info.current_event.reward_percent | percent }}
+                        Expected Reward: {{ game.current_event.expected_reward | count }}
                     </div>
                     <div class="col-12">
-                        Min Reward: {{ info.current_event.min_reward | count }}
+                        Reward: {{ game.current_event.reward_percent | percent }}
                     </div>
                     <div class="col-12">
-                        Max Reward: {{ info.current_event.max_reward | count }}
+                        Min Reward: {{ game.current_event.min_reward | count }}
                     </div>
                     <div class="col-12">
-                        Number of blocks this event: {{ info.current_event.number_of_blocks | count }}
+                        Max Reward: {{ game.current_event.max_reward | count }}
                     </div>
                     <div class="col-12">
-                        Blocks Remaining: {{ info.current_event.number_of_blocks_remaining | count }}
+                        Number of blocks this event: {{ game.current_event.length | count }}
                     </div>
                     <div class="col-12">
+                        Blocks Remaining: {{ game.current_event.number_of_blocks_remaining | count }}
+                    </div>
+                    <div class="col-12" v-if="isMyGame()">
                         <button @click="redeemEvent()">Redeem</button>
                     </div>
                 </span>
             </div>
         </div>
 
-        <div class="card mt-5 text-left" v-if="info.active_ico">
+        <div class="card mt-5 text-left" v-if="game.active_ico">
             <h4>NAS</h4>
             <div class="row">
                 <div class="col-12">
-                    my_resources_nas_value: {{ info.active_ico.my_resources_nas_value | nas }} 
+                    my_resources_nas_value: {{ game.active_ico.my_resources_nas_value | nas }} 
                 </div>
                 <div class="col-12 mt-2" v-if="isMyGame()">
                     <button @click="exitScam()" class="btn btn-primary">Exit Scam</button>
                 </div>
             </div>
         </div>
-        <div class="card mt-5 text-left" v-for="item in info.items" :key="item.name">
+        <div class="card mt-5 text-left" v-for="item in game.items" :key="item.name">
             <h5>{{ item.name }}</h5>
             <div class="row mt-2">
                 <div class="col-12">
@@ -117,7 +128,7 @@
                 <div class="col-12" v-if="item.bonus_multiplier">
                     bonus_multiplier: {{ item.bonus_multiplier | percent }}
                 </div>
-                <span v-if="info.active_ico">
+                <span v-if="game.active_ico">
                     <div class="col-12">
                         <hr>
                     </div>
@@ -137,21 +148,21 @@
                         user_max_can_afford: {{ item.user_max_can_afford | count }}
                     </div>
                     <div class="col-12" v-if="isMyGame()">
-                        <input type="range" v-model="selections[item.name].number_to_buy" @input="$forceUpdate()" min="1" :max="item.user_max_can_afford">
+                        <input type="range" v-model="input_selections[item.name].number_to_buy" @input="$forceUpdate()" min="1" :max="item.user_max_can_afford">
                     </div>
                     <div class="col-12" v-if="isMyGame()">
-                        <button v-on:click="buy(item, selections[item.name].number_to_buy)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">
-                            Buy {{ selections[item.name].number_to_buy | count }}
+                        <button v-on:click="buy(item, input_selections[item.name].number_to_buy)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">
+                            Buy {{ input_selections[item.name].number_to_buy | count }}
                         </button>
                         <button v-on:click="buy(item, null)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">Buy Max</button>
                         +{{ getBuyProductionGain(item) | count }}/s for {{ getBuyPrice(item) | price }}
                     </div>
                     <div class="col-12" v-if="isMyGame()">
-                        <input type="number" v-model="selections[item.name].number_to_buy_with_nas" @input="$forceUpdate()">
-                        <button v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-secondary">
+                        <input type="number" v-model="input_selections[item.name].number_to_buy_with_nas" @input="$forceUpdate()">
+                        <button v-on:click="buyWithNas(item, input_selections[item.name].number_to_buy_with_nas)" class="btn btn-secondary">
                             Buy for {{ getBuyWithNasCost(item) | nas }}
                         </button>
-                        Buy {{ selections[item.name].number_to_buy_with_nas | count }} for +{{ getBuyProductionGainWithNas(item) | count }}/s 
+                        Buy {{ input_selections[item.name].number_to_buy_with_nas | count }} for +{{ getBuyProductionGainWithNas(item) | count }}/s 
                     </div>
                 </span>
             </div>
@@ -229,91 +240,45 @@
 </template>
 
 <script>
-var game = require("../logic/game.js");
-var neb = require("../logic/HardlyNeb.js");
-var refresh_count = 0;
-
-import Navbar from './Navbar.vue';
-import FundsContainer from './FundsDisplay';
+let game = require("../logic/game.js");
 
 export default {
     name: 'Debug',
     data () {
         return {
-            info: null,
-            selections: {},
-            amount_to_invest: 0,
-            method_to_call: "",
-            method_to_call_args: "",
+            // data
+            game: null,
             best_known_scammers: [],
             coin_market_caps: [],
             explorer_smart_contract_url: null,
-            smart_contract_address: null
+            smart_contract_address: null,
+            ticker_is_available: false, // for Launch ICO form
+            is_wallet_missing: false, // for new user help
+
+            // user input
+            input_selections: {}, 
+            amount_to_invest: 0,
+            method_to_call: "",
+            method_to_call_args: "",
+            launch_ico_name: "",
+            launch_ico_ticker: "",
         }
     },
     components: {
-        Navbar,
-        FundsContainer
     },
     methods: {
-        log(message)
+        // Write
+        launchICO()
         {
-            console.log("---------------------------------------");
-            console.log("---------------------------------------");
-            console.log("---------------------------------------");
-            console.log(message);
-            console.log("---------------------------------------");
-        },
-        isMyGame()
-        {
-            return game.isMyGame();
-        },
-        startICO()
-        {
-            game.startICO($("#name").val(), $("#ticker").val(), onTxPosted, onSuccess, onError);
-        },
-        getInfo()
-        {
-            game.getInfo((resp) =>
+            game.launchICO(this.launch_ico_name, this.launch_ico_ticker, onTxPosted, (resp) =>
             {
-                this.info = resp;
-                if(!this.info.active_ico && !game.isMyGame())
-                {
-                    game.setTicker(null);
-                    // use router
-                    window.location.hash = window.location.hash.substring(window.location.hash.indexOf("?"));
-                }
-
-                for(var i = 0; i < this.info.items.length; i++)
-                {
-                    var item = this.info.items[i];
-                    var selection = this.selections[item.name];
-                    if(selection == null)
-                    {
-                        this.selections[item.name] = {
-                            number_to_buy: 0
-                        };
-                    }
-
-                    if(this.selections[item.name].number_to_buy_with_nas == null)
-                    {
-                        this.selections[item.name].number_to_buy_with_nas = 1;
-                    }
-
-                    if(item.user_max_can_afford <= 0)
-                    {
-                        this.selections[item.name].number_to_buy = 0;
-                    }
-                    else if(!this.selections[item.name].number_to_buy)
-                    {
-                        this.selections[item.name].number_to_buy = 1;
-                    }
-                }
-            }, this.log);
+                window.location.search = this.launch_ico_ticker; // TODO router..
+                onSuccess(resp);
+            }, onError);
         },
         buy(item, count)
         {
-            game.buy(item.name, count, onTxPosted, onSuccess, onError);
+            game.buy(item, count, onTxPosted, onSuccess, onError);
         },
         buyWithNas(item, count)
         {
@@ -323,48 +288,79 @@ export default {
         {
             game.invest(this.amount_to_invest, onTxPosted, onSuccess, onError);
         },
-        callMethodAsWrite()
-        {
-            if(this.method_to_call_args == "")
-            {
-                this.method_to_call_args = null;
-            }
-            var args = null;
-            if(this.method_to_call_args)
-            {
-                args = this.method_to_call_args.split(",");
-            }
-            neb.nebWrite(this.method_to_call, args, onTxPosted, 0, onSuccess, onError);
-        },
-        callMethodAsRead()
-        {
-            if(this.method_to_call_args == "")
-            {
-                this.method_to_call_args = null;
-            }
-            var args = null;
-            if(this.method_to_call_args)
-            {
-                args = this.method_to_call_args.split(",");
-            }
-            neb.nebRead(this.method_to_call, args, onSuccess, onError);
-        },
         exitScam()
         {
             game.exitScam(onTxPosted, onSuccess, onError);
         },
+        redeemEvent()
+        {
+            game.redeemEvent(onTxPosted, onSuccess, onError);
+        },
+
+        // Read
+        isMyGame()
+        {
+            if(!this.game.active_ico)
+            {
+                return false;
+            }
+            return this.game.active_ico.is_you;
+        },       
+        getGame()
+        {
+            game.getGame((resp) =>
+            {
+                this.game = resp;
+
+                // TODO use router?
+                if(this.game.active_ico)
+                {
+                    window.location.search = this.game.active_ico.ticker;
+                }
+                else if(window.location.search)
+                {
+                    window.location.search = "";  
+                }
+
+                for(let i = 0; i < this.game.items.length; i++)
+                { // Init default user selections
+                    let item = this.game.items[i];
+                    let selection = this.input_selections[item.name];
+                    if(selection == null)
+                    {
+                        this.input_selections[item.name] = {
+                            number_to_buy: 0
+                        };
+                    }
+
+                    if(this.input_selections[item.name].number_to_buy_with_nas == null)
+                    {
+                        this.input_selections[item.name].number_to_buy_with_nas = 1;
+                    }
+
+                    if(item.user_max_can_afford <= 0)
+                    {
+                        this.input_selections[item.name].number_to_buy = 0;
+                    }
+                    else if(!this.input_selections[item.name].number_to_buy)
+                    {
+                        this.input_selections[item.name].number_to_buy = 1;
+                    }
+                }
+            });
+        },
         getBuyPrice(item)
         {
-            return game.getBuyPrice(item, this.selections[item.name].number_to_buy);
+            return game.getBuyPrice(item, this.input_selections[item.name].number_to_buy);
         },
         getBuyWithNasCost(item)
         {
-            return game.getBuyWithNasCost(item, this.selections[item.name].number_to_buy_with_nas);
+            return game.getBuyWithNasCost(item, this.input_selections[item.name].number_to_buy_with_nas);
         },
         getBestKnownScammers()
         {
             game.getBestKnownScammers(null, null, (resp) =>
-            {
+            { 
                 this.best_known_scammers = resp;
             }, onError);
         },
@@ -377,15 +373,49 @@ export default {
         },
         getBuyProductionGain(item)
         {
-            return this.selections[item.name].number_to_buy * item.resources_per_s;
+            return this.input_selections[item.name].number_to_buy * item.resources_per_s;
         },
         getBuyProductionGainWithNas(item)
         {
-            return this.selections[item.name].number_to_buy_with_nas * item.resources_per_s;
+            return this.input_selections[item.name].number_to_buy_with_nas * item.resources_per_s;
         },
-        redeemEvent()
+        checkTicker()
         {
-            game.redeemEvent(onTxPosted, onSuccess, onError);
+            game.getIsTickerAvailable(this.launch_ico_ticker, () =>
+            {
+                this.ticker_is_available = true;
+            }, () =>
+            {
+                this.ticker_is_available = false;
+            })
+        },
+
+        // For Debugging
+        callMethodAsWrite()
+        {
+            if(this.method_to_call_args == "")
+            {
+                this.method_to_call_args = null;
+            }
+            let args = null;
+            if(this.method_to_call_args)
+            {
+                args = this.method_to_call_args.split(",");
+            }
+            game.directNebWrite(this.method_to_call, args, onTxPosted, 0, onSuccess, onError);
+        },
+        callMethodAsRead()
+        {
+            if(this.method_to_call_args == "")
+            {
+                this.method_to_call_args = null;
+            }
+            let args = null;
+            if(this.method_to_call_args)
+            {
+                args = this.method_to_call_args.split(",");
+            }
+            game.directNebRead(this.method_to_call, args, onSuccess, onError);
         },
     },
     filters: {
@@ -416,27 +446,27 @@ export default {
     },
     mounted() {
         this.smart_contract_address = game.getSmartContractAddress();
-        this.explorer_smart_contract_url = 
-            "https://explorer.nebulas.io/#" + (game.getIsTestnet() ? '/testnet' : '') + "/address/" + this.smart_contract_address;
-        var index = window.location.hash.lastIndexOf("?");
-        if(index >= 0)
+        this.explorer_smart_contract_url = game.getBlockExplorerURLForContract();
+        if(window.location.search)
         {
-            var ticker = window.location.hash.substring(window.location.hash.lastIndexOf("?") + 1);
-            if(ticker)
-            {
-                game.setTicker(ticker);
-            }
+            game.setTicker(window.location.search.substring(1));
         }
 
-        this.getInfo();
-        setInterval(this.getInfo, 10000);
+        this.getGame();
+        setInterval(this.getGame, 10000);
 
         this.getBestKnownScammers();
         this.getCoinMarketCaps();
+
+        setTimeout(() =>
+        { // It takes a second for the wallet game to appear
+            this.is_wallet_missing = !game.isWalletInstalled();
+        }, 1000);
     }
 }
 
-var status_cooldown;
+//#region Modal
+let status_cooldown;
 function hideStatus()
 {
     $("#status-card").modal('hide');    
@@ -456,7 +486,7 @@ function showStatus(title, message, timeout, onTimeout)
 
     if(timeout) 
     {
-        status_cooldown = setTimeout(function() 
+        status_cooldown = setTimeout(() =>
         {
             hideStatus();
             if(onTimeout)
@@ -466,6 +496,7 @@ function showStatus(title, message, timeout, onTimeout)
         }, timeout);
     }
 }
+//#endregion
 
 function onTxPosted(resp) 
 {
@@ -473,15 +504,14 @@ function onTxPosted(resp)
 }
 
 function onError(error)
-{ // onError
+{
     showStatus("Error", error, 15000);
 }
 
 function onSuccess(resp)
-{ // onSuccess
+{ 
     showStatus("Success", JSON.stringify(resp), 3000);
 }
-
 
 // From https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
 const numberWithCommas = (x, decimals) => 
@@ -490,12 +520,12 @@ const numberWithCommas = (x, decimals) =>
     {
         decimals = 0;
     }
-    var parts = Number.parseFloat(x).toFixed(decimals).split(".");
+    let parts = Number.parseFloat(x).toFixed(decimals).split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return parts.join(".");
 }
 
-var token_denominator = 1000000000000000000;
+let token_denominator = 1000000000000000000;
 
 function formatCoins(number, digits, unit) 
 {
@@ -507,17 +537,10 @@ function formatCoins(number, digits, unit)
     {
         digits = 8;
     }
-    var x = number / token_denominator;
+    let x = number / token_denominator;
     return numberWithCommas(x, digits) + " " + unit;
 }
-
-
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-/* .card
-{
-    background-color: black;
-} */
 </style>

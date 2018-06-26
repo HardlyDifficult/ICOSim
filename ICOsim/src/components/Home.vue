@@ -5,6 +5,11 @@
       <Navbar :color="'rgba(7,190,215,1)'"/>
       <!--<NoExtensionWarning/>-->
       <LaunchIco :onClickLaunch="launchICO" v-if="game !== null && game.active_ico === undefined"/>
+      <Airdrops 
+        :game="game" 
+        :redeemEvent="redeemEvent" 
+        :isMyGame="isMyGame"
+        v-if="game !== null && game.current_event !== null" />
       <div class='row'>
           <div class='col-lg-6'>
               <FundsContainer :showdirection=1 :target="playerResources"/>
@@ -30,6 +35,7 @@ import {BigNumber} from 'bignumber.js';
 import Navbar from './Navbar.vue';
 import FundsContainer from './FundsDisplay';
 import Roadmap from './Roadmap';
+import Airdrops from './Airdrops';
 import Team from './Team';
 import Details from './Details';
 import NoExtensionWarning from './NoExtensionWarning';
@@ -85,6 +91,7 @@ export default {
     Navbar,
     FundsContainer,
     Roadmap,
+    Airdrops,
     Team,
     Details,
     NoExtensionWarning,

@@ -1,12 +1,12 @@
-let settings = require("../static/settings.js");
+const settings = require("../static/settings.js");
 
 // TODO if error == 'contract check failed' (sp?) then mainnet vs testnet bug.
-let NebPay = require("nebPay");
-let nebPay = new NebPay();
+const NebPay = require("nebPay");
+const nebPay = new NebPay();
 
 // The nebulas API, used for signing transactions, etc
-const nebulas = require("nebulas");
-const neb = new nebulas.Neb();
+let nebulas = require("nebulas");
+let neb = new nebulas.Neb();
 neb.setRequest(new nebulas.HttpRequest(neb_contract.apiUrl));
 
 let has_checked_for_wallet = false;
@@ -46,7 +46,7 @@ module.exports =
             } 
             else
             {
-                error(resp.execute_error);
+                onError(resp.execute_error);
             }
         }).catch(onError);
     },
@@ -81,7 +81,7 @@ module.exports =
                     }
                 }
             });
-        }, onError);
+        }, onError, nas_to_send);
     },
 
     nebSend(to, onTxPosted, value, onSuccess, onError)
@@ -107,7 +107,7 @@ module.exports =
         }});           
     },
 
-    nebRead(method, args, onSuccess, onError = null)
+    nebRead(method, args, onSuccess, onError = null, nas_to_send = 0) 
     {
         if(!args)
         {
@@ -125,13 +125,13 @@ module.exports =
                 setTimeout(() =>
                 {
                     has_checked_for_wallet = true;
-                    this.nebRead(method, args, onSuccess, onError);
+                    this.nebRead(method, args, onSuccess, onError, nas_to_send);
                 }, 1000);
                 return;
             }
         }
 
-        nebPay.simulateCall(neb_contract.contract, 0, method, global.JSON.stringify(args), {
+        nebPay.simulateCall(neb_contract.contract, nas_to_send, method, global.JSON.stringify(args), {
             listener: (resp) =>
             {
                 let error = resp.execute_err;
@@ -145,8 +145,8 @@ module.exports =
                 } 
                 else 
                 {
-                    console.log("Error: " + error);
                     onError(error);
+                    console.log("Error: " + error);
                     return;
                 }
             

@@ -130,7 +130,7 @@ module.exports =
         {
             quantity = parseInt(quantity);
         }
-        return item.nas_price * quantity;
+        return new BigNumber(item.nas_price).mul(quantity);
     },
     
     getGame(onSuccess, onError)

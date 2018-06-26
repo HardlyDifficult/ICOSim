@@ -966,6 +966,7 @@ Contract.prototype =
 
   redeemEvent: function()
   {
+    this.redeemResources();
     var event = this.getCurrentEvent();
     if(!event)
     {
@@ -983,7 +984,7 @@ Contract.prototype =
     user.last_event_redeemed = current_event_source_block_height;
     this.addr_to_user.put(user.addr, user);
     var ico = this.getActiveICO();
-    var reward = ico.resources.value.mul(event.reward_percent);
+    var reward = ico.resources.value.mul(event.reward_percent).div(100);
     if(reward.lt(event.min_reward))
     {
       reward = event.min_reward;

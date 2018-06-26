@@ -83,34 +83,37 @@ async function run(){
         fs.writeFileSync('../ICOSim/src/static/settings.js', content);
 
         await callMethod("setStartingResources", "42"); 
-        await callMethod("setWorldResources", "5555555555"); 
+        await callMethod("setWorldResources", "1000000000000"); 
         await callMethod("setEventConfig", {
           interval: "10", 
-          min_reward: "10000", max_reward: "9999999999", 
+          min_reward: "10000", max_reward: "99999999999", 
           min_reward_percent: "0.1", max_reward_percent: "100", 
-          min_length: "2", max_length: "2"});
+          min_length: "2", max_length: "7"});
 
         var item_make_a_commit = "Make a Commit on Github";
         var items = [
-          // Raw production
-          {name: item_make_a_commit, sort_id: 0, start_price: "1", nas_price: "1", resources_per_s: "1"},
-          {name: "Announce an Announcement", sort_id: 1, start_price: "30", nas_price: "30", resources_per_s: "5"},
-          {name: "Publish Performance Numbers", sort_id: 2, start_price: "500", nas_price: "500", resources_per_s: "10"},
-          {name: "Do a Giveaway on Twitter", sort_id: 3, start_price: "15000", nas_price: "15000", resources_per_s: "25"},
-          {name: "Incite FOMO", sort_id: 4, start_price: "420000", nas_price: "420000", resources_per_s: "50"},
-          {name: "Buy Exchange Listing", sort_id: 5, start_price: "20000000", nas_price: "20000000", resources_per_s: "100"},
-          {name: "Air Drop", sort_id: 6, start_price: "3000000000", nas_price: "3000000000", resources_per_s: "500"},
-          {name: "Announce Partnership", sort_id: 7, start_price: "2000000000000", nas_price: "2000000000000", resources_per_s: "10000"},
+          // .0001 nas == .05 cents
+          // $5 == 1 nas
+          // Roadmap
+          {name: item_make_a_commit, sort_id: 100,            start_price: "1",         nas_price: "100000000000000" /* .0001 nas*/, resources_per_s: "1"},
+          {name: "Announce an Announcement", sort_id: 200,    start_price: "15",        nas_price: "400000000000000", resources_per_s: "5"},
+          {name: "Publish Performance Numbers", sort_id: 300, start_price: "100",       nas_price: "900000000000000", resources_per_s: "10"},
+          {name: "Do a Giveaway on Twitter", sort_id: 400,    start_price: "800",       nas_price: "800000000000000", resources_per_s: "25"},
+          {name: "Incite FOMO", sort_id: 500,                 start_price: "4200",      nas_price: "1500000000000000", resources_per_s: "50"},
+          {name: "Buy Exchange Listing", sort_id: 600,        start_price: "30000",     nas_price: "1000000000000000", resources_per_s: "100"},
+          {name: "Announce Partnership", sort_id: 700,        start_price: "500000",    nas_price: "4000000000000000", resources_per_s: "500"},
+          {name: "Release Wallet", sort_id: 800,              start_price: "6000000",   nas_price: "60000000000000000", resources_per_s: "10000"},
 
-          // Bonuses
-          {name: "Tom Lee", sort_id: 8, start_price: "500000", nas_price: "1", bonus_multiplier: "1"},
-          {name: "Craig Grant", sort_id: 9, start_price: "35000000", nas_price: "1", bonus_multiplier: "2"},
-          {name: "Ian Balina", sort_id: 10, start_price: "1000000000", nas_price: "1", bonus_multiplier: "5"},
-          {name: "Suppoman", sort_id: 11, start_price: "10000000000", nas_price: "1", bonus_multiplier: "10"},
-          {name: "Trevon James", sort_id: 12, start_price: "100000000000", nas_price: "1", bonus_multiplier: "15"},
-          {name: "Roger Ver", sort_id: 13, start_price: "100000000000", nas_price: "1", bonus_multiplier: "20"},
-          {name: "John McAfee", sort_id: 14, start_price: "10000000000000", nas_price: "1", bonus_multiplier: "25"},
-          {name: "Carlos Matos", sort_id: 15, start_price: "999000000000000", nas_price: "1", bonus_multiplier: "50"},
+          // Advisors
+          {name: "Tom Lee", sort_id: 900,                     start_price: "100000",    nas_price: "18000000000000000", bonus_multiplier: "1"},
+          {name: "Craig Grant", sort_id: 1000,                start_price: "800000",    nas_price: "35000000000000000", bonus_multiplier: "2"},
+          {name: "Ian Balina", sort_id: 1100,                 start_price: "1000000",   nas_price: "85000000000000000", bonus_multiplier: "5"},
+          {name: "Suppoman", sort_id: 1200,                   start_price: "1800000",   nas_price: "130000000000000000", bonus_multiplier: "8"},
+          {name: "Trevon James", sort_id: 1300,               start_price: "2700000",   nas_price: "150000000000000000", bonus_multiplier: "10"},
+          {name: "Roger Ver", sort_id: 1400,                  start_price: "40500000",  nas_price: "180000000000000000", bonus_multiplier: "13"},
+          {name: "John McAfee", sort_id: 1500,                start_price: "81000000",  nas_price: "200000000000000000", bonus_multiplier: "15"},
+          {name: "Carlos Matos", sort_id: 1600,               start_price: "162000000", nas_price: "250000000000000000", bonus_multiplier: "20"},
+          {name: "Craig Wright", sort_id: 1700,               start_price: "324000000", nas_price: "300000000000000000", bonus_multiplier: "25"},
         ]
 
         for(var i = 0; i < items.length; i++)
@@ -127,41 +130,41 @@ async function run(){
         await callMethod("changeOwner", my_wallet);
 
         // For testing: 
-        await callMethod("isOwner");
-        await callMethod("getOrCreateUser");
-        await callMethod("getUser", ["n1S5JNP13pnoyswKbGtrtE3Bexz6pbtKaPj"]);
-        await callMethod("launchICO", ["HardlyValuable", "HV1"])
-        await callMethod("getActiveICO");
-        await callMethod("getICO");
-        await callMethod("getICOId", ["HV"]);
-        await callMethod("getSmartContractBalance");
-        await callMethod("getMyResources");
-        await callMethod("getMyResourcesNasValue");
-        await callMethod("getMyItemProductionRate", item_make_a_commit);
-        await callMethod("getMyProductionRate");
-        await callMethod("getTimePassed");
-        await callMethod("getMyProductionSinceLastRedeem");
-        await callMethod("getMyItemBonus", item_make_a_commit);
-        await callMethod("getMyBonus");
-        await callMethod("getMyPendingResources");
-        await callMethod("redeemResources");
-        await callMethod("getAllItemNames");
-        await callMethod("getItemRaw", item_make_a_commit);
-        await callMethod("getItem", item_make_a_commit);
-        await callMethod("getMyItemCount", item_make_a_commit);
-        await callMethod("getTotalCostFor", [item_make_a_commit, "10000"]);
-        await callMethod("getMyItemPrice", [item_make_a_commit, "10000"]);
-        await callMethod("getMaxICanAfford", [item_make_a_commit]);
-        await callMethod("buy", ["Make a Commit on Github", "3"]);
-        await callMethod("getInfo");
-        await callMethod("getBestKnownScammers");
-        await callMethod("getBestKnownScammers", [1, 10]);
-        await callMethod("getICOStats");
-        await callMethod("getCoinMarketCaps");
-        await callMethod("getCoinMarketCaps", [1, 10]);
-        await callMethod("getList", "all_items");
-        await callMethod("exitScam");
-        await callMethod("launchICO", ["HardlyValuable", "HV2"])
+        // await callMethod("isOwner");
+        // await callMethod("getOrCreateUser");
+        // await callMethod("getUser", ["n1S5JNP13pnoyswKbGtrtE3Bexz6pbtKaPj"]);
+        // await callMethod("launchICO", ["HardlyValuable", "HV1"])
+        // await callMethod("getActiveICO");
+        // await callMethod("getICO");
+        // await callMethod("getICOId", ["HV"]);
+        // await callMethod("getSmartContractBalance");
+        // await callMethod("getMyResources");
+        // await callMethod("getMyResourcesNasValue");
+        // await callMethod("getMyItemProductionRate", item_make_a_commit);
+        // await callMethod("getMyProductionRate");
+        // await callMethod("getTimePassed");
+        // await callMethod("getMyProductionSinceLastRedeem");
+        // await callMethod("getMyItemBonus", item_make_a_commit);
+        // await callMethod("getMyBonus");
+        // await callMethod("getMyPendingResources");
+        // await callMethod("redeemResources");
+        // await callMethod("getAllItemNames");
+        // await callMethod("getItemRaw", item_make_a_commit);
+        // await callMethod("getItem", item_make_a_commit);
+        // await callMethod("getMyItemCount", item_make_a_commit);
+        // await callMethod("getTotalCostFor", [item_make_a_commit, "10000"]);
+        // await callMethod("getMyItemPrice", [item_make_a_commit, "10000"]);
+        // await callMethod("getMaxICanAfford", [item_make_a_commit]);
+        // await callMethod("buy", ["Make a Commit on Github", "3"]);
+        // await callMethod("getInfo");
+        // await callMethod("getBestKnownScammers");
+        // await callMethod("getBestKnownScammers", [1, 10]);
+        // await callMethod("getICOStats");
+        // await callMethod("getCoinMarketCaps");
+        // await callMethod("getCoinMarketCaps", [1, 10]);
+        // await callMethod("getList", "all_items");
+        // await callMethod("exitScam");
+        // await callMethod("launchICO", ["HardlyValuable", "HV2"])
       }
 
       return;

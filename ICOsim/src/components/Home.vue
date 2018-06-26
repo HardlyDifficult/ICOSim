@@ -4,28 +4,40 @@
       <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
       <Navbar :color="'rgba(7,190,215,1)'"/>
       <!--<NoExtensionWarning/>-->
-      <LaunchIco :onClickLaunch="launchICO" v-if="game !== null && game.active_ico === undefined"/>
-      <Airdrops 
-        :game="game" 
-        :redeemEvent="redeemEvent" 
-        :isMyGame="isMyGame"
-        v-if="game !== null && (game.current_event !== null || game.blocks_till_next_event)" />
-      <div class='row'>
-          <div class='col-lg-6'>
-              <FundsContainer :showdirection=1 :target="playerResources"/>
-          </div>
-          <div class='col-lg-6'>
-              <Details :game="game"/>
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-lg-6">
-              <Team :items="game ? game.items : []" :onBuy="buy"/>
-          </div>
-          <div class="col-lg-6">
-              <Roadmap :steps="this.game ? this.game.items : []" :onBuy="buy"/>
-          </div>
-      </div>
+      <span v-if="game !== null"> <!--TODO: show loading instead-->
+        <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined"/>
+        <Airdrops 
+          :game="game" 
+          :redeemEvent="redeemEvent" 
+          :isMyGame="isMyGame"
+          v-if="game !== null && (game.current_event !== null || game.blocks_till_next_event)" />
+        <div class='row'>
+            <div class='col-lg-6'>
+                <FundsContainer :showdirection=1 :target="playerResources"/>
+            </div>
+            <div class='col-lg-6'>
+                <Details :game="game"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <Items 
+                  :isTeam="false" 
+                  :items="game.roadmap_steps"
+                  :selections="selections"
+                  :isMyGame="isMyGame"
+                  :status="status" />
+            </div>
+            <div class="col-lg-6">
+                <Items 
+                  :isTeam="true"
+                  :items="game.team_members" 
+                  :selections="selections"
+                  :isMyGame="isMyGame"
+                  :status="status" />
+            </div>
+        </div>
+      </span>
   </div>
 </template>
 
@@ -34,9 +46,8 @@ import {BigNumber} from 'bignumber.js';
 
 import Navbar from './Navbar.vue';
 import FundsContainer from './FundsDisplay';
-import Roadmap from './Roadmap';
+import Items from './Items';
 import Airdrops from './Airdrops';
-import Team from './Team';
 import Details from './Details';
 import NoExtensionWarning from './NoExtensionWarning';
 import LaunchIco from './LaunchIco';
@@ -48,21 +59,21 @@ function onTxPosted(resp)
 {
   console.log(`onTxPosted not implemented in Home.vue`);
   console.log(resp);
-  showStatus("Tx Posted", resp.txhash, 5000);
+  //showStatus("Tx Posted", resp.txhash, 5000); // TODO status display
 }
 
 function onError(error)
 {
   console.log(`onError not implemented in Home.vue`);
   console.log(error);
-  showStatus("Error", error, 15000);
+  //showStatus("Error", error, 15000);
 }
 
 function onSuccess(resp)
 {
   console.log(`onSuccess not implemented in Home.vue`);
   console.log(resp);
-  showStatus("Success", JSON.stringify(resp), 3000);
+  //showStatus("Success", JSON.stringify(resp), 3000);
 }
 
 export default {
@@ -71,28 +82,19 @@ export default {
     return {
       // data
       game: null,
-      best_known_scammers: [],
-      coin_market_caps: [],
+      selections: {},
       explorer_smart_contract_url: null,
       smart_contract_address: null,
       ticker_is_available: false, // for Launch ICO form
       is_wallet_missing: false, // for new user help
-
-      // user input
-      input_selections: {},
-      amount_to_invest: 0,
-      method_to_call: "",
-      method_to_call_args: "",
-      launch_ico_name: "",
-      launch_ico_ticker: "",
+      status: {onTxPosted, onSuccess, onError}
     }
   },
   components: {
     Navbar,
     FundsContainer,
-    Roadmap,
+    Items,
     Airdrops,
-    Team,
     Details,
     NoExtensionWarning,
     LaunchIco
@@ -115,25 +117,18 @@ export default {
         onSuccess(resp);
       }, onError);
     },
-    buy(item, count)
-    {
-      game.buy(item, count, onTxPosted, onSuccess, onError);
-    },
-    buyWithNas(item, count)
-    {
-      game.buyWithNas(item, count, onTxPosted, onSuccess, onError);
-    },
+    
     invest()
     {
-      game.invest(this.amount_to_invest, onTxPosted, onSuccess, onError);
+      game.invest(this.amount_to_invest, this.onTxPosted, this.onSuccess, this.onError);
     },
     exitScam()
     {
-      game.exitScam(onTxPosted, onSuccess, onError);
+      game.exitScam(this.onTxPosted, this.onSuccess, this.onError);
     },
     redeemEvent()
     {
-      game.redeemEvent(onTxPosted, onSuccess, onError);
+      game.redeemEvent(this.onTxPosted, this.onSuccess, this.onError);
     },
 
     // Read
@@ -162,30 +157,31 @@ export default {
         }
 
         this.game.roadmap_steps = [];
+        this.game.team_members = [];
 
         for(let i = 0; i < this.game.items.length; i++)
         { // Init default user selections
           let item = this.game.items[i];
-          let selection = this.input_selections[item.name];
+          let selection = this.selections[item.name];
           if(selection == null)
           {
-            this.input_selections[item.name] = {
+            this.selections[item.name] = {
               number_to_buy: 0
             };
           }
 
-          if(this.input_selections[item.name].number_to_buy_with_nas == null)
+          if(this.selections[item.name].number_to_buy_with_nas == null)
           {
-            this.input_selections[item.name].number_to_buy_with_nas = 1;
+            this.selections[item.name].number_to_buy_with_nas = 1;
           }
 
           if(item.user_max_can_afford <= 0)
           {
-            this.input_selections[item.name].number_to_buy = 0;
+            this.selections[item.name].number_to_buy = 0;
           }
-          else if(!this.input_selections[item.name].number_to_buy)
+          else if(!this.selections[item.name].number_to_buy)
           {
-            this.input_selections[item.name].number_to_buy = 1;
+            this.selections[item.name].number_to_buy = 1;
           }
 
           //every number is a bignumber
@@ -202,17 +198,15 @@ export default {
 
           //roadmap
           if(item.resources_per_s !== null)
+          {
             this.game.roadmap_steps.push(item);
+          }
+          else
+          {
+            this.game.team_members.push(item);
+          }
         }
       });
-    },
-    getBuyPrice(item)
-    {
-      return game.getBuyPrice(item, this.input_selections[item.name].number_to_buy);
-    },
-    getBuyWithNasCost(item)
-    {
-      return game.getBuyWithNasCost(item, this.input_selections[item.name].number_to_buy_with_nas);
     },
     getBestKnownScammers()
     {
@@ -227,14 +221,6 @@ export default {
       {
         this.coin_market_caps = resp;
       }, onError);
-    },
-    getBuyProductionGain(item)
-    {
-      return this.input_selections[item.name].number_to_buy * item.resources_per_s;
-    },
-    getBuyProductionGainWithNas(item)
-    {
-      return this.input_selections[item.name].number_to_buy_with_nas * item.resources_per_s;
     },
     checkTicker()
     {
@@ -306,14 +292,11 @@ export default {
     this.explorer_smart_contract_url = game.getBlockExplorerURLForContract();
     if(window.location.search)
     {
-      game.setTicker(window.location.search.substring(1));
+      game.setTicker(window.location.search.substring(1)); // TODO routes
     }
 
     this.getGame();
     setInterval(this.getGame, 10000);
-
-    //this.getBestKnownScammers();
-    //this.getCoinMarketCaps();
 
     setTimeout(() =>
     { // It takes a second for the wallet game to appear

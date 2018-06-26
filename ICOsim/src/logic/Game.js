@@ -1,8 +1,8 @@
-var neb = require("../logic/HardlyNeb.js");
+const neb = require("../logic/HardlyNeb.js");
 let settings = require("../static/settings.js");
 const token_denominator = 1000000000000000000;
 
-var ticker;
+let ticker;
 
 module.exports = 
 {
@@ -20,7 +20,7 @@ module.exports =
 
     buyWithNas(item, count, onTxPosted, onSuccess, onError)
     {
-        var cost = this.getBuyWithNasCost(item, count) / token_denominator;
+        let cost = this.getBuyWithNasCost(item, count) / token_denominator;
         neb.nebWrite("buyWithNas", [item.name, count], onTxPosted, cost, onSuccess, onError);
     },
 
@@ -115,8 +115,8 @@ module.exports =
         {
             quantity = parseInt(quantity);
         }
-        var item_count = parseInt(item.user_holdings);
-        var max = item_count + quantity;
+        let item_count = parseInt(item.user_holdings);
+        let max = item_count + quantity;
         return this.getTotalCostFor(item, max) - this.getTotalCostFor(item, item_count);
     },
     

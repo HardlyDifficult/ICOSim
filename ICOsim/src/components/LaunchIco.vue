@@ -7,13 +7,13 @@
             <div class="row">
                 <div class="col-3"></div>
                 <div class="col-6 align-content-center">
-                    <input class="inp form-control" type="text" title="ico-name" placeholder="Coin Name (eg Bitconnect)"/>
-                    <input class="inp form-control" type="text" title="ico-name" placeholder="Coin Ticker (eg BCC)"/>
+                    <input v-model="coin_name" class="inp form-control" type="text" title="ico-name" placeholder="Coin Name (eg Bitconnect)"/>
+                    <input v-model="coin_ticker" class="inp form-control" type="text" title="ico-name" placeholder="Coin Ticker (eg BCC)"/>
                 </div>
                 <div class="col-3"></div>
             </div>
             <div class="col-12">
-                <button class="btn btn-primary">Launch ICO</button>
+                <button class="btn btn-primary" @click="launch">Launch ICO</button>
             </div>
         </div>
         <div class="col-lg-3"></div>
@@ -22,7 +22,20 @@
 
 <script>
   export default {
-    name: "LaunchIco"
+    name: "LaunchIco",
+    data() {
+      return {
+        coin_name : '',
+        coin_ticker : ''
+      }
+    },
+    props : ["onClickLaunch"],
+    methods : {
+      launch(){
+        console.log('launching');
+        this.onClickLaunch(this.coin_name, this.coin_ticker);
+      }
+    }
   }
 </script>
 

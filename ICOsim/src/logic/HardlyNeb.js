@@ -5,11 +5,11 @@ let NebPay = require("nebPay");
 let nebPay = new NebPay();
 
 // The nebulas API, used for signing transactions, etc
-var nebulas = require("nebulas");
-var neb = new nebulas.Neb();
+const nebulas = require("nebulas");
+const neb = new nebulas.Neb();
 neb.setRequest(new nebulas.HttpRequest(neb_contract.apiUrl));
 
-var has_checked_for_wallet = false;
+let has_checked_for_wallet = false;
 
 module.exports = 
 {
@@ -107,7 +107,7 @@ module.exports =
         }});           
     },
 
-    nebRead(method, args, onSuccess, onError) 
+    nebRead(method, args, onSuccess, onError = null)
     {
         if(!args)
         {
@@ -134,8 +134,8 @@ module.exports =
         nebPay.simulateCall(neb_contract.contract, 0, method, global.JSON.stringify(args), {
             listener: (resp) =>
             {
-                var error = resp.execute_err;
-                var result;
+                let error = resp.execute_err;
+                let result;
                 if(!error) 
                 {
                     if(resp.result) 
@@ -145,8 +145,8 @@ module.exports =
                 } 
                 else 
                 {
-                    onError(error);
                     console.log("Error: " + error);
+                    onError(error);
                     return;
                 }
             
@@ -172,8 +172,8 @@ module.exports =
             contract: {function: method, args: global.JSON.stringify(args)} 
         }).then((resp) =>
         {
-            var error = resp.execute_err;
-            var result;
+            let error = resp.execute_err;
+            let result;
             if(resp.result) 
             {
                 result = global.JSON.parse(resp.result);

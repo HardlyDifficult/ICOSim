@@ -4,30 +4,28 @@
             <h2>Roadmap</h2>
         </div>
         <div class="col-6 roadmap-step" v-for="(step, index) in steps" :key="index" :class="getStepClasses(step, index)">
-
             <div class="row roadmap-step-inner" @mouseover="step.mouseover=true" :class="(step.next_price > player_money) ? 'glow-cant-afford' : 'glow-1'">
                     <div class="col-12">
                         <div class="row">
                             <div class="col-12">
                             </div>
                             <div class="col-12">
-                                <p class="title">{{step.title}}</p>
+                                <p class="title">{{step.name}}</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-12 line"></div>
 
-
                     <div class="col-4">
-                        <p>Count: {{step.current_num}}</p>
-                        <p>Production: {{step.producing}}</p>
+                        <p>Count: {{step.user_holdings}}</p>
+                        <p>Production: {{step.user_item_production.toString()}}</p>
                     </div>
                     <div class="col-8">
                         <p>
                             Current Price
                         </p>
-                        $<FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="step.next_price"/>
+                        $<FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="step.user_price"/>
                     </div>
 
                     <div class="col-12 line"></div>
@@ -35,21 +33,20 @@
                     <div class="col-12">
                         <div class="row cols-same-height">
                             <div class="col-4">
-                                <button class="btn btn-buy">BUY</button>
+                                <button @click="onBuy(step, step.number_to_buy.toString())" class="btn btn-buy">BUY</button>
                             </div>
                             <div class="col-8">
                                 <div class="row">
                                     <div class="col-12">
-                                        BUY {{step.num_to_buy}} FOR $ {{step.next_price.mul(step.num_to_buy).toString()}}
+                                        BUY {{step.number_to_buy}} FOR $ {{getBuyPrice(step)}}
                                     </div>
                                     <div class="col-12">
                                         <VueSlider
                                                 ref="slider"
-                                                v-model="step.num_to_buy"
-                                                :tooltip="false"
+                                                v-model="step.number_to_buy"
                                                 :speed="0"
                                                 :min="0"
-                                                :max="step.num_can_afford"
+                                                :max="step.user_max_can_afford"
                                         ></VueSlider>
                                     </div>
                                 </div>
@@ -64,11 +61,14 @@
 </template>
 
 <script>
+  const game = require("../logic/game.js");
   import FundsContainer from './FundsDisplay';
   import VueSlider from 'vue-slider-component';
 
   export default {
     name: "Roadmap",
+
+    props : ['items', 'onBuy'],
 
     components : {
       FundsContainer,
@@ -81,19 +81,41 @@
         classes.push(this.classes[index % 4]);
 
 
-        if(step.current_num <= 0){
+        if(parseInt(step.user_holdings) <= 0){
           classes.push('locked');
         }else{
           classes.push('unlocked');
         }
 
-        if(step.next_price <= this.player_money){
+        if(step.user_price.lte(this.player_money)){
           classes.push('can_afford');
         }else{
           classes.push('cannot_afford');
         }
 
         return classes;
+      },
+
+      getBuyPrice(item) {
+        return game.getBuyPrice(item, item.number_to_buy);
+      }
+    },
+
+    computed : {
+      steps : function(){
+        let output = [];
+        console.log(this.items);
+        for(let i in this.items){
+          let item = this.items[i];
+          if(item.resources_per_s !== null)
+            output.push({
+              ...item,
+              number_to_buy : 1
+            });
+        }
+        console.log('output');
+        console.log(output);
+        return output;
       }
     },
 
@@ -109,81 +131,7 @@
           "step-3",
           "step-4"
         ],
-        player_money : 75,
-        steps : [
-          {
-            title : "Hire Intern",
-            num_can_afford : 33,
-            num_to_buy : 0,
-            producing : 8,
-            current_num : 80,
-            expected_return : 1,
-            next_price : new BigNumber(500)
-          },
-          {
-            title : "Hire 2nd",
-            num_can_afford : 3,
-            num_to_buy : 0,
-            producing : 8,
-            current_num : 80,
-            expected_return : 1,
-            next_price : new BigNumber(25)
-          },
-          {
-            title : "Hire 3rd",
-            num_can_afford : 3,
-            num_to_buy : 0,
-            producing : 0,
-            current_num : 0,
-            expected_return : 1,
-            next_price : new BigNumber(20)
-          },
-          {
-            title : "Hire 4th",
-            num_can_afford : 3,
-            num_to_buy : 0,
-            producing : 0,
-            current_num : 0,
-            expected_return : 1,
-            next_price : new BigNumber(150)
-          },
-          {
-            title : "Hire Intern",
-            num_can_afford : 3,
-            num_to_buy : 0,
-            producing : 0,
-            current_num : 0,
-            expected_return : 1,
-            next_price : new BigNumber(150)
-          },
-          {
-            title : "Hire 2nd",
-            num_can_afford : 3,
-            num_to_buy : 0,
-            producing : 0,
-            current_num : 0,
-            expected_return : 1,
-            next_price : new BigNumber(150)
-          },
-          {
-            title : "Hire 3rd",
-            num_can_afford : 3,
-            num_to_buy : 0,
-            producing : 0,
-            current_num : 0,
-            expected_return : 1,
-            next_price : new BigNumber(150)
-          },
-          {
-            title : "Hire 4th",
-            num_can_afford : 3,
-            num_to_buy : 0,
-            producing : 0,
-            current_num : 0,
-            expected_return : 1,
-            next_price : new BigNumber(150)
-          }
-        ]
+        player_money : 75
       };
     },
 

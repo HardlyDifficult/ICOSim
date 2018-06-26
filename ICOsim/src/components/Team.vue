@@ -4,22 +4,40 @@
             <h2>Team</h2>
         </div>
         <div class="team-container">
-            <div class="team-member" v-for="(member, index) in members" :key="index" :class="getClasses(member)">
-                <div class="image" :style="{backgroundImage:'url(' + member.img + ')'}"></div>
-                <p class="member-name">{{member.name}}</p>
-                <p class="member-description">{{member.description}}</p>
+            <template v-for="(member, index) in items">
+                <div v-if="member.bonus_multiplier !== null" class="team-member" :key="index" :class="getClasses(member)">
+                    <div class="image" :style="{backgroundImage:'url(' + pictures[member.name]+ ')'}"></div>
+                    <p class="member-name">{{member.name}}</p>
+                    <p class="member-description">{{member.description}}</p>
 
-                <p v-if="member.is_bought" class="member-buy">Active Advisor!</p>
-                <p v-else-if="member.price <= player_money" class="member-buy">Buy For: $ {{member.price}}</p>
-                <p v-else class="member-buy">$ {{member.price}}</p>
-            </div>
+                    <p v-if="parseInt(member.user_holdings) > 0" class="member-buy">ADVISOR LEVEL {{member.user_holdings}}</p>
+                    <p v-else class="member-buy">BUY TO UNLOCK ADVISOR</p>
+
+                    <p class="member-buy">$ {{getBuyPrice(member)}}</p>
+
+                    <VueSlider
+                            ref="slider"
+                            v-model="member.number_to_buy"
+                            :speed="0"
+                            :min="0"
+                            :max="parseInt(member.user_max_can_afford)"
+                    ></VueSlider>
+                </div>
+            </template>
         </div>
     </div>
 </template>
 
 <script>
+  const game = require("../logic/game.js");
+  import VueSlider from 'vue-slider-component';
+
   export default {
     name: "Team",
+
+    components : {
+      VueSlider
+    },
 
     methods: {
       getClasses(member){
@@ -34,71 +52,29 @@
           classes.push('glow-1');
         }
         return classes;
+      },
+
+      getBuyPrice(item) {
+        return game.getBuyPrice(item, item.number_to_buy);
       }
+
     },
+
+    props : ['items'],
 
     data() {
       return {
+        pictures : {
+          'Roger Ver' : require('../assets/ver.png'),
+          'John McAfee' : require('../assets/mcafee.png'),
+          'Carlos Matos': require('../assets/matos.png'),
+          'Tom Lee' : require('../assets/lee.png'),
+          'Craig Grant': require('../assets/grant.png'),
+          'Ian Balina': require('../assets/balina.png'),
+          'Suppoman': require('../assets/suppoman.png'),
+          'Trevon James': require('../assets/trevon.png'),
+        },
         player_money : 75,
-        members: [
-          {
-            name: "Roger Ver",
-            description: "Full time paid shiller",
-            img: require('../assets/ver.png'),
-            is_bought : true,
-            price : 500
-          },
-          {
-            name: "John McAfee",
-            description: "Full time paid shiller",
-            img: require('../assets/mcafee.png'),
-            is_bought : true,
-            price : 500
-          },
-          {
-            name: "Carlos Matos",
-            description: "Full time paid shiller",
-            img: require('../assets/matos.png'),
-            is_bought : true,
-            price : 500
-          },
-          {
-            name: "Tom Lee",
-            description: "Full time paid shiller",
-            img: require('../assets/lee.png'),
-            is_bought : true,
-            price : 5
-          },
-          {
-            name: "Craig Grant",
-            description: "Full time paid shiller",
-            img: require('../assets/grant.png'),
-            is_bought : true,
-            price : 5
-          },
-          {
-            name: "Ian Balina",
-            description: "Full time paid shiller",
-            img: require('../assets/balina.png'),
-            is_bought : false,
-            price : 5
-          },
-          {
-            name: "Suppoman",
-            description: "Full time paid shiller",
-            img: require('../assets/suppoman.png'),
-            is_bought : false,
-            price : 500
-          },
-          {
-            name: "Trevon James",
-            description: "Full time paid shiller",
-            img: require('../assets/trevon.png'),
-            is_bought : false,
-            price : 500
-          }
-
-        ]
       };
     }
   }
@@ -136,7 +112,7 @@
         padding:15px;
         background-color:rgba(0,0,0,0.5);
         margin:15px;
-        width: 200px;
+        width: 250px;
     }
 
     .not_bought_can_afford{

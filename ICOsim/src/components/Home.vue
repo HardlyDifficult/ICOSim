@@ -3,14 +3,14 @@
       <div class="fixed-bg"></div><!--super stupid workaround-->
       <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
       <Navbar :color="'rgba(7,190,215,1)'"/>
-      <!--<NoExtensionWarning/>-->
-      <span v-if="game !== null"> <!--TODO: show loading instead-->
-        <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined"/>
+      <NoExtensionWarning v-if="is_wallet_missing"/>
+      <div v-if="game !== null"> <!--TODO: show loading instead-->
+        <LaunchIco :onClickLaunch="launchICO" v-if="!is_wallet_missing && game.active_ico === undefined"/>
         <Airdrops 
           :game="game" 
           :redeemEvent="redeemEvent" 
           :isMyGame="isMyGame"
-          v-if="game !== null && (game.current_event !== null || game.blocks_till_next_event)" />
+          v-if="isMyGame() && game !== null && (game.current_event !== null || game.blocks_till_next_event)" />
         <div class='row'>
             <div class='col-lg-12'>
                 <Details :game="game"/>
@@ -34,8 +34,7 @@
                   :status="status" />
             </div>
         </div>
-      </span>
-
+      </div>
   </div>
 </template>
 

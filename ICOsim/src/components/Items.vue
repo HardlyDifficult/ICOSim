@@ -123,13 +123,13 @@
         }
 
 
-        if(parseInt(item.user_holdings) <= 0){
+        if(parseInt(item.user_holdings) <= 0 || !this.isMyGame()){
           classes.push('locked');
         }else{
           classes.push('unlocked');
         }
 
-        if(item.user_max_can_afford > 0){
+        if(this.isMyGame() && item.user_max_can_afford > 0){
           classes.push('can_afford');
         }else{
           classes.push('cannot_afford');

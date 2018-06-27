@@ -7,8 +7,8 @@
             <div class="row">
                 <div class="col-12 hl"></div>
                 <div class="col-12">
-                    <h3 class="title" v-if="show_exits">Top successful exit scams</h3>
-                    <h3 class="title" v-if="!show_exits">Top running ICOs</h3>
+                    <h3 class="title" v-if="show_scammers">Top Scammers By NAS Taken</h3>
+                    <h3 class="title" v-if="!show_scammers">Top ICOs By Market Capitalization</h3>
                 </div>
             </div>
         </div>
@@ -17,11 +17,11 @@
                 <div class="col-lg-1"></div>
                 <div class="col-lg-10">
                     <div class="row table-header">
-                        <div class="col-2 table-header-el" :class="show_exits ? '' : 'active'" @click="show_exits=false">
-                            Active ICOs
+                        <div class="col-2 table-header-el" :class="show_scammers ? '' : 'active'" @click="show_scammers=false">
+                            ICOs
                         </div>
-                        <div class="col-2 table-header-el" :class="show_exits ?  'active' : ''" @click="show_exits=true">
-                            Successful Exit Scams
+                        <div class="col-2 table-header-el" :class="show_scammers ?  'active' : ''" @click="show_scammers=true">
+                            Scammers
                         </div>
                     </div>
                     <table class="table cmc-table">
@@ -30,22 +30,22 @@
                                 <th scope="col" class="border-right">#</th>
                                 <th scope="col">Ticker</th>
                                 <th scope="col">Name</th>
-                                <th scope="col" class="num" v-if="show_exits">Exit</th>
-                                <th scope="col" class="num" v-if="!show_exits">Market Cap</th>
-                                <th scope="col" class="num" v-if="!show_exits">Growth</th>
+                                <th scope="col" class="num" v-if="show_scammers">Exit</th>
+                                <th scope="col" class="num" v-if="!show_scammers">Market Cap</th>
+                                <th scope="col" class="num" v-if="!show_scammers">Growth</th>
                                 <th scope="col" >Owner</th>
                             </tr>
                         </thead>
                         <tbody>
                             <template v-for="(ico, index) in icos">
-                                <tr v-if="(show_exits && ico.exit) || (!show_exits && !ico.exit)" v-bind:key="index">
+                                <tr v-if="(show_scammers && ico.exit) || (!show_scammers && !ico.exit)" v-bind:key="index">
                                     <td scope="row" class="border-right" >{{index + 1}}</td>
-                                    <td scope="row" ><span v-bind:style="{backgroundColor:randomColor(ico.coin), borderColor:randomColor(ico.coin + ico.ticker)}" class="ticker">{{ico.ticker}}</span></td>
-                                    <td scope="row" >{{ico.coin}}</td>
-                                    <td scope="row" class="num" v-if="show_exits">$ {{ico.exit.toString()}}</td>
-                                    <td scope="row" class="num" v-if="!show_exits">$ {{ico.cap.toString()}}</td>
-                                    <td scope="row" class="num" v-if="!show_exits">$ {{ico.growth_per_s.toString()}}</td>
-                                    <td scope="row" >{{ico.user}}</td>
+                                    <td scope="row" ><span v-bind:style="{backgroundColor:randomColor(ico.ticker), borderColor:randomColor(ico.name + ico.ticker)}" class="ticker">{{ico.ticker}}</span></td>
+                                    <td scope="row" class="text-left" >{{ico.name}}</td>
+                                    <td scope="row" class="num" v-if="show_scammers">{{ico.nas_redeemed | nas}}</td>
+                                    <td scope="row" class="num" v-if="!show_scammers">${{ico.market_cap | count}}</td>
+                                    <td scope="row" class="num" v-if="!show_scammers">${{ico.total_production_rate | count}}/s</td>
+                                    <td scope="row" >{{ico.player_addr}}</td>
                                 </tr>
                             </template>
                         </tbody>
@@ -60,9 +60,9 @@
 </template>
 
 <script>
-  import Navbar from './Navbar.vue';
-  import {BigNumber} from 'bignumber.js';
-  let gen = require('random-seed');
+import Navbar from './Navbar.vue';
+let gen = require('random-seed');
+let game = require("../logic/game.js");
 
 
   function randomInt (min, max, seed){
@@ -72,45 +72,13 @@
 
   export default {
     name: "CMC",
+    props : ['status'],
+
     data () {
       return {
-        show_exits : false,
-        icos : [
-          {
-            user : "n1Vk4pTWvwhKnk6rwGaCwgJdJo6zQf6yJfB",
-            coin : "Bitconnect",
-            ticker : "BCC",
-            exit : new BigNumber(9999),
-            cap : new BigNumber(7777),
-            growth_per_s: new BigNumber(100),
-          },
-          {
-            user : "n1Vk4pTWnwhKnk6rwGaCwgJdJo6zQf6yJfB",
-            coin : "TestCoin3",
-            ticker : "TC3",
-            exit : new BigNumber(9999),
-            cap : new BigNumber(7777),
-            growth_per_s: new BigNumber(100),
-          },
-          {
-            user : "n1Vk4pTWBwhKnk6rwGaCwgJdJo6zQf6yJfB",
-            coin : "TestCoin",
-            ticker : "TSTCOIN",
-            exit : new BigNumber(9999),
-            cap : new BigNumber(7777),
-            growth_per_s: new BigNumber(100),
-          },
-          {
-            user : "n1Vk4pTWBwhKnk6rwGaCwgJdJo6zQf6yJfB",
-            coin : "TestCoin",
-            ticker : "TSTCOIN",
-            exit : null,
-            cap : new BigNumber(7777),
-            growth_per_s: new BigNumber(100),
-          }
-
-
-        ]
+        show_scammers : false,
+        scammers: [],
+        icos: [],
       };
     },
 
@@ -126,10 +94,28 @@
         let l = rng.intBetween(40, 90);
 
         return `hsl(${h},${s}%,${l}%)`;
-      }
+      },
+        getBestKnownScammers()
+        {
+            game.getBestKnownScammers(null, null, (resp) =>
+            { 
+                this.scammers = resp;
+            }, status.onError);
+        },
+        getCoinMarketCaps()
+        {
+            game.getCoinMarketCaps(null, null, (resp) =>
+            {
+                this.icos = resp;
+            }, status.onError);
+        },
+    },
+    mounted() {
+        this.getBestKnownScammers();
+        this.getCoinMarketCaps();
     }
 
-  }
+}
 </script>
 
 <style scoped>

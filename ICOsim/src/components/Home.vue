@@ -191,9 +191,14 @@ export default {
           item.nas_price = new BigNumber(item.nas_price);
           item.user_holdings = parseInt(item.user_holdings);
           item.user_price = new BigNumber(item.user_price);
-          item.user_item_production = new BigNumber(item.user_item_production);
           if(item.user_item_bonus)
+          {
             item.user_item_bonus = new BigNumber(item.user_item_bonus);
+          }
+          else
+          {
+            item.user_item_production = new BigNumber(item.user_item_production);
+          }
           item.user_max_can_afford = parseInt(item.user_max_can_afford);
 
           //roadmap

@@ -84,7 +84,10 @@ const numberWithCommas = (x, decimals) =>
         bottom:0;
         left:0;
         right:0;
-        z-index:-1;
+        pointer-events: none;
+    }
+    .airdrop-outer *{
+        pointer-events:all;
     }
     .airdrop-warning{
         position:fixed;

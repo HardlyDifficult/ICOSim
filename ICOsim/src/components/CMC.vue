@@ -37,17 +37,22 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <template v-for="(ico, index) in icos">
-                                <tr v-if="(show_scammers && ico.exit) || (!show_scammers && !ico.exit)" v-bind:key="index">
+                            <tr v-if="!show_scammers" v-for="(ico, index) in icos" v-bind:key="ico.id">
                                     <td scope="row" class="border-right" >{{index + 1}}</td>
                                     <td scope="row" ><span v-bind:style="{backgroundColor:randomColor(ico.ticker), borderColor:randomColor(ico.name + ico.ticker)}" class="ticker">{{ico.ticker}}</span></td>
-                                    <td scope="row" class="text-left" >{{ico.name}}</td>
-                                    <td scope="row" class="num" v-if="show_scammers">{{ico.nas_redeemed | nas}}</td>
-                                    <td scope="row" class="num" v-if="!show_scammers">${{ico.market_cap | count}}</td>
-                                    <td scope="row" class="num" v-if="!show_scammers">${{ico.total_production_rate | count}}/s</td>
-                                    <td scope="row" >{{ico.player_addr}}</td>
-                                </tr>
-                            </template>
+                                    <td scope="row" class="text-left" >
+                                        <a v-bind:href="'/?' + ico.ticker + '#'">{{ico.name}}</a>
+                                    </td>
+                                    <td scope="row" class="num">${{ico.market_cap | count}}</td>
+                                    <td scope="row" class="num">${{ico.total_production_rate | count}}/s</td>
+                                    <td scope="row" >{{ico.player_addr | addr}}</td>
+                            </tr>
+                            <tr v-if="show_scammers" v-for="(scammer, index) in scammers" v-bind:key="scammer.id">
+                                <td scope="row" class="border-right" >{{index + 1}}</td>
+                                
+                                <td scope="row" class="num">{{scammer.nas_redeemed | nasComplete}}</td>
+                                <td scope="row" >{{scammer.addr | addr}}</td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -111,8 +116,8 @@ let game = require("../logic/game.js");
         },
     },
     mounted() {
-        this.getBestKnownScammers();
         this.getCoinMarketCaps();
+        this.getBestKnownScammers();
     }
 
 }

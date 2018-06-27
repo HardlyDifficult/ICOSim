@@ -35,6 +35,9 @@ Vue.filter('nasComplete', function (value) {
 Vue.filter('addr', function (value) {
   return value.substring(0, 4) + "..." + value.substring(value.length - 4);
 });
+Vue.filter('blocks_to_seconds', function (value) {
+  return parseInt(value)*15;
+});
 
 /* eslint-disable no-new */
 new Vue({

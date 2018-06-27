@@ -38,6 +38,7 @@
             </div>
         </div>
       </span>
+
   </div>
 </template>
 
@@ -163,11 +164,12 @@ export default {
         { // Init default user selections
           let item = this.game.items[i];
           let selection = this.selections[item.name];
-          if(selection == null)
-          {
-            this.selections[item.name] = {
+          if(selection == null){
+            let newSelections = {...this.selections};
+            newSelections[item.name] = {
               number_to_buy: 0
             };
+            this.selections = newSelections;
           }
 
           if(this.selections[item.name].number_to_buy_with_nas == null)
@@ -361,4 +363,5 @@ export default {
         right:0;
         background-color: #202022;
     }
+
 </style>

@@ -94,6 +94,7 @@ import Navbar from './Navbar.vue';
 let gen = require('random-seed');
 let game = require("../logic/game.js");
 import FundsContainer from './FundsDisplay';
+const auto_refresh_time = 10000; // TODO auto refresh
 
 
   function randomInt (min, max, seed){
@@ -144,7 +145,6 @@ import FundsContainer from './FundsDisplay';
                 this.total_scammed = new BigNumber(0);
                 for(var i = 0; i < this.scammers.length; i++)
                 {
-                    this.scammers[i].nas_redeemed = new BigNumber(this.scammers[i].nas_redeemed);
                     this.total_scammed = this.total_scammed.plus(this.scammers[i].nas_redeemed);
                 }
             }, status.onError);
@@ -158,7 +158,6 @@ import FundsContainer from './FundsDisplay';
                 this.total_growth = new BigNumber(0);
                 for(var i = 0; i < this.icos.length; i++)
                 {
-                    this.icos[i].market_cap = new BigNumber(this.icos[i].market_cap);
                     this.total_market_cap = this.total_market_cap.plus(this.icos[i].market_cap);
                     this.total_growth = this.total_growth.plus(this.icos[i].total_production_rate);
                 }

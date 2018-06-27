@@ -53,6 +53,7 @@ import Loading from './Loading';
 
 import neb from "../logic/HardlyNeb.js";
 const game = require("../logic/game.js");
+const auto_refresh_time = 10000;
 
 function onTxPosted(resp)
 {
@@ -102,7 +103,7 @@ export default {
 
   computed : {
     playerResources(){
-      return (this.game && this.game.active_ico) ? new BigNumber(this.game.active_ico.resources) : new BigNumber(0);
+      return (this.game && this.game.active_ico) ? this.game.active_ico.resources : new BigNumber(0);
     }
   },
 
@@ -183,23 +184,6 @@ export default {
             this.selections[item.name].number_to_buy = 1;
           }
 
-          //every number is a bignumber
-          item.start_price = new BigNumber(item.start_price);
-          if(item.resources_per_s)
-              item.resources_per_s = new BigNumber(item.resources_per_s);
-          item.nas_price = new BigNumber(item.nas_price);
-          item.user_holdings = parseInt(item.user_holdings);
-          item.user_price = new BigNumber(item.user_price);
-          if(item.user_item_bonus)
-          {
-            item.user_item_bonus = new BigNumber(item.user_item_bonus);
-          }
-          else
-          {
-            item.user_item_production = new BigNumber(item.user_item_production);
-          }
-          item.user_max_can_afford = parseInt(item.user_max_can_afford);
-
           //roadmap
           if(item.resources_per_s !== null)
           {
@@ -210,6 +194,10 @@ export default {
             this.game.team_members.push(item);
           }
         }
+        setInterval(this.getGame, auto_refresh_time);
+      }, (error) =>
+      {
+        setInterval(this.getGame, auto_refresh_time);
       });
     },
     getBestKnownScammers()
@@ -300,7 +288,6 @@ export default {
     }
 
     this.getGame();
-    setInterval(this.getGame, 10000);
 
     setTimeout(() =>
     { // It takes a second for the wallet game to appear

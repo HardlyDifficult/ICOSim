@@ -92,17 +92,32 @@ module.exports =
     
     getCoinMarketCaps(start_index, count, onSuccess, onError)
     {
-        neb.nebRead("getCoinMarketCaps", null, onSuccess, onError);
+        neb.nebRead("getCoinMarketCaps", null, function(icos)
+        {
+            for(var i = 0; i < icos.length; i++)
+            {
+                icos[i].market_cap = new BigNumber(icos[i].market_cap).div(100);
+            }
+            onSuccess(icos);
+        }, onError);
     },
     
     getBestKnownScammers(start_index, count, onSuccess, onError)
     {
-        neb.nebRead("getBestKnownScammers", null, onSuccess, onError);
+        neb.nebRead("getBestKnownScammers", null, function(scammers)
+        {
+            for(var i = 0; i < scammers.length; i++)
+            {
+                scammers[i].nas_redeemed = new BigNumber(scammers[i].nas_redeemed);
+            }
+            onSuccess(scammers);
+        }, onError);
     },
     
     getTotalCostFor(item, quantity)
     {
-        return item.start_price * (quantity * quantity);
+        quantity = new BigNumber(quantity);
+        return new BigNumber(item.start_price).mul(quantity).mul(quantity);
     },
     
     getBuyPrice(item, quantity)
@@ -117,7 +132,7 @@ module.exports =
         }
         let item_count = parseInt(item.user_holdings);
         let max = item_count + quantity;
-        return this.getTotalCostFor(item, max) - this.getTotalCostFor(item, item_count);
+        return this.getTotalCostFor(item, max).sub(this.getTotalCostFor(item, item_count));
     },
     
     getBuyWithNasCost(item, quantity)
@@ -130,7 +145,7 @@ module.exports =
         {
             quantity = parseInt(quantity);
         }
-        return new BigNumber(item.nas_price).mul(quantity);
+        return item.nas_price.mul(quantity);
     },
     
     getGame(onSuccess, onError)
@@ -156,7 +171,31 @@ module.exports =
                         info.current_event.expected_reward = info.current_event.max_reward;
                     }
                 }
+                info.active_ico.resources = new BigNumber(info.active_ico.resources);
             }
+
+            for(let i = 0; i < info.items.length; i++)
+            {
+                let item = info.items[i];
+                item.start_price = new BigNumber(item.start_price);
+                if(item.resources_per_s)
+                {
+                    item.resources_per_s = new BigNumber(item.resources_per_s);
+                }
+                item.nas_price = new BigNumber(item.nas_price);
+                item.user_holdings = parseInt(item.user_holdings);
+                item.user_price = new BigNumber(item.user_price);
+                if(item.user_item_bonus)
+                {
+                    item.user_item_bonus = new BigNumber(item.user_item_bonus);
+                }
+                else
+                {
+                    item.user_item_production = new BigNumber(item.user_item_production);
+                }
+                item.user_max_can_afford = parseInt(item.user_max_can_afford);
+            }
+
             onSuccess(info);
         }, onError);
     },

@@ -10,6 +10,8 @@ let neb = new nebulas.Neb();
 neb.setRequest(new nebulas.HttpRequest(neb_contract.apiUrl));
 
 let has_checked_for_wallet = false;
+const timeout_error_message = "Unexpected token < in JSON at position 0";
+const auto_refresh_time = 3000;
 
 module.exports = 
 {
@@ -31,12 +33,13 @@ module.exports =
     {
         neb.api.getTransactionReceipt({hash: txhash}).then((resp) =>
         {
-            if(resp.status > 1) 
+            if(resp == timeout_error_message || resp.status > 1) 
             {
                 setTimeout(() =>
                 {
+                    console.log("Timeout!  Will retry...");
                     this.nebGetTxStatus(txhash, onSuccess, onError);
-                }, 3000);
+                }, auto_refresh_time);
                 return;
             }
             
@@ -58,36 +61,25 @@ module.exports =
             args = null;
         }
 
-        this.nebRead(method, args, () => {
-            nebPay.call(neb_contract.contract, nas_to_send, method, global.JSON.stringify(args),
-            {
-                listener: (resp) =>
-                { 
-                    if(!resp.txhash)
-                    {
-                        if(onError)
-                        {
-                            onError(resp);
-                        }
-                        return;
-                    }
-                    if(onTxPosted)
-                    {
-                        onTxPosted(resp);
-                    }         
-                    if(onSuccess)
-                    {
-                        this.nebGetTxStatus(resp.txhash, onSuccess, onError);
-                    }
-                }
-            });
-        }, onError, nas_to_send);
+        this.nebRead(method, args, 
+            () => completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError), 
+            onError, nas_to_send);
     },
 
     nebSend(to, onTxPosted, value, onSuccess, onError)
     {
         nebPay.pay(to, value, {listener: (resp) =>
         {
+            if(resp == timeout_error_message) 
+            {
+                setTimeout(() =>
+                {
+                    console.log("Timeout!  Will retry...");
+                    this.nebSend(to, onTxPosted, value, onSuccess, onError);
+                }, auto_refresh_time);
+                return;
+            }
+
             if(!resp.txhash)
             {
                 if(onError)
@@ -123,7 +115,7 @@ module.exports =
             else
             {
                 setTimeout(() =>
-                {
+                { // TODO poll faster, quit after 1 sec
                     has_checked_for_wallet = true;
                     this.nebRead(method, args, onSuccess, onError, nas_to_send);
                 }, 1000);
@@ -134,6 +126,16 @@ module.exports =
         nebPay.simulateCall(neb_contract.contract, nas_to_send, method, global.JSON.stringify(args), {
             listener: (resp) =>
             {
+                if(resp == timeout_error_message) 
+                {
+                    setTimeout(() =>
+                    {
+                        console.log("Timeout!  Will retry...");
+                        this.nebRead(method, args, onSuccess, onError, nas_to_send);
+                    }, auto_refresh_time);
+                    return;
+                }
+
                 let error = resp.execute_err;
                 let result;
                 if(!error) 
@@ -172,6 +174,16 @@ module.exports =
             contract: {function: method, args: global.JSON.stringify(args)} 
         }).then((resp) =>
         {
+            if(resp == timeout_error_message) 
+            {
+                setTimeout(() =>
+                {
+                    console.log("Timeout!  Will retry...");
+                    this.nebReadAnon(method, args, onSuccess, onError);
+                }, auto_refresh_time);
+                return;
+            }
+
             let error = resp.execute_err;
             let result;
             if(resp.result) 
@@ -188,4 +200,39 @@ module.exports =
             onSuccess(result);
         });        
     },
+}
+
+function completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError)
+{
+    nebPay.call(neb_contract.contract, nas_to_send, method, global.JSON.stringify(args),
+    {
+        listener: (resp) =>
+        { 
+            if(resp == timeout_error_message) 
+            {
+                setTimeout(() =>
+                {
+                    console.log("Timeout!  Will retry...");
+                    completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError);
+                }, auto_refresh_time);
+                return;
+            }
+            if(!resp.txhash)
+            {
+                if(onError)
+                {
+                    onError(resp);
+                }
+                return;
+            }
+            if(onTxPosted)
+            {
+                onTxPosted(resp);
+            }         
+            if(onSuccess)
+            {
+                module.exports.nebGetTxStatus(resp.txhash, onSuccess, onError);
+            }
+        }
+    });
 }

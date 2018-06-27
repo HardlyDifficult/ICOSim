@@ -347,6 +347,9 @@ export default {
                         this.input_selections[item.name].number_to_buy = 1;
                     }
                 }
+                setInterval(this.getGame, 10000);
+            }, () => {
+                setInterval(this.getGame, 10000);
             });
         },
         getBuyPrice(item)
@@ -453,7 +456,6 @@ export default {
         }
 
         this.getGame();
-        setInterval(this.getGame, 10000);
 
         this.getBestKnownScammers();
         this.getCoinMarketCaps();

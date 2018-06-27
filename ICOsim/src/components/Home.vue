@@ -12,10 +12,7 @@
           :isMyGame="isMyGame"
           v-if="game !== null && (game.current_event !== null || game.blocks_till_next_event)" />
         <div class='row'>
-            <div class='col-lg-6'>
-                <FundsContainer :showdirection=1 :target="playerResources"/>
-            </div>
-            <div class='col-lg-6'>
+            <div class='col-lg-12'>
                 <Details :game="game"/>
             </div>
         </div>

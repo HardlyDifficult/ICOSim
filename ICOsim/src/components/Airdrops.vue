@@ -9,7 +9,7 @@
             <div class="airdrop-information clickable glow-airdrop" @click="redeemEvent()">
                 <div class="col-12">
                     Claim Airdrop worth<br>
-                    ${{ game.current_event ? game.current_event.expected_reward : 0 | count }}
+                    $<FundsDisplay showdirection=1 :mystyle="rewardNumberStyle" :target="getExpectedReward()"/>
                 </div>
                 <div class="col-12">
                     Blocks Remaining: {{ game.current_event ? game.current_event.number_of_blocks_remaining : 0 | count }}
@@ -45,16 +45,31 @@
 </template>
 
 <script>
+  import FundsDisplay from './FundsDisplay';
+  import {BigNumber} from 'bignumber.js';
+
   export default {
     name: "Airdrops",
 
     props : ['game', 'redeemEvent', 'isMyGame'],
 
+    data(){
+      return {
+        rewardNumberStyle : {
+          fontSize:'16px',
+          backgroundColor:'transparent'
+        }
+      }
+    },
+
     components : {
+      FundsDisplay
     },
 
     methods : {
-     
+      getExpectedReward(){
+        return this.game.current_event ? new BigNumber(this.game.current_event.expected_reward) : new BigNumber(0);
+      }
     },
     filters: {
         count(value) 

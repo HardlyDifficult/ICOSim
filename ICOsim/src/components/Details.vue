@@ -13,16 +13,16 @@
                 <div class="col-12">
                     <div class="row text-center">
                         <div class="col-md-4">
-                            $<FundsContainer :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :showdirection=1 :target="playerResources"/>
+                            $<FundsContainer :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :showdirection=1 :target="playerResources" :start="playerResources"/>
                         </div>
                         <div class="col-md-4">
                             {{game.active_ico ? game.active_ico.ticker : ""}}
                         </div>
                         <div class="col-md-2">
-                            $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="production_rate" style="display:inline-block"/>/ s
+                            $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="production_rate" :start="production_rate" style="display:inline-block"/>/ s
                         </div>
                         <div class="col-md-2">
-                            <FundsContainer :places=8 :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="nas_value" style="display:inline-block"/> NAS
+                            <FundsContainer :places=8 :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block"/> NAS
                         </div>
                     </div>
                 </div>

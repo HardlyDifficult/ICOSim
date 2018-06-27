@@ -398,6 +398,10 @@
     .unlocked.can_afford .corner-ribbon:before{
         content: "UPGRADE";
     }
+    .unlocked.cannot_afford .corner-ribbon{
+        visibility:visible;
+        background:#288232;
+    }
     .unlocked.cannot_afford .corner-ribbon:before{
         content: "BOUGHT";
     }
@@ -407,7 +411,13 @@
     .locked.can_afford .corner-ribbon{
         visibility:visible;
         background:orange;
-        content: "BUY NOW";
+    }
+    .locked.cannot_afford .corner-ribbon:before{
+        content:"CANT AFFORD";
+    }
+    .locked.cannot_afford .corner-ribbon{
+        visibility:visible;
+        background:white;
     }
 
 </style>

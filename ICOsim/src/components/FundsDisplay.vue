@@ -16,7 +16,7 @@
 
     export default {
     name: "FundsDisplay",
-    props : ['target', 'mystyle', 'instant', 'showdirection', 'places'],
+    props : ['target', 'mystyle', 'instant', 'showdirection', 'places', 'start'],
     components : {
       FundNumber
     },
@@ -75,6 +75,8 @@
 
     created(){
       this.lerp();
+      if(this.start)
+        this.value = new BigNumber(this.start);
     }
   }
 </script>

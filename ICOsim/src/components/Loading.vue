@@ -1,12 +1,14 @@
 <template>
     <div class="row">
         <div class="col-12">
-            <h3>Loading - please wait while we're {{loadingString}}</h3>
+            <h3>Loading - please wait while we're {{loadingString}}{{ellipse}}</h3>
         </div>
     </div>
 </template>
 
 <script>
+let tick_count = 0;
+
   function shuffle(a) {
     for (let i = a.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -21,25 +23,40 @@
     data() {
       return {
         strings : [
-          'copy-pasting Whitepapers...',
-          'inviting Shillers...',
-          'creating our ERC20 token...',
-          'moving to a tax haven...'
+          'copy-pasting Whitepapers',
+          'inviting Shillers',
+          'creating our ERC20 token',
+          'moving to a tax haven'
         ],
         current : 0,
-        destroyed : false
+        destroyed : false,
+        ellipse: ""
       }
     },
 
     methods:{
       tick(){
         if(this.destroyed)
+        {
           return;
+        }
+        tick_count++;
+        this.ellipse = "";
+        let dot_count = tick_count % 4;
+        for(let i = 0; i < dot_count; i++)
+        {
+          this.ellipse += ".";
+        }
 
-        this.current++;
-        if(this.current >= this.strings.length)
-          this.current = 0;
-        setTimeout(this.tick, 2000);
+        if(tick_count % 10 == 0)
+        {
+          this.current++;
+          if(this.current >= this.strings.length)
+          {
+            this.current = 0;
+          }
+        }
+        setTimeout(this.tick, 500);
       }
     },
 

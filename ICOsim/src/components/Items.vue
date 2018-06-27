@@ -24,8 +24,8 @@
                         <div class="col-12 line"></div>
 
                         <div class="col-4">
-                            <p>Count: {{item.user_holdings}}</p>
-                            <p>Production: {{item.user_item_production.toString()}}</p>
+                            <p>Count: {{item.user_holdings | count}}</p>
+                            <p>Production: {{item.user_item_production | count}}</p>
                         </div>
                         <div class="col-8">
                             <p>
@@ -39,7 +39,7 @@
                         <div class="col-12">
                             <div class="row cols-same-height">
                                 <div class="col-4">
-                                    <button @click="onBuy(item, selections[item.name].number_to_buy.toString())" class="btn btn-buy">BUY</button>
+                                    <button @click="onBuy(item, selections[item.name].number_to_buy | count)" class="btn btn-buy">BUY</button>
                                 </div>
                                 <div class="col-md-8">
                                     <div class="row">
@@ -139,30 +139,6 @@
     },
     
   filters: {
-    count(value)
-    {
-      return numberWithCommas(value);
-    },
-    date(value)
-    {
-      return new Date(value).toString();
-    },
-    percent(value)
-    {
-      return numberWithCommas(value) + "%";
-    },
-    decimal(value)
-    {
-      return numberWithCommas(value, 4);
-    },
-    price(value)
-    {
-      return numberWithCommas(value);
-    },
-    nas(value)
-    {
-      return formatCoins(value, 4);
-    },
   },
 
     data (){
@@ -198,34 +174,6 @@
 
   }
 
-  
-// From https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-const numberWithCommas = (x, decimals) => 
-{
-    if(decimals == null)
-    {
-        decimals = 0;
-    }
-    let parts = new BigNumber(x).toFixed(decimals).split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return parts.join(".");
-}
-
-const token_denominator = new BigNumber(1000000000000000000);
-
-function formatCoins(number, digits, unit) 
-{
-    if(!unit)
-    {
-        unit = "nas";
-    }
-    if(!digits)
-    {
-        digits = 8;
-    }
-    let x = new BigNumber(number).div(token_denominator);
-    return numberWithCommas(x, digits) + " " + unit;
-}
 </script>
 
 <style scoped>

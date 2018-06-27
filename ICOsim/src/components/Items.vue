@@ -45,7 +45,14 @@
                                 <div class="col-8">
                                     <div class="row">
                                         <div class="col-12">
-                                            BUY {{selections[item.name].number_to_buy}} FOR $ {{getBuyPrice(item)}}
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    BUY {{selections[item.name].number_to_buy}} FOR<br>
+                                                </div>
+                                                <div class="col-12">
+                                                    $ {{getBuyPrice(item)}}
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="col-12">
                                             <VueSlider
@@ -261,6 +268,8 @@
     .locked.cannot_afford > .roadmap-step-inner{
         opacity: 0.1;
         pointer-events: none;
+        -webkit-filter: grayscale(100%);
+        filter: grayscale(100%);
     }
 
     .locked.can_afford> .roadmap-step-inner{

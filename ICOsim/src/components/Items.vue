@@ -109,8 +109,11 @@
     methods : {
       getStepClasses(item, index){
         let classes = [];
-        if(!this.isTeam)
-            classes.push(this.classes[index % 4]);
+        if(!this.isTeam){
+          classes.push(this.classes[index % 4]);
+        }else{
+          classes.push('roadmap-step-team');
+        }
 
 
         if(parseInt(item.user_holdings) <= 0){
@@ -250,6 +253,9 @@
         margin-bottom:65px;
         margin-top:15px;
         position:relative;
+    }
+    .roadmap-step-team{
+        margin-bottom:15px;
     }
 
     .locked.cannot_afford > .roadmap-step-inner{

@@ -62,28 +62,28 @@
 
     methods : {
       canExit(){
-        return (this.game && this.game.active_ico && new BigNumber(this.game.active_ico.my_resources_nas_value).gt(0));
+        return (this.game && this.game.active_ico && this.game.active_ico.my_resources_nas_value.gt(0));
       }
     },
 
     computed : {
       production_rate(){
         if(this.game && this.game.active_ico)
-          return new BigNumber(this.game.active_ico.my_production_rate);
+          return this.game.active_ico.my_production_rate;
         return new BigNumber(0);
       },
       advisor_bonus(){
         if(this.game && this.game.active_ico)
-          return new BigNumber(this.game.active_ico.my_bonus);
+          return this.game.active_ico.my_bonus;
         return new BigNumber(0);
       },
       nas_value(){
         if(this.game && this.game.active_ico)
-          return new BigNumber(this.game.active_ico.my_resources_nas_value);
+          return this.game.active_ico.my_resources_nas_value;
         return new BigNumber(0);
       },
       playerResources(){
-        return (this.game && this.game.active_ico) ? new BigNumber(this.game.active_ico.resources) : new BigNumber(0);
+        return (this.game && this.game.active_ico) ? this.game.active_ico.resources : new BigNumber(0);
       }
     }
 

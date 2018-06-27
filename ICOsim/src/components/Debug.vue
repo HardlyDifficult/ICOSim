@@ -376,25 +376,11 @@ export default {
         },
         getBuyProductionGain(game, item)
         {
-            if(item.resources_per_s != null)
-            {
-                return item.resources_per_s.mul(this.input_selections[item.name].number_to_buy);
-            }
-            else
-            {
-                return game.active_ico.my_production_rate.mul(item.bonus_multiplier);
-            }
+            return game.getBuyProductionGain(game, item, this.input_selections[item.name].number_to_buy);
         },
         getBuyProductionGainWithNas(game, item)
         {
-            if(item.resources_per_s != null)
-            {
-                return item.resources_per_s.mul(this.input_selections[item.name].number_to_buy_with_nas);
-            }
-            else
-            {
-                return game.active_ico.my_production_rate.mul(item.bonus_multiplier.mul(this.input_selections[item.name].number_to_buy_with_nas));
-            }
+            return game.getBuyProductionGain(game, item, this.input_selections[item.name].number_to_buy_with_nas);
         },
         checkTicker()
         {

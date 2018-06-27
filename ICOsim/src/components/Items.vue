@@ -27,7 +27,7 @@
 
                         <div class="col-4">
                             <p>Count: {{item.user_holdings | count}}</p>
-                            <p>Production: {{item.user_item_production | count}}</p>
+                            <p v-if="item.user_item_production">Production: {{item.user_item_production | resources}}</p>
                         </div>
                         <div class="col-8">
                             <p>
@@ -47,11 +47,10 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="row">
-                                                <div class="col-12">
-                                                    BUY {{selections[item.name].number_to_buy}} FOR<br>
-                                                </div>
-                                                <div class="col-12">
-                                                    $ {{getBuyPrice(item)}}
+                                                <div class="col">
+                                                    Buy {{selections[item.name].number_to_buy}} For
+                                                    ${{getBuyPrice(item) | resources}}<br>
+                                                    +${{ getBuyProductionGain(item) | resources }}/s
                                                 </div>
                                             </div>
                                         </div>
@@ -70,12 +69,12 @@
                             </div>
                             <div class="row" v-if="isMyGame()">
                                 <div class="col-12 line"></div>
-                                <div class="col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">Buy with NAS.</div>
-                                <div class="col-12" v-if="show_buy_nas[item.name]">
+                                <button class="btn btn-secondary col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">Buy with NAS</button>
+                                <div class="col-12 mt-3" v-if="show_buy_nas[item.name]">
                                     <div class="row cols-same-height">
                                         <div class="col-4">
                                             <button v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-buy">
-                                                Buy
+                                                BUY <br>w/ NAS
                                             </button>
                                         </div>
                                         <div class="col-8">
@@ -84,7 +83,9 @@
                                                     <input title="nas-buy-input" class="form-control" type="number" v-model="selections[item.name].number_to_buy_with_nas" @input="$forceUpdate()">
                                                 </div>
                                                 <div class="col-12" >
-                                                    Buy {{ selections[item.name].number_to_buy_with_nas | count }} for +{{ getBuyProductionGainWithNas(item) | count }}/s
+                                                    Buy {{ selections[item.name].number_to_buy_with_nas | count }} For 
+                                                    {{ getBuyWithNasCost(item) | nas }}
+                                                    +${{ getBuyProductionGainWithNas(item) | resources }}/s
                                                 </div>
                                             </div>
                                         </div>
@@ -157,11 +158,11 @@
         },
         getBuyProductionGain(item)
         {
-            return this.selections[item.name].number_to_buy * item.resources_per_s;
+            return game.getBuyProductionGain(game, item, this.selections[item.name].number_to_buy);
         },
         getBuyProductionGainWithNas(item)
         {
-            return this.selections[item.name].number_to_buy_with_nas * item.resources_per_s;
+            return game.getBuyProductionGain(game, item, this.selections[item.name].number_to_buy_with_nas);
         },
     },
     

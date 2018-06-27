@@ -162,6 +162,7 @@ module.exports =
             if(info.active_ico)
             {
                 delete info.active_ico.my_resources; // dupe info
+                info.active_ico.my_resources_nas_value = new BigNumber(info.active_ico.my_resources_nas_value);
                 info.active_ico.resources = new BigNumber(info.active_ico.resources).div(100);
                 info.active_ico.my_production_rate = new BigNumber(info.active_ico.my_production_rate).div(100);
                 info.active_ico.my_bonus = new BigNumber(info.active_ico.my_bonus);
@@ -217,6 +218,21 @@ module.exports =
 
             onSuccess(info);
         }, onError);
+    },
+
+    getBuyProductionGain(game, item, number_to_buy)
+    {
+        if(item.resources_per_s != null)
+        {
+            return item.resources_per_s.mul(number_to_buy);
+        }
+        else if(game.active_ico)
+        {
+            return game.active_ico.my_production_rate.mul(item.bonus_multiplier.mul(number_to_buy));
+        } else
+        {
+            return new BigNumber(0);
+        }
     },
     //#endregion
 

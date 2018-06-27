@@ -110,7 +110,7 @@ export default {
       console.log(`launching ico ${icoName} ticker ${icoTicker}`);
       game.launchICO(icoName, icoTicker, onTxPosted, (resp) =>
       {
-        window.location.search = this.launch_ico_ticker; // TODO router..
+        this.$router.push({name : 'ico', params : {ticker:  this.launch_ico_ticker}});
         onSuccess(resp);
       }, onError);
     },

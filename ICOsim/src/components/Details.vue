@@ -35,7 +35,7 @@
                         <div class="col-md-3"></div>
                         <div class="col-md-3">
                             <small v-if="isMyGame()">Your ICO!</small>
-                            <small v-else>Not your ICO. <a style="color:white;" href="/">get to yours</a></small>
+                            <small style="color:orangered" v-else>Not your ICO. <a style="color:white;" href="/">get to yours</a></small>
                         </div>
                         <div class="col-md-2"></div>
                         <div class="col-md-2"></div>

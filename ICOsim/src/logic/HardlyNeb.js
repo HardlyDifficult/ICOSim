@@ -1,18 +1,16 @@
 const settings = require("../static/settings.js");
 
-// TODO if error == 'contract check failed' (sp?) then mainnet vs testnet bug.
 const NebPay = require("nebPay");
 const nebPay = new NebPay();
 
-// The nebulas API, used for signing transactions, etc
 let nebulas = require("nebulas");
 let neb = new nebulas.Neb();
 neb.setRequest(new nebulas.HttpRequest(neb_contract.apiUrl));
 
 let has_checked_for_wallet = false;
+let wallet_check_count = 0;
 const timeout_error_message = "Unexpected token < in JSON at position 0";
 const auto_refresh_time = 3000;
-// TODO add a throttle.
 
 module.exports = 
 {
@@ -62,8 +60,10 @@ module.exports =
             args = null;
         }
 
+        let write_id = ++write_count;
+
         this.nebRead(method, args, 
-            () => completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError), 
+            () => completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError, write_id), 
             onError, nas_to_send);
     },
 
@@ -116,10 +116,14 @@ module.exports =
             else
             {
                 setTimeout(() =>
-                { // TODO poll faster, quit after 1 sec
-                    has_checked_for_wallet = true;
+                { // Poll quickly for up to 1 second
+                    wallet_check_count++;
+                    if(wallet_check_count > 10)
+                    {
+                        has_checked_for_wallet = true;
+                    }
                     this.nebRead(method, args, onSuccess, onError, nas_to_send);
-                }, 1000);
+                }, 100);
                 return;
             }
         }
@@ -203,8 +207,15 @@ module.exports =
     },
 }
 
-function completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError)
+let write_count = 0;
+
+function completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError, write_id)
 {
+    if(write_id != write_count)
+    { // Another write was started, cancel this one
+        return;
+    }
+
     nebPay.call(neb_contract.contract, nas_to_send, method, global.JSON.stringify(args),
     {
         listener: (resp) =>
@@ -213,13 +224,21 @@ function completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError
             {
                 setTimeout(() =>
                 {
+                    if(write_id != write_count)
+                    { // Another write was started, cancel this one
+                        return;
+                    }
                     console.log("Timeout!  Will retry...");
-                    completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError);
+                    completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError, write_id);
                 }, auto_refresh_time);
                 return;
             }
             if(!resp.txhash)
             {
+                if(write_id != write_count)
+                { // Another write was started, cancel this one
+                    return;
+                }
                 if(onError)
                 {
                     onError(resp);

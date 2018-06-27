@@ -13,7 +13,7 @@
           v-if="isMyGame() && game !== null && (game.current_event !== null || game.blocks_till_next_event)" />
         <div class='row'>
             <div class='col-lg-12'>
-                <Details :game="game"/>
+                <Details :isMyGame="isMyGame" :game="game"/>
             </div>
         </div>
         <div class="row">
@@ -144,7 +144,7 @@ export default {
         this.game = resp;
 
         // TODO use router?
-        if(this.game.active_ico && !this.$route.params.ticker){
+        if(this.game.active_ico && !this.$route.params.ticker && this.$route.name === 'Home'){
           this.$router.push({name : 'ico', params : {ticker:  this.game.active_ico.ticker}});
 
         }else if(window.location.search){

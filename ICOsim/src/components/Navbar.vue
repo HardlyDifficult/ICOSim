@@ -1,14 +1,14 @@
 <template>
     <div class="row navbar">
         <div class="col-sm-2">
-            <router-link class="navbar-icosim" :style="{color : color}" to="/">
+            <a class="navbar-icosim" :style="{color : color}" href="/">
                 ICOSim
-            </router-link>
+            </a>
         </div>
         <div class="col-sm-8">
-            <router-link class="navbar-item" :style="{color : color}" to="/">
+            <a class="navbar-item" :style="{color : color}" href="/">
                 Home
-            </router-link>
+            </a>
             <router-link class="navbar-item" :style="{color : color}" to="/icos">
                 ICos
             </router-link>

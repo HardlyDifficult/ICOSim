@@ -32,8 +32,11 @@
                 </div>
                 <div class="col-12">
                     <div class="row text-center">
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4"></div>
+                        <div class="col-md-3"></div>
+                        <div class="col-md-3">
+                            <small v-if="isMyGame()">Your ICO!</small>
+                            <small v-else>Not your ICO. <a style="color:white;" href="/">get to yours</a></small>
+                        </div>
                         <div class="col-md-2"></div>
                         <div class="col-md-2"></div>
                         <div class="col-md-2"><button v-if="canExit()" class="btn btn-sm btn-primary">EXIT SCAM NOW</button></div>
@@ -51,7 +54,7 @@
   export default {
     name: "Details",
 
-    props : ['game'],
+    props : ['game', 'isMyGame'],
 
     components : {
       FundsContainer

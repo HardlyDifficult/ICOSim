@@ -6,6 +6,7 @@
         <template v-for="(item, index) in items">
             <div class="col-6 roadmap-step" :key="index" :class="getStepClasses(item, index)">
                 <div class="row roadmap-step-inner" :class="(item.next_price > player_money) ? 'glow-cant-afford' : 'glow-1'">
+                    <div class="corner-ribbon-container"><div class="corner-ribbon"></div></div>
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-12" v-if="isTeam">
@@ -225,6 +226,7 @@
 
         margin-left:15px;
         margin-right:15px;
+        position:relative;
     }
 
     .title{
@@ -363,4 +365,48 @@
         -webkit-filter: sepia(50%);
         filter: sepia(50%);
     }
+
+    .corner-ribbon-container{
+        position:absolute;
+        left:0;
+        top:0;
+        height:100%;
+        width:100%;
+        overflow:hidden;
+    }
+    .corner-ribbon{
+        visibility:hidden;
+        width: 200px;
+        background:#FF2A00;
+        position: absolute;
+        top: 15px;
+        left: -75px;
+        text-align: center;
+        line-height: 25px;
+        letter-spacing: 1px;
+        color: #f0f0f0;
+        transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+        font-size:0.5em;
+        z-index:2;
+    }
+    .unlocked .corner-ribbon{
+        visibility:visible;
+        background:#FF2A00;
+    }
+    .unlocked.can_afford .corner-ribbon:before{
+        content: "UPGRADE";
+    }
+    .unlocked.cannot_afford .corner-ribbon:before{
+        content: "BOUGHT";
+    }
+    .locked.can_afford .corner-ribbon:before{
+        content:"BUY NOW";
+    }
+    .locked.can_afford .corner-ribbon{
+        visibility:visible;
+        background:green;
+        content: "BUY NOW";
+    }
+
 </style>

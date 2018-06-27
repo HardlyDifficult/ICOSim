@@ -15,13 +15,23 @@
                         <div class="col-md-4">
                             $<FundsContainer :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :showdirection=1 :target="playerResources"/>
                         </div>
-                        <div class="col-md-4">{{game.active_ico ? game.active_ico.ticker : ""}}</div>
+                        <div class="col-md-4">
+                            {{game.active_ico ? game.active_ico.ticker : ""}}
+                        </div>
                         <div class="col-md-2">
                             $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="production_rate" style="display:inline-block"/>/ s
                         </div>
                         <div class="col-md-2">
                             <FundsContainer :places=8 :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="nas_value" style="display:inline-block"/> NAS
                         </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="row text-center">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4"></div>
+                        <div class="col-md-2"></div>
+                        <div class="col-md-2"><button v-if="canExit()" class="btn btn-sm btn-primary">EXIT SCAM NOW</button></div>
                     </div>
                 </div>
             </div>
@@ -40,6 +50,12 @@
 
     components : {
       FundsContainer
+    },
+
+    methods : {
+      canExit(){
+        return (this.game && this.game.active_ico && new BigNumber(this.game.active_ico.my_resources_nas_value).gt(0));
+      }
     },
 
     computed : {

@@ -24,8 +24,13 @@
     data : function(){
       return {
         value : new BigNumber("0"),
-        step: new BigNumber("0.0005")
+        step: new BigNumber("0.0005"),
+        removed : false
       }
+    },
+
+    beforeDestroy(){
+      this.removed = true;
     },
 
     methods : {
@@ -42,9 +47,11 @@
             if(diff.gt(0))
               this.value = this.target;
 
-            setTimeout(()=>{
-              this.lerp();
-            }, 10);
+            if(!this.removed){
+              setTimeout(()=>{
+                this.lerp();
+              }, 10);
+            }
           }else{
             if(diff.lt(0.1)){
               this.value = this.target;
@@ -53,9 +60,11 @@
               this.value = this.value.plus(this.step);
             }
 
-            setTimeout(()=>{
-              this.lerp();
-            }, 10);
+            if(!this.removed){
+              setTimeout(()=>{
+                this.lerp();
+              }, 10);
+            }
           }
         }
       }

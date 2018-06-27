@@ -35,6 +35,7 @@
             </div>
         </div>
       </div>
+      <Loading v-else/>
   </div>
 </template>
 
@@ -48,6 +49,7 @@ import Airdrops from './Airdrops';
 import Details from './Details';
 import NoExtensionWarning from './NoExtensionWarning';
 import LaunchIco from './LaunchIco';
+import Loading from './Loading';
 
 import neb from "../logic/HardlyNeb.js";
 const game = require("../logic/game.js");
@@ -94,7 +96,8 @@ export default {
     Airdrops,
     Details,
     NoExtensionWarning,
-    LaunchIco
+    LaunchIco,
+    Loading
   },
 
   computed : {

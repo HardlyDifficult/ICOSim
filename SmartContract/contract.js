@@ -14,8 +14,7 @@ class SafeNumber
     }
     else
     {
-      assert(typeof(value) == "string" || typeof(value) == "object" || value == 0, "SafeNumber must be constructed from a string: " + value + " type " + typeof(value) + " json: " + JSON.stringify(value));
-      this.value = new BigNumber(value);
+      this.value = new BigNumber(value.toString());
     }
     this.validate();
   }
@@ -1072,7 +1071,7 @@ Contract.prototype =
     }
     user_list.sort(function(a, b)
     {
-      return nas_redeemed.sub(b.nas_redeemed);
+      return b.nas_redeemed.value.toNumber() - a.nas_redeemed.value.toNumber();
     });
 
     return user_list.slice(start_index, count);
@@ -1099,7 +1098,7 @@ Contract.prototype =
     }
     ico_list.sort(function(a, b)
     {
-      return a.market_cap - b.market_cap;
+      return b.market_cap.value.toNumber() - a.market_cap.value.toNumber();
     });
 
     return ico_list.slice(start_index, count);

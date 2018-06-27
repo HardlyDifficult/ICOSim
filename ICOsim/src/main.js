@@ -29,6 +29,12 @@ Vue.filter('price', function (value) {
 Vue.filter('nas', function (value) {
   return formatCoins(value, 4);
 });
+Vue.filter('nasComplete', function (value) {
+  return formatCoins(value, 18);
+});
+Vue.filter('addr', function (value) {
+  return value.substring(0, 4) + "..." + value.substring(value.length - 4);
+});
 
 /* eslint-disable no-new */
 new Vue({

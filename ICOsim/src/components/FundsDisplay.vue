@@ -16,7 +16,7 @@
 
     export default {
     name: "FundsDisplay",
-    props : ['target', 'mystyle', 'instant', 'showdirection'],
+    props : ['target', 'mystyle', 'instant', 'showdirection', 'places'],
     components : {
       FundNumber
     },
@@ -63,7 +63,7 @@
 
     computed : {
       fund_parts () {
-        let parts = this.value.toFixed(2).toString().split(".");
+        let parts = this.value.toFixed(this.places ? this.places : 2).toString().split(".");
         let parts2 = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",").split(",");
         return [
             ...parts2,

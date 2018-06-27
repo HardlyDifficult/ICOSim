@@ -20,7 +20,7 @@
                             $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="production_rate" style="display:inline-block"/>/ s
                         </div>
                         <div class="col-md-2">
-                            $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="production_rate" style="display:inline-block"/>
+                            <FundsContainer :places=8 :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="nas_value" style="display:inline-block"/> NAS
                         </div>
                     </div>
                 </div>
@@ -46,6 +46,11 @@
       production_rate(){
         if(this.game && this.game.active_ico)
           return new BigNumber(this.game.active_ico.my_production_rate);
+        return new BigNumber(0);
+      },
+      nas_value(){
+        if(this.game && this.game.active_ico)
+          return new BigNumber(this.game.active_ico.my_resources_nas_value);
         return new BigNumber(0);
       },
       playerResources(){

@@ -1,14 +1,13 @@
 <template>
-    <div class="row">
-        <div class="col">
-            <div class="funds">
-                <FundNumber v-for="(part, index) in fund_parts" :class="(part === '.' ? 'fund-dot' : '')" v-bind:key="index" :mystyle="mystyle" :content="part"/>
+  <span class="funds">
+      <FundNumber v-for="(part, index) in fund_parts" :class="(part === '.' ? 'fund-dot' : '')" 
+        v-bind:key="index" :mystyle="mystyle" :content="part"/>
 
-                <i v-if="showdirection && step.gt(0)" style="color:green" class="fas fa-caret-up" :style="mystyle ? mystyle : {fontSize : '4em'}"></i>
-                <i v-if="showdirection && step.lt(0)" style="color:red" class="fas fa-caret-down" :style="mystyle ? mystyle : {fontSize : '4em'}"></i>
-            </div>
-        </div>
-    </div>
+      <i v-if="showdirection && step.gt(0)" class="fas fa-caret-up" 
+        :style="mystyle ? mystyle : {fontSize : '4em'}" style="color:green !important;"></i>
+      <i v-if="showdirection && step.lt(0)" class="fas fa-caret-down" 
+        :style="mystyle ? mystyle : {fontSize : '4em'}" style="color:red !important;"></i>
+  </span>
 </template>
 
 <script>

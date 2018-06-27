@@ -16,7 +16,7 @@ if(conf.version !==  consts.CONF_VERSION){
 }
 
 const contractSource = fs.readFileSync('./contract.js').toString();
-const apiUrl = "https://testnet.nebulas.io";//"http://localhost:8685";
+const apiUrl = "https://mainnet.nebulas.io";//"http://localhost:8685";
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -182,22 +182,33 @@ run();
 
 async function callMethod(method, args)
 {
-  if(!(args instanceof Array))
-  {
-    args = [args];
-  }
-  options.to = receipt.contract_address;
-  options.contract = {
-    function: method,
-    args: JSON.stringify(args)
-  };
-  options.nonce++;
-  var transaction = new Nebulas.Transaction(options);
-  transaction.signTransaction();
+  try {
 
-  let payload = {
-    data : transaction.toProtoString()
-  };
-  await neb.api.sendRawTransaction(payload);
-  console.log("sent: " + JSON.stringify(payload));
+    if(!(args instanceof Array))
+    {
+      args = [args];
+    }
+    options.to = receipt.contract_address;
+    options.contract = {
+      function: method,
+      args: JSON.stringify(args)
+    };
+    options.nonce++;
+    var transaction = new Nebulas.Transaction(options);
+    transaction.signTransaction();
+    
+    let payload = {
+      data : transaction.toProtoString()
+    };
+    await neb.api.sendRawTransaction(payload);
+    await sleep(1000);
+    console.log("sent: " + JSON.stringify(payload));
+  } 
+  catch(e)
+  {
+    console.log("FAIL... will try again");
+    await sleep(2000);
+    options.nonce--;
+    await callMethod(method, args);
+  }
 }

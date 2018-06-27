@@ -7,6 +7,18 @@
             <div class="row">
                 <div class="col-12 hl"></div>
                 <div class="col-12">
+                    ICOs: {{ icos.length | count }}
+                    <span class="bullet">•</span>
+                    Market Cap: <FundsContainer :showdirection=1 :target="total_market_cap" :mystyle="number_style"/>
+                    <span class="bullet">•</span>
+                    Growth: ${{ total_growth | count }}/s
+                    <span class="bullet">•</span>
+                    Scammers: {{ scammers.length | count }}
+                    <span class="bullet">•</span>
+                    Taken:  <FundsContainer :showdirection=1 :target="total_scammed" :mystyle="number_style"/>
+                </div>
+                <div class="col-12 hl"></div>
+                <div class="col-12">
                     <h3 class="title" v-if="show_scammers">Top Scammers By NAS Taken</h3>
                     <h3 class="title" v-if="!show_scammers">Top ICOs By Market Capitalization</h3>
                 </div>
@@ -28,9 +40,9 @@
                         <thead>
                             <tr>
                                 <th scope="col" class="border-right">#</th>
-                                <th scope="col">Ticker</th>
-                                <th scope="col">Name</th>
-                                <th scope="col" class="num" v-if="show_scammers">Exit</th>
+                                <th scope="col" class="num" v-if="show_scammers">Exit Amount</th>
+                                <th scope="col">Ticker(s)</th>
+                                <th scope="col" v-if="!show_scammers">Name</th>
                                 <th scope="col" class="num" v-if="!show_scammers">Market Cap</th>
                                 <th scope="col" class="num" v-if="!show_scammers">Growth</th>
                                 <th scope="col" >Owner</th>
@@ -43,14 +55,25 @@
                                     <td scope="row" class="text-left" >
                                         <a v-bind:href="'/?' + ico.ticker + '#'">{{ico.name}}</a>
                                     </td>
-                                    <td scope="row" class="num">${{ico.market_cap | count}}</td>
+                                    <td scope="row" class="num">
+                                        <FundsContainer :showdirection=1 :target="ico.market_cap" :mystyle="number_style"/>
+                                    </td>
                                     <td scope="row" class="num">${{ico.total_production_rate | count}}/s</td>
                                     <td scope="row" >{{ico.player_addr | addr}}</td>
                             </tr>
                             <tr v-if="show_scammers" v-for="(scammer, index) in scammers" v-bind:key="scammer.id">
                                 <td scope="row" class="border-right" >{{index + 1}}</td>
                                 
-                                <td scope="row" class="num">{{scammer.nas_redeemed | nasComplete}}</td>
+                                <td scope="row" class="num">
+                                    <FundsContainer :showdirection=1 :target="scammer.nas_redeemed" :mystyle="number_style"/>                                    
+                                </td>
+                                    <td>
+                                        <span v-for="(ticker, index) in scammer.retired_icos" v-bind:key="ticker">
+                                            <span>
+                                                <a v-bind:href="'/?' + ticker + '#'">{{ticker}}</a>
+                                            </span><span v-if="index != scammer.retired_icos.length - 1">, </span>
+                                        </span>
+                                    </td>
                                 <td scope="row" >{{scammer.addr | addr}}</td>
                         </tr>
                         </tbody>
@@ -68,6 +91,7 @@
 import Navbar from './Navbar.vue';
 let gen = require('random-seed');
 let game = require("../logic/game.js");
+import FundsContainer from './FundsDisplay';
 
 
   function randomInt (min, max, seed){
@@ -84,10 +108,20 @@ let game = require("../logic/game.js");
         show_scammers : false,
         scammers: [],
         icos: [],
+        total_market_cap: new BigNumber(0),
+        total_growth: new BigNumber(0),
+        total_scammed: new BigNumber(0),
+        number_style: {
+            "background-color":"transparent", 
+            "font-size":"1.25rem",
+            "color":"black",
+            "display": "inline-block",
+        }
       };
     },
 
     components :{
+        FundsContainer,
       Navbar
     },
 
@@ -105,6 +139,12 @@ let game = require("../logic/game.js");
             game.getBestKnownScammers(null, null, (resp) =>
             { 
                 this.scammers = resp;
+                this.total_scammed = new BigNumber(0);
+                for(var i = 0; i < this.scammers.length; i++)
+                {
+                    this.scammers[i].nas_redeemed = new BigNumber(this.scammers[i].nas_redeemed);
+                    this.total_scammed = this.total_scammed.plus(this.scammers[i].nas_redeemed);
+                }
             }, status.onError);
         },
         getCoinMarketCaps()
@@ -112,6 +152,14 @@ let game = require("../logic/game.js");
             game.getCoinMarketCaps(null, null, (resp) =>
             {
                 this.icos = resp;
+                this.total_market_cap = new BigNumber(0);
+                this.total_growth = new BigNumber(0);
+                for(var i = 0; i < this.icos.length; i++)
+                {
+                    this.icos[i].market_cap = new BigNumber(this.icos[i].market_cap);
+                    this.total_market_cap = this.total_market_cap.plus(this.icos[i].market_cap);
+                    this.total_growth = this.total_growth.plus(this.icos[i].total_production_rate);
+                }
             }, status.onError);
         },
     },
@@ -206,5 +254,9 @@ let game = require("../logic/game.js");
     }
     .border-right{
         border-right: 1px solid grey;
+    }
+    .bullet{
+        margin-left: .3em;
+        margin-right: .3em;
     }
 </style>

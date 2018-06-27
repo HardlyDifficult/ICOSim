@@ -695,7 +695,7 @@ Contract.prototype =
 
     var ico = this.getActiveICO();
     this.total_resources = this.total_resources.sub(ico.resources);
-    user.retired_icos.push(ico.id);
+    user.retired_icos.push(ico.ticker);
     user.active_ico_id = null;
     removeFromList(this.lists, "active_icos", ico.id);
     this.addr_to_user.put(Blockchain.transaction.from, user);
@@ -715,7 +715,7 @@ Contract.prototype =
     var ico = this.getICO(ico_id);
     this.total_resources = this.total_resources.sub(ico.resources);
     var user = this.getUser(ico.player_addr);
-    user.retired_icos.push(ico.id);
+    user.retired_icos.push(ico.ticker);
     user.active_ico_id = null;
     removeFromList(this.lists, "active_icos", ico.id);
     this.addr_to_user.put(user.addr, user);

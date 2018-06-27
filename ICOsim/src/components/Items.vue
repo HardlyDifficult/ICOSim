@@ -35,9 +35,9 @@
                             $<FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="item.user_price"/>
                         </div>
 
-                        <div class="col-12 line"></div>
 
-                        <div class="col-12">
+                        <div class="col-12" v-if="isMyGame()">
+                            <div class="col-12 line"></div>
                             <div class="row cols-same-height buy-section">
                                 <div class="col-sm-4">
                                     <button @click="onBuy(item, selections[item.name].number_to_buy.toString())" class="btn btn-buy">BUY</button>
@@ -123,13 +123,13 @@
         }
 
 
-        if(parseInt(item.user_holdings) <= 0 || !this.isMyGame()){
+        if(parseInt(item.user_holdings) <= 0){
           classes.push('locked');
         }else{
           classes.push('unlocked');
         }
 
-        if(this.isMyGame() && item.user_max_can_afford > 0){
+        if(item.user_max_can_afford > 0){
           classes.push('can_afford');
         }else{
           classes.push('cannot_afford');

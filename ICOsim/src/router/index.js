@@ -16,9 +16,9 @@ export default new Router({
       component: Home
     },
     {
-      path: '/dashboard',
-      name: 'Dashboard',
-      component: Dashboard
+      path: '/ico/:ticker',
+      name: 'ico',
+      component: Home
     },
     {
       path: '/debug',

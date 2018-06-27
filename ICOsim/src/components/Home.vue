@@ -5,7 +5,7 @@
       <Navbar :color="'rgba(7,190,215,1)'"/>
       <NoExtensionWarning v-if="is_wallet_missing"/>
       <div v-if="game !== null"> <!--TODO: show loading instead-->
-        <LaunchIco :onClickLaunch="launchICO" v-if="!is_wallet_missing && game.active_ico === undefined"/>
+        <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined"/>
         <Airdrops 
           :game="game" 
           :redeemEvent="redeemEvent" 
@@ -144,13 +144,11 @@ export default {
         this.game = resp;
 
         // TODO use router?
-        if(this.game.active_ico)
-        {
-          window.location.search = this.game.active_ico.ticker;
-        }
-        else if(window.location.search)
-        {
-          window.location.search = "";
+        if(this.game.active_ico && !this.$route.params.ticker){
+          this.$router.push({name : 'ico', params : {ticker:  this.game.active_ico.ticker}});
+
+        }else if(window.location.search){
+          //window.location.search = "";
         }
 
         this.game.roadmap_steps = [];
@@ -293,9 +291,9 @@ export default {
   mounted() {
     this.smart_contract_address = game.getSmartContractAddress();
     this.explorer_smart_contract_url = game.getBlockExplorerURLForContract();
-    if(window.location.search)
+    if(this.$route.params.ticker)
     {
-      game.setTicker(window.location.search.substring(1)); // TODO routes
+      game.setTicker(this.$route.params.ticker);
     }
 
     this.getGame();

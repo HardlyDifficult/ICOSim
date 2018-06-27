@@ -53,7 +53,9 @@
                                     <td scope="row" class="border-right" >{{index + 1}}</td>
                                     <td scope="row" ><span v-bind:style="{backgroundColor:randomColor(ico.ticker), borderColor:randomColor(ico.name + ico.ticker)}" class="ticker">{{ico.ticker}}</span></td>
                                     <td scope="row" class="text-left" >
-                                        <a v-bind:href="'/?' + ico.ticker + '#'">{{ico.name}}</a>
+                                        <router-link class="navbar-icosim" :to="{path:'/ico/' + ico.ticker}">
+                                            {{ico.name}}
+                                        </router-link>
                                     </td>
                                     <td scope="row" class="num">
                                         <FundsContainer :showdirection=1 :target="ico.market_cap" :mystyle="number_style"/>

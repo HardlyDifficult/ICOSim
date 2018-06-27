@@ -8,8 +8,8 @@
                 <div class="row roadmap-step-inner" :class="(item.next_price > player_money) ? 'glow-cant-afford' : 'glow-1'">
                         <div class="col-12">
                             <div class="row">
-                                <div class="col-12">
-                                    <!-- <div class="image" :style="{backgroundImage:'url(' + pictures[member.name]+ ')'}"></div> -->
+                                <div class="col-12" v-if="isTeam">
+                                    <div class="image" :style="{backgroundImage:'url(' + pictures[item.name]+ ')'}"></div>
                                 </div>
                                 <div class="col-12">
                                     <p class="title">{{item.name}}</p>
@@ -69,10 +69,10 @@
                             </div>
                         </div>
                 </div>
-                <div class="connecting-line" v-anime="line_animation"></div>
+                <div v-if="!isTeam" class="connecting-line" v-anime="line_animation"></div>
             </div>
         </template>
-        <div class="middle-line"></div>
+        <div v-if="!isTeam" class="middle-line"></div>
     </div>
 </template>
 
@@ -94,7 +94,8 @@
     methods : {
       getStepClasses(item, index){
         let classes = [];
-        classes.push(this.classes[index % 4]);
+        if(!this.isTeam)
+            classes.push(this.classes[index % 4]);
 
 
         if(parseInt(item.user_holdings) <= 0){
@@ -255,7 +256,7 @@ function formatCoins(number, digits, unit)
     .connecting-line{
         position:absolute;
         background-color:#003430;
-        z-index: -1;
+        z-index: 1;
     }
 
     .middle-line{
@@ -265,7 +266,7 @@ function formatCoins(number, digits, unit)
         height:100%;
         width:5px;
         background-color:#003430;
-        z-index: -1;
+        z-index: 1;
     }
     .roadmap-container{
         position: relative;

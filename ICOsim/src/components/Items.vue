@@ -160,7 +160,7 @@
     },
     nas(value)
     {
-      return formatCoins(value, 18);
+      return formatCoins(value, 4);
     },
   },
 

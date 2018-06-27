@@ -4,7 +4,7 @@
       <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
       <Navbar :color="'rgba(7,190,215,1)'"/>
       <NoExtensionWarning v-if="is_wallet_missing"/>
-      <div v-if="game !== null"> <!--TODO: show loading instead-->
+      <div v-if="game !== null">
         <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined"/>
         <Airdrops 
           :game="game" 

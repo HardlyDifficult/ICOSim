@@ -266,6 +266,10 @@
     }
     .roadmap-step-team{
         margin-bottom:15px;
+
+    }
+    .roadmap-step-team .roadmap-step-inner{
+        border-radius : 55px 5px 55px 55px;
     }
 
     .locked.cannot_afford > .roadmap-step-inner{
@@ -369,8 +373,8 @@
 
     .corner-ribbon-container{
         position:absolute;
-        left:-1px;
-        top:-1px;
+        left:0;
+        top:0;
         height:100%;
         width:100%;
         overflow:hidden;
@@ -392,6 +396,13 @@
         color:black;
         font-weight:bolder;
         opacity:0.7;
+    }
+    .roadmap-step-team .corner-ribbon{
+        top: 20px;
+        right: -65px;
+        left: auto;
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
     }
     .unlocked .corner-ribbon{
         visibility:visible;

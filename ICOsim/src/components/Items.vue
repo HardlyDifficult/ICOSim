@@ -38,11 +38,11 @@
                         <div class="col-12 line"></div>
 
                         <div class="col-12">
-                            <div class="row cols-same-height">
-                                <div class="col-4">
+                            <div class="row cols-same-height buy-section">
+                                <div class="col-sm-4">
                                     <button @click="onBuy(item, selections[item.name].number_to_buy.toString())" class="btn btn-buy">BUY</button>
                                 </div>
-                                <div class="col-8">
+                                <div class="col-sm-8">
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="row">
@@ -270,6 +270,13 @@
         pointer-events: none;
         -webkit-filter: grayscale(100%);
         filter: grayscale(100%);
+    }
+
+    .cannot_afford .buy-section{
+        -webkit-filter: grayscale(100%);
+        filter: grayscale(100%);
+        opacity: 0.2;
+        pointer-events: none;
     }
 
     .locked.can_afford> .roadmap-step-inner{

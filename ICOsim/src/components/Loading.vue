@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-12">
-            <h2>Loading - please wait while we're {{loadingString}}</h2>
+            <h3>Loading - please wait while we're {{loadingString}}</h3>
         </div>
     </div>
 </template>

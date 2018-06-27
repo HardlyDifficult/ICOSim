@@ -368,8 +368,8 @@
 
     .corner-ribbon-container{
         position:absolute;
-        left:0;
-        top:0;
+        left:-1px;
+        top:-1px;
         height:100%;
         width:100%;
         overflow:hidden;
@@ -377,22 +377,23 @@
     .corner-ribbon{
         visibility:hidden;
         width: 200px;
-        background:#FF2A00;
+        background:green;
         position: absolute;
-        top: 15px;
-        left: -75px;
+        top: 20px;
+        left: -65px;
         text-align: center;
         line-height: 25px;
         letter-spacing: 1px;
-        color: #f0f0f0;
         transform: rotate(-45deg);
         -webkit-transform: rotate(-45deg);
-        font-size:0.5em;
+        font-size:0.7em;
         z-index:2;
+        color:black;
+        font-weight:bolder;
+        opacity:0.7;
     }
     .unlocked .corner-ribbon{
         visibility:visible;
-        background:#FF2A00;
     }
     .unlocked.can_afford .corner-ribbon:before{
         content: "UPGRADE";
@@ -405,7 +406,7 @@
     }
     .locked.can_afford .corner-ribbon{
         visibility:visible;
-        background:green;
+        background:orange;
         content: "BUY NOW";
     }
 

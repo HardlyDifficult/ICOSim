@@ -13,10 +13,11 @@
                                 </div>
                                 <div class="col-12">
                                     <p class="title">{{item.name}}</p>
-                                    <!-- <p class="member-description">{{member.description}}</p>
-                                    
-                                    <p v-if="parseInt(member.user_holdings) > 0" class="member-buy">ADVISOR LEVEL {{member.user_holdings}}</p>
-                                    <p v-else class="member-buy">BUY TO UNLOCK ADVISOR</p> -->
+                                    <template v-if="isTeam">
+                                        <p class="member-description">{{item.description}}</p>
+                                        <p v-if="parseInt(item.user_holdings) > 0" class="member-buy">ADVISOR LEVEL {{item.user_holdings}}</p>
+                                        <p v-else class="member-buy">BUY TO UNLOCK ADVISOR</p>
+                                    </template>
                                 </div>
                             </div>
                         </div>
@@ -39,9 +40,9 @@
                         <div class="col-12">
                             <div class="row cols-same-height">
                                 <div class="col-4">
-                                    <button @click="onBuy(item, selections[item.name].number_to_buy | count)" class="btn btn-buy">BUY</button>
+                                    <button @click="onBuy(item, selections[item.name].number_to_buy.toString())" class="btn btn-buy">BUY</button>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-8">
                                     <div class="row">
                                         <div class="col-12">
                                             BUY {{selections[item.name].number_to_buy}} FOR $ {{getBuyPrice(item)}}
@@ -58,13 +59,27 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mt-5">
-                                <div class="col-12" v-if="isMyGame()">
-                                    <input type="number" v-model="selections[item.name].number_to_buy_with_nas" @input="$forceUpdate()">
-                                    <button v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-secondary">
-                                        Buy for {{ getBuyWithNasCost(item) | nas }}
-                                    </button>
-                                    Buy {{ selections[item.name].number_to_buy_with_nas | count }} for +{{ getBuyProductionGainWithNas(item) | count }}/s 
+                            <div class="row" v-if="isMyGame()">
+                                <div class="col-12 line"></div>
+                                <div class="col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">Buy with NAS.</div>
+                                <div class="col-12" v-if="show_buy_nas[item.name]">
+                                    <div class="row cols-same-height">
+                                        <div class="col-4">
+                                            <button v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-buy">
+                                                Buy
+                                            </button>
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <input title="nas-buy-input" class="form-control" type="number" v-model="selections[item.name].number_to_buy_with_nas" @input="$forceUpdate()">
+                                                </div>
+                                                <div class="col-12" >
+                                                    Buy {{ selections[item.name].number_to_buy_with_nas | count }} for +{{ getBuyProductionGainWithNas(item) | count }}/s
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -166,10 +181,18 @@
           'Suppoman': require('../assets/suppoman.png'),
           'Trevon James': require('../assets/trevon.png'),
         },
+        show_buy_nas : {
+
+        }
       };
     },
     mounted()
     {
+      let newShowBuyNas = {}
+      for(let i in this.items){
+        newShowBuyNas[this.items[i].name] = false;
+      }
+      this.show_buy_nas = newShowBuyNas;
     }
 
   }
@@ -211,7 +234,7 @@
         position:absolute;
         left:50%;
         top:100px;
-        height:100%;
+        height:calc(100% - 100px);
         width:5px;
         background-color:#003430;
         z-index: 1;

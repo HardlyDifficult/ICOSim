@@ -59,16 +59,16 @@
             <h4>{{ game.active_ico.name }} ({{ game.active_ico.ticker }})</h4>
             <div class="row mt-2">
                 <div class="col-12">
-                    my_resources: {{ game.active_ico.my_resources | count }}
+                    resources: {{ game.active_ico.resources | resources }}
                 </div>
                 <div class="col-12">
-                    my_production_rate: {{ game.active_ico.my_production_rate | count }}
+                    my_production_rate: {{ game.active_ico.my_production_rate | resources }}
                 </div>
                 <div class="col-12">
                     my_bonus: {{ game.active_ico.my_bonus | percent }}
                 </div>
                 <div class="col-12">
-                    my_total_production_rate: {{ game.active_ico.my_total_production_rate | count }}
+                    total_production_rate: {{ game.active_ico.total_production_rate | resources }}
                 </div>
             </div>
         </div>
@@ -81,16 +81,16 @@
                 </div>
                 <span v-else>
                     <div class="col-12">
-                        Expected Reward: {{ game.current_event.expected_reward | count }}
+                        Expected Reward: {{ game.current_event.expected_reward | resources }}
                     </div>
                     <div class="col-12">
                         Reward: {{ game.current_event.reward_percent | percent }}
                     </div>
                     <div class="col-12">
-                        Min Reward: {{ game.current_event.min_reward | count }}
+                        Min Reward: {{ game.current_event.min_reward | resources }}
                     </div>
                     <div class="col-12">
-                        Max Reward: {{ game.current_event.max_reward | count }}
+                        Max Reward: {{ game.current_event.max_reward | resources }}
                     </div>
                     <div class="col-12">
                         Number of blocks this event: {{ game.current_event.length | count }}
@@ -120,10 +120,10 @@
             <h5>{{ item.name }}</h5>
             <div class="row mt-2">
                 <div class="col-12">
-                    start_price: {{ item.start_price | price }}
+                    start_price: {{ item.start_price | resources }}
                 </div>
                 <div class="col-12" v-if="item.resources_per_s">
-                    resources_per_s: {{ item.resources_per_s | count }}/s
+                    resources_per_s: {{ item.resources_per_s | resources }}/s
                 </div>
                 <div class="col-12" v-if="item.bonus_multiplier">
                     bonus_multiplier: {{ item.bonus_multiplier | percent }}
@@ -133,13 +133,13 @@
                         <hr>
                     </div>
                     <div class="col-12">
-                        user_holdings: {{ item.user_holdings | count }}
+                        user_holdings: {{ item.user_holdings | resources }}
                     </div>
                     <div class="col-12">
-                        user_price: {{ item.user_price | price }}
+                        user_price: {{ item.user_price | resources }}
                     </div>
                     <div class="col-12" v-if="item.user_item_production">
-                        user_item_production: {{ item.user_item_production | count }}
+                        user_item_production: {{ item.user_item_production | resources }}
                     </div>
                     <div class="col-12" v-if="item.user_item_bonus">
                         user_item_bonus: {{ item.user_item_bonus | percent }}
@@ -155,14 +155,14 @@
                             Buy {{ input_selections[item.name].number_to_buy | count }}
                         </button>
                         <button v-on:click="buy(item, null)" class="btn btn-secondary" v-bind:disabled="item.user_max_can_afford < 1">Buy Max</button>
-                        +{{ getBuyProductionGain(item) | count }}/s for {{ getBuyPrice(item) | price }}
+                            +{{ getBuyProductionGain(game, item) | resources }}/s for {{ getBuyPrice(item) | resources }}
                     </div>
                     <div class="col-12" v-if="isMyGame()">
                         <input type="number" v-model="input_selections[item.name].number_to_buy_with_nas" @input="$forceUpdate()">
                         <button v-on:click="buyWithNas(item, input_selections[item.name].number_to_buy_with_nas)" class="btn btn-secondary">
                             Buy for {{ getBuyWithNasCost(item) | nas }}
                         </button>
-                        Buy {{ input_selections[item.name].number_to_buy_with_nas | count }} for +{{ getBuyProductionGainWithNas(item) | count }}/s 
+                        Buy {{ input_selections[item.name].number_to_buy_with_nas | count }} for +{{ getBuyProductionGainWithNas(game, item) | resources }}/s 
                     </div>
                 </span>
             </div>
@@ -202,13 +202,13 @@
                     last_action_date: {{ ico.last_action_date | date }}
                 </div>
                 <div class="col-12">
-                    market_cap: {{ ico.market_cap | count }}
+                    market_cap: {{ ico.market_cap | resources }}
                 </div>
                 <div class="col-12">
-                    resources: {{ ico.resources | count }}
+                    resources: {{ ico.resources | resources }}
                 </div>
                 <div class="col-12">
-                    total_production_rate: {{ ico.total_production_rate | count }}
+                    total_production_rate: {{ ico.total_production_rate | resources }}
                 </div>
             </div>
         </div> 
@@ -347,9 +347,9 @@ export default {
                         this.input_selections[item.name].number_to_buy = 1;
                     }
                 }
-                setInterval(this.getGame, 10000);
+                setTimeout(this.getGame, 10000);
             }, () => {
-                setInterval(this.getGame, 10000);
+                setTimout(this.getGame, 10000);
             });
         },
         getBuyPrice(item)
@@ -374,13 +374,27 @@ export default {
                 this.coin_market_caps = resp;
             }, onError);
         },
-        getBuyProductionGain(item)
+        getBuyProductionGain(game, item)
         {
-            return this.input_selections[item.name].number_to_buy * item.resources_per_s;
+            if(item.resources_per_s != null)
+            {
+                return item.resources_per_s.mul(this.input_selections[item.name].number_to_buy);
+            }
+            else
+            {
+                return game.active_ico.my_production_rate.mul(item.bonus_multiplier);
+            }
         },
-        getBuyProductionGainWithNas(item)
+        getBuyProductionGainWithNas(game, item)
         {
-            return this.input_selections[item.name].number_to_buy_with_nas * item.resources_per_s;
+            if(item.resources_per_s != null)
+            {
+                return item.resources_per_s.mul(this.input_selections[item.name].number_to_buy_with_nas);
+            }
+            else
+            {
+                return game.active_ico.my_production_rate.mul(item.bonus_multiplier.mul(this.input_selections[item.name].number_to_buy_with_nas));
+            }
         },
         checkTicker()
         {
@@ -419,32 +433,6 @@ export default {
                 args = this.method_to_call_args.split(",");
             }
             game.directNebRead(this.method_to_call, args, onSuccess, onError);
-        },
-    },
-    filters: {
-        count(value) 
-        {
-            return numberWithCommas(value);
-        },
-        date(value)
-        {
-            return new Date(value).toString();
-        },
-        percent(value)
-        {
-            return numberWithCommas(value) + "%";
-        },
-        decimal(value)
-        {
-            return numberWithCommas(value, 4);
-        },
-        price(value)
-        {
-            return numberWithCommas(value);
-        },
-        nas(value)
-        {
-            return formatCoins(value, 18);
         },
     },
     mounted() {
@@ -515,33 +503,6 @@ function onSuccess(resp)
     showStatus("Success", JSON.stringify(resp), 3000);
 }
 
-// From https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-const numberWithCommas = (x, decimals) => 
-{
-    if(decimals == null)
-    {
-        decimals = 0;
-    }
-    let parts = Number.parseFloat(x).toFixed(decimals).split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return parts.join(".");
-}
-
-let token_denominator = 1000000000000000000;
-
-function formatCoins(number, digits, unit) 
-{
-    if(!unit)
-    {
-        unit = "nas";
-    }
-    if(!digits)
-    {
-        digits = 8;
-    }
-    let x = number / token_denominator;
-    return numberWithCommas(x, digits) + " " + unit;
-}
 </script>
 
 <style>

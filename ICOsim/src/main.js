@@ -23,8 +23,12 @@ Vue.filter('percent', function (value) {
 Vue.filter('decimal', function (value) {
   return numberWithCommas(value, 4);
 });
-Vue.filter('price', function (value) {
-  return numberWithCommas(value);
+Vue.filter('resources', function (value) {
+  if(!(value instanceof BigNumber))
+  {
+    throw new Error("Error!  This should be using a BigNumber");
+  }
+  return numberWithCommas(value, 2);
 });
 Vue.filter('nas', function (value) {
   return formatCoins(value, 4);

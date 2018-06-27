@@ -61,8 +61,8 @@
                                                     v-model="selections[item.name].number_to_buy"
                                                     :speed="0"
                                                     :tooltip="'hover'"
-                                                    :min="item.user_max_can_afford > 0 ? 1 : 0"
-                                                    :max="item.user_max_can_afford"
+                                                    :min="item.user_max_can_afford.gt(0) ? 1 : 0"
+                                                    :max="item.user_max_can_afford.toNumber()"
                                             ></VueSlider>
                                         </div>
                                     </div>

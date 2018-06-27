@@ -194,10 +194,10 @@ export default {
             this.game.team_members.push(item);
           }
         }
-        setInterval(this.getGame, auto_refresh_time);
+        setTimeout(this.getGame, auto_refresh_time);
       }, (error) =>
       {
-        setInterval(this.getGame, auto_refresh_time);
+        setTimeout(this.getGame, auto_refresh_time);
       });
     },
     getBestKnownScammers()

@@ -97,6 +97,9 @@ module.exports =
             for(var i = 0; i < icos.length; i++)
             {
                 icos[i].market_cap = new BigNumber(icos[i].market_cap).div(100);
+                icos[i].resources = new BigNumber(icos[i].resources).div(100);
+                icos[i].total_production_rate = new BigNumber(icos[i].total_production_rate).div(100);
+                delete icos[i].my_total_production_rate;
             }
             onSuccess(icos);
         }, onError);
@@ -158,42 +161,58 @@ module.exports =
             });
             if(info.active_ico)
             {
-                info.active_ico.my_total_production_rate = info.active_ico.my_production_rate * (1 + info.active_ico.my_bonus / 100);
+                delete info.active_ico.my_resources; // dupe info
+                info.active_ico.resources = new BigNumber(info.active_ico.resources).div(100);
+                info.active_ico.my_production_rate = new BigNumber(info.active_ico.my_production_rate).div(100);
+                info.active_ico.my_bonus = new BigNumber(info.active_ico.my_bonus);
+                info.active_ico.total_production_rate = new BigNumber(info.active_ico.total_production_rate).div(100);
                 if(info.current_event)
                 {
-                    info.current_event.expected_reward = (info.current_event.reward_percent/100) * info.active_ico.resources;
-                    if(info.current_event.expected_reward < info.current_event.min_reward)
+                    info.current_event.reward_percent = new BigNumber(info.current_event.reward_percent).div(100);
+                    info.current_event.expected_reward = new BigNumber(info.current_event.reward_percent).mul(info.active_ico.resources);
+                    info.current_event.min_reward = new BigNumber(info.current_event.min_reward).div(100);
+                    info.current_event.max_reward = new BigNumber(info.current_event.max_reward).div(100);
+                    if(info.current_event.expected_reward.lt(info.current_event.min_reward))
                     {
                         info.current_event.expected_reward = info.current_event.min_reward;
                     }
-                    else if(info.current_event.expected_reward > info.current_event.max_reward)
+                    else if(info.current_event.expected_reward.gt(info.current_event.max_reward))
                     {
                         info.current_event.expected_reward = info.current_event.max_reward;
                     }
                 }
-                info.active_ico.resources = new BigNumber(info.active_ico.resources);
             }
 
             for(let i = 0; i < info.items.length; i++)
             {
                 let item = info.items[i];
-                item.start_price = new BigNumber(item.start_price);
+                item.start_price = new BigNumber(item.start_price).div(100);
                 if(item.resources_per_s)
                 {
-                    item.resources_per_s = new BigNumber(item.resources_per_s);
+                    item.resources_per_s = new BigNumber(item.resources_per_s).div(100);
+                }
+                else 
+                {
+                    item.bonus_multiplier = new BigNumber(item.bonus_multiplier);
                 }
                 item.nas_price = new BigNumber(item.nas_price);
-                item.user_holdings = parseInt(item.user_holdings);
-                item.user_price = new BigNumber(item.user_price);
-                if(item.user_item_bonus)
+                if(item.user_holdings)
                 {
-                    item.user_item_bonus = new BigNumber(item.user_item_bonus);
+                    item.user_holdings = new BigNumber(item.user_holdings);
                 }
-                else
+                if(item.user_price)
                 {
-                    item.user_item_production = new BigNumber(item.user_item_production);
+                    item.user_price = new BigNumber(item.user_price).div(100);
+                    if(item.user_item_bonus)
+                    {
+                        item.user_item_bonus = new BigNumber(item.user_item_bonus);
+                    }
+                    else
+                    {
+                        item.user_item_production = new BigNumber(item.user_item_production).div(100);
+                    }
+                    item.user_max_can_afford = new BigNumber(item.user_max_can_afford);
                 }
-                item.user_max_can_afford = parseInt(item.user_max_can_afford);
             }
 
             onSuccess(info);

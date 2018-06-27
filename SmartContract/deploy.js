@@ -16,7 +16,7 @@ if(conf.version !==  consts.CONF_VERSION){
 }
 
 const contractSource = fs.readFileSync('./contract.js').toString();
-const apiUrl = "https://mainnet.nebulas.io";//"http://localhost:8685";
+const apiUrl = "http://localhost:8685"; // https://mainnet.nebulas.io
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

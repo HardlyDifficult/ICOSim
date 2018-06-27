@@ -3,10 +3,9 @@
       <FundNumber v-for="(part, index) in fund_parts" :class="(part === '.' ? 'fund-dot' : '')" 
         v-bind:key="index" :mystyle="mystyle" :content="part"/>
 
-      <i v-if="showdirection && step.gt(0)" class="fas fa-caret-up" 
-        :style="mystyle ? mystyle : {fontSize : '4em'}" style="color:green !important;"></i>
-      <i v-if="showdirection && step.lt(0)" class="fas fa-caret-down" 
-        :style="mystyle ? mystyle : {fontSize : '4em'}" style="color:red !important;"></i>
+      <i v-if="showdirection && step.gt(0)" class="fas fa-caret-up" :style="up_style" style="color:green !important;"></i>
+      <i v-else-if="showdirection && step.lt(0)" class="fas fa-caret-down" :style="down_style"></i>
+      <i v-else-if="showdirection" class="fas fa-caret-right" :style="mystyle ? mystyle : {fontSize : '4em'}"></i>
   </span>
 </template>
 
@@ -79,6 +78,20 @@
             ".",
             parts[1]
         ];
+      },
+      down_style(){
+        return {
+          fontSize : '4em',
+          ...this.mystyle,
+          color : 'red'
+        }
+      },
+      up_style(){
+        return {
+          fontSize : '4em',
+          ...this.mystyle,
+          color : 'green'
+        }
       }
     },
 

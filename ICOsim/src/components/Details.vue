@@ -4,22 +4,26 @@
             <div class="row details-inner">
                 <div class="col-12">
                     <div class="row text-center details-header">
-                        <div class="col-md-4">Market Cap</div>
-                        <div class="col-md-4">{{game.active_ico ? game.active_ico.name : ""}}</div>
+                        <div class="col-md-3">Market Cap</div>
+                        <div class="col-md-3">{{game.active_ico ? game.active_ico.name : ""}}</div>
                         <div class="col-md-2 header-small">Growth Rate</div>
+                        <div class="col-md-2 header-small">Advisor Bonus</div>
                         <div class="col-md-2 header-small">Potential Exit Scam Value</div>
                     </div>
                 </div>
                 <div class="col-12">
                     <div class="row text-center">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             $<FundsContainer :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :showdirection=1 :target="playerResources" :start="playerResources"/>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             {{game.active_ico ? game.active_ico.ticker : ""}}
                         </div>
                         <div class="col-md-2">
                             $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="production_rate" :start="production_rate" style="display:inline-block"/>/ s
+                        </div>
+                        <div class="col-md-2">
+                            <FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="advisor_bonus" :start="advisor_bonus" style="display:inline-block"/>%
                         </div>
                         <div class="col-md-2">
                             <FundsContainer :places=8 :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block"/> NAS
@@ -30,6 +34,7 @@
                     <div class="row text-center">
                         <div class="col-md-4"></div>
                         <div class="col-md-4"></div>
+                        <div class="col-md-2"></div>
                         <div class="col-md-2"></div>
                         <div class="col-md-2"><button v-if="canExit()" class="btn btn-sm btn-primary">EXIT SCAM NOW</button></div>
                     </div>
@@ -62,6 +67,11 @@
       production_rate(){
         if(this.game && this.game.active_ico)
           return new BigNumber(this.game.active_ico.my_production_rate);
+        return new BigNumber(0);
+      },
+      advisor_bonus(){
+        if(this.game && this.game.active_ico)
+          return new BigNumber(this.game.active_ico.my_bonus);
         return new BigNumber(0);
       },
       nas_value(){

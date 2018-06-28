@@ -53,11 +53,12 @@
 <script>
   import FundsDisplay from './FundsDisplay';
   import {BigNumber} from 'bignumber.js';
+    const game = require("../logic/game.js");
 
   export default {
     name: "Airdrops",
 
-    props : ['game', 'isMyGame'],
+    props : ['game', 'isMyGame', 'status'],
 
     data(){
       return {
@@ -78,7 +79,7 @@
       },
         redeemEvent()
         {
-            game.redeemEvent(onTxPosted, onSuccess, onError);
+            game.redeemEvent(status.onTxPosted, status.onSuccess, status.onError);
         },
     },
   }

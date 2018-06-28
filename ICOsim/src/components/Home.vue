@@ -1,6 +1,8 @@
 <template>
   <div class='container-fluid'>
-      <div class="fixed-bg"></div><!--super stupid workaround-->
+      
+
+      <div class="fixed-bg"></div> 
       <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
       <Navbar :color="'rgba(7,190,215,1)'"/>
       <Notifications :notifications="notifications"/>
@@ -9,6 +11,7 @@
         <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined"/>
         <Airdrops 
           :game="game" 
+          :status="status"
           :isMyGame="isMyGame"
           v-if="isMyGame() && game !== null && (game.current_event !== null || game.blocks_till_next_event)" />
         <div class='row'>
@@ -35,7 +38,8 @@
             </div>
         </div>
       </div>
-      <Loading v-else/>
+       <Loading v-else/>
+      <Footer />
   </div>
 </template>
 
@@ -278,6 +282,7 @@ export default {
         left:0;
         right:0;
         background-color: #202022;
+        z-index: -1;
     }
 
 </style>

@@ -3,6 +3,7 @@
       <div class="fixed-bg"></div><!--super stupid workaround-->
       <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
       <Navbar :color="'rgba(7,190,215,1)'"/>
+      <Notifications :notifications="notifications"/>
       <NoExtensionWarning v-if="is_wallet_missing"/>
       <div v-if="game !== null"> 
         <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined"/>
@@ -52,29 +53,10 @@ import LaunchIco from './LaunchIco';
 import Loading from './Loading';
 
 import neb from "../logic/HardlyNeb.js";
+import Notifications from "./Notifications";
 const game = require("../logic/game.js");
 const auto_refresh_time = 10000;
 
-function onTxPosted(resp)
-{
-  console.log(`onTxPosted not implemented in Home.vue`);
-  console.log(resp);
-  //showStatus("Tx Posted", resp.txhash, 5000); // TODO status display
-}
-
-function onError(error)
-{
-  console.log(`onError not implemented in Home.vue`);
-  console.log(error);
-  //showStatus("Error", error, 15000);
-}
-
-function onSuccess(resp)
-{
-  console.log(`onSuccess not implemented in Home.vue`);
-  console.log(resp);
-  //showStatus("Success", JSON.stringify(resp), 3000);
-}
 
 export default {
   name: 'Home',
@@ -87,10 +69,11 @@ export default {
       smart_contract_address: null,
       ticker_is_available: false, // for Launch ICO form
       is_wallet_missing: false, // for new user help
-      status: {onTxPosted, onSuccess, onError}
+      notifications : []
     }
   },
   components: {
+    Notifications,
     Navbar,
     FundsContainer,
     Items,
@@ -104,19 +87,56 @@ export default {
   computed : {
     playerResources(){
       return (this.game && this.game.active_ico) ? this.game.active_ico.resources : new BigNumber(0);
+    },
+    status(){
+      return {
+        onTxPosted : this.onTxPosted,
+        onSuccess : this.onSuccess,
+        onError : this.onError
+      }
     }
   },
 
+
   methods: {
+    showNotification(title, message, href = null, href_text = null, length=3000){
+      this.notifications.push({
+        title : title,
+        message : message,
+        href :href,
+        href_text : href_text,
+        length : length
+      });
+    },
+
+    onTxPosted(resp) {
+      this.showNotification("Notification posted", resp);
+      console.log(`onTxPosted not implemented in Home.vue`);
+      console.log(resp);
+      //showStatus("Tx Posted", resp.txhash, 5000); // TODO status display
+    },
+
+    onError(error) {
+      this.showNotification("Error", error);
+      console.log(`onError not implemented in Home.vue`);
+      console.log(error);
+      //showStatus("Error", error, 15000);
+    },
+
+    onSuccess(resp) {
+      this.showNotification("Great Success!", resp);
+      console.log(`onSuccess not implemented in Home.vue`);
+      console.log(resp);
+      //showStatus("Success", JSON.stringify(resp), 3000);
+    },
+
     // Write
-    launchICO(icoName, icoTicker)
-    {
+    launchICO(icoName, icoTicker) {
       console.log(`launching ico ${icoName} ticker ${icoTicker}`);
-      game.launchICO(icoName, icoTicker, onTxPosted, (resp) =>
-      {
+      game.launchICO(icoName, icoTicker, this.onTxPosted, (resp) => {
         this.$router.push({name : 'ico', params : {ticker:  this.launch_ico_ticker}});
         onSuccess(resp);
-      }, onError);
+      }, this.onError);
     },
     
     invest()
@@ -204,14 +224,14 @@ export default {
       game.getBestKnownScammers(null, null, (resp) =>
       {
         this.best_known_scammers = resp;
-      }, onError);
+      }, this.onError);
     },
     getCoinMarketCaps()
     {
       game.getCoinMarketCaps(null, null, (resp) =>
       {
         this.coin_market_caps = resp;
-      }, onError);
+      }, this.onError);
     },
     checkTicker()
     {
@@ -236,7 +256,7 @@ export default {
       {
         args = this.method_to_call_args.split(",");
       }
-      game.directNebWrite(this.method_to_call, args, onTxPosted, 0, onSuccess, onError);
+      game.directNebWrite(this.method_to_call, args, this.onTxPosted, 0, this.onSuccess, this.onError);
     },
     callMethodAsRead()
     {
@@ -249,7 +269,7 @@ export default {
       {
         args = this.method_to_call_args.split(",");
       }
-      game.directNebRead(this.method_to_call, args, onSuccess, onError);
+      game.directNebRead(this.method_to_call, args, this.onSuccess, this.onError);
     },
   },
   filters: {

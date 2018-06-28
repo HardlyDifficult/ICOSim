@@ -16,7 +16,7 @@
 
     export default {
     name: "FundsDisplay",
-    props : ['target', 'mystyle', 'instant', 'showdirection', 'places', 'start'],
+    props : ['target', 'mystyle', 'instant', 'showdirection', 'places', 'start', 'jumpprecision'],
     components : {
       FundNumber
     },
@@ -53,7 +53,7 @@
               }, 10);
             }
           }else{
-            if(diff.lt(0.1)){
+            if(diff.lt(this.jumpprecision ? this.jumpprecision : 0.1)){
               this.value = this.target;
               this.step = new BigNumber(0);
             }else{

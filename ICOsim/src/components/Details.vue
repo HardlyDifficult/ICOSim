@@ -26,7 +26,7 @@
                             <FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="advisor_bonus" :start="advisor_bonus" style="display:inline-block"/>%
                         </div>
                         <div class="col-md-2">
-                            <FundsContainer :places=12 :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block"/> NAS
+                            <FundsContainer :jumpprecision="0.0000000000001" :places=12 :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block"/> NAS
                         </div>
                     </div>
                 </div>

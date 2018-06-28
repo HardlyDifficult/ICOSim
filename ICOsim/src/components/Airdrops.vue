@@ -1,9 +1,16 @@
 <template>
     <div class="airdrop-outer">
         <div class="airdrop-warning" v-if="!game.current_event || game.current_event.number_of_blocks_remaining === 0 || game.current_event.user_has_redeemed">
-            <i class="fas fa-exclamation exclamation"></i>
-            Airdrop in: {{ game.blocks_till_next_event | count }} blocks (~{{ game.blocks_till_next_event | blocks_to_seconds}}s)
-            <i class="fas fa-exclamation exclamation"></i>
+            <span v-if="game.current_event">
+                <i class="fas fa-check"></i>
+                Successfully claimed Airdrop worth $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="game.current_event.expected_reward" :start="game.current_event.expected_reward" style="display:inline-block"/>%
+                <i class="fas fa-check"></i>
+            </span>
+            <span v-else>
+                <i class="fas fa-exclamation exclamation"></i>
+                Airdrop in: {{ game.blocks_till_next_event | count }} blocks (~{{ game.blocks_till_next_event | blocks_to_seconds}}s)
+                <i class="fas fa-exclamation exclamation"></i>
+            </span>
         </div>
         <div v-else class="airdrop-container">
             <div class="airdrop-information clickable glow-airdrop" @click="redeemEvent()">

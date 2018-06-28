@@ -50,6 +50,7 @@ let tick_count = 0;
 
         if(tick_count % 10 == 0)
         {
+          tick_count = 0;
           this.current++;
           if(this.current >= this.strings.length)
           {

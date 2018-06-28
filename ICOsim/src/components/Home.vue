@@ -1,6 +1,6 @@
 <template>
   <div class='container-fluid'>
-      <div class="fixed-bg"></div><!--super stupid workaround-->
+      <div class="fixed-bg"></div> 
       <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
       <Navbar :color="'rgba(7,190,215,1)'"/>
       <Notifications :notifications="notifications"/>
@@ -9,7 +9,7 @@
         <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined"/>
         <Airdrops 
           :game="game" 
-          :redeemEvent="redeemEvent" 
+          :status="status"
           :isMyGame="isMyGame"
           v-if="isMyGame() && game !== null && (game.current_event !== null || game.blocks_till_next_event)" />
         <div class='row'>
@@ -36,7 +36,8 @@
             </div>
         </div>
       </div>
-      <Loading v-else/>
+       <Loading v-else/>
+      <Footer />
   </div>
 </template>
 
@@ -51,12 +52,11 @@ import Details from './Details';
 import NoExtensionWarning from './NoExtensionWarning';
 import LaunchIco from './LaunchIco';
 import Loading from './Loading';
+import Footer from './Footer';
 
 import neb from "../logic/HardlyNeb.js";
 import Notifications from "./Notifications";
 const game = require("../logic/game.js");
-const auto_refresh_time = 10000;
-
 
 export default {
   name: 'Home',
@@ -81,13 +81,11 @@ export default {
     Details,
     NoExtensionWarning,
     LaunchIco,
-    Loading
+    Loading,
+    Footer,
   },
 
   computed : {
-    playerResources(){
-      return (this.game && this.game.active_ico) ? this.game.active_ico.resources : new BigNumber(0);
-    },
     status(){
       return {
         onTxPosted : this.onTxPosted,
@@ -96,7 +94,6 @@ export default {
       }
     }
   },
-
 
   methods: {
     showNotification(title, message, href = null, href_text = null, length=3000){
@@ -111,23 +108,17 @@ export default {
 
     onTxPosted(resp) {
       this.showNotification("Transaction posted", '', 'https://explorer.nebulas.io/#/tx/' + resp.txhash, 'Open in Explorer');
-      console.log(`onTxPosted not implemented in Home.vue`);
       console.log(resp);
-      //showStatus("Tx Posted", resp.txhash, 5000); // TODO status display
     },
 
     onError(error) {
       this.showNotification("Error", error);
-      console.log(`onError not implemented in Home.vue`);
       console.log(error);
-      //showStatus("Error", error, 15000);
     },
 
     onSuccess(resp) {
       this.showNotification("Great Success!", resp);
-      console.log(`onSuccess not implemented in Home.vue`);
       console.log(resp);
-      //showStatus("Success", JSON.stringify(resp), 3000);
     },
 
     // Write
@@ -139,19 +130,6 @@ export default {
       }, this.onError);
     },
     
-    invest()
-    {
-      game.invest(this.amount_to_invest, this.onTxPosted, this.onSuccess, this.onError);
-    },
-    exitScam()
-    {
-      game.exitScam(this.onTxPosted, this.onSuccess, this.onError);
-    },
-    redeemEvent()
-    {
-      game.redeemEvent(this.onTxPosted, this.onSuccess, this.onError);
-    },
-
     // Read
     isMyGame()
     {
@@ -212,25 +190,15 @@ export default {
             this.game.team_members.push(item);
           }
         }
-        setTimeout(this.getGame, auto_refresh_time);
+        setTimeout(this.getGame, game.auto_refresh_time);
       }, (error) =>
       {
-        setTimeout(this.getGame, auto_refresh_time);
+        if(!this.game)
+        { // Retry right away
+          return this.getGame();
+        }
+        setTimeout(this.getGame, game.auto_refresh_time);
       });
-    },
-    getBestKnownScammers()
-    {
-      game.getBestKnownScammers(null, null, (resp) =>
-      {
-        this.best_known_scammers = resp;
-      }, this.onError);
-    },
-    getCoinMarketCaps()
-    {
-      game.getCoinMarketCaps(null, null, (resp) =>
-      {
-        this.coin_market_caps = resp;
-      }, this.onError);
     },
     checkTicker()
     {
@@ -241,60 +209,6 @@ export default {
       {
         this.ticker_is_available = false;
       })
-    },
-
-    // For Debugging
-    callMethodAsWrite()
-    {
-      if(this.method_to_call_args === "")
-      {
-        this.method_to_call_args = null;
-      }
-      let args = null;
-      if(this.method_to_call_args)
-      {
-        args = this.method_to_call_args.split(",");
-      }
-      game.directNebWrite(this.method_to_call, args, this.onTxPosted, 0, this.onSuccess, this.onError);
-    },
-    callMethodAsRead()
-    {
-      if(this.method_to_call_args === "")
-      {
-        this.method_to_call_args = null;
-      }
-      let args = null;
-      if(this.method_to_call_args)
-      {
-        args = this.method_to_call_args.split(",");
-      }
-      game.directNebRead(this.method_to_call, args, this.onSuccess, this.onError);
-    },
-  },
-  filters: {
-    count(value)
-    {
-      return numberWithCommas(value);
-    },
-    date(value)
-    {
-      return new Date(value).toString();
-    },
-    percent(value)
-    {
-      return numberWithCommas(value) + "%";
-    },
-    decimal(value)
-    {
-      return numberWithCommas(value, 4);
-    },
-    price(value)
-    {
-      return numberWithCommas(value);
-    },
-    nas(value)
-    {
-      return formatCoins(value, 18);
     },
   },
   mounted() {
@@ -364,6 +278,7 @@ export default {
         left:0;
         right:0;
         background-color: #202022;
+        z-index: -1;
     }
 
 </style>

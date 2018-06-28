@@ -720,7 +720,7 @@ Contract.prototype =
     removeFromList(this.lists, "active_icos", ico.id);
     this.addr_to_user.put(user.addr, user);
     
-    Event.Trigger("forceExis", {
+    Event.Trigger("forceExit", {
       ico,
     });
   },

@@ -57,7 +57,7 @@
   export default {
     name: "Airdrops",
 
-    props : ['game', 'redeemEvent', 'isMyGame'],
+    props : ['game', 'isMyGame'],
 
     data(){
       return {
@@ -74,28 +74,15 @@
 
     methods : {
       getExpectedReward(){
-        return this.game.current_event ? new BigNumber(this.game.current_event.expected_reward) : new BigNumber(0);
-      }
-    },
-    filters: {
-        count(value) 
+        return this.game.current_event ? this.game.current_event.expected_reward : new BigNumber(0);
+      },
+        redeemEvent()
         {
-            return numberWithCommas(value);
+            game.redeemEvent(onTxPosted, onSuccess, onError);
         },
-    }
+    },
   }
 
-// From https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-const numberWithCommas = (x, decimals) => 
-{
-    if(decimals == null)
-    {
-        decimals = 0;
-    }
-    let parts = Number.parseFloat(x).toFixed(decimals).split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return parts.join(".");
-}
 </script>
 
 <style scoped>

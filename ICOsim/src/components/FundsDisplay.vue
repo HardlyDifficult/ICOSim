@@ -1,7 +1,12 @@
 <template>
   <span class="funds">
-    <span v-for="(part, index) in fund_parts" v-bind:key="index">
-      <span :style="mystyle" :class="'fund_part ' + (part === '.' ? 'fund-dot' : 'num')">{{part}}</span>
+    <span v-for="(part, index) in number_parts" v-bind:key="index">
+      <span :style="mystyle" class="fund_part num">{{part}}</span>
+      <span :style="mystyle"  class="fund_part comma" v-if="index < number_parts.length - 1">,</span>
+    </span>
+    <span :style="mystyle" class="fund_part fund-dot" v-if="decimal_parts.length > 0">.</span>
+    <span v-for="(part, index) in decimal_parts" v-bind:key="index">
+      <span :style="mystyle" class="fund_part num">{{part}}</span>
     </span>
      
       <i v-if="showdirection && step.gt(0)" class="fas fa-caret-up" 
@@ -14,13 +19,11 @@
 
 <script>
     import {BigNumber} from 'bignumber.js';
-    import FundNumber from './FundNumber';
 
     export default {
     name: "FundsDisplay",
     props : ['target', 'mystyle', 'instant', 'showdirection', 'places', 'start', 'jumpprecision'],
     components : {
-      FundNumber
     },
 
     data : function(){
@@ -73,14 +76,14 @@
     },
 
     computed : {
-      fund_parts () {
+      number_parts () {
         let parts = this.value.toFixed(this.places ? this.places : 2).toString().split(".");
         let parts2 = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",").split(",");
-        return [
-            ...parts2,
-            ".",
-            parts[1]
-        ];
+        return parts2;
+      },
+      decimal_parts () {
+        let parts = this.value.toFixed(this.places ? this.places : 2).toString().split(".");
+        return parts[1];
       }
     },
 
@@ -106,7 +109,15 @@
         font-size:4em;
     }
     .num{
-        padding-left:0.1em;
-        padding-right:0.1em;
+    }
+    .fund-dot{
+      position: relative;
+      margin-left: -.15em;
+      margin-right: -.2em;
+    }
+    .comma{
+      position: relative;
+      margin-left: -.3em;
+      margin-right: -.1em;
     }
 </style>

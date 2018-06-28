@@ -110,7 +110,7 @@ export default {
     },
 
     onTxPosted(resp) {
-      this.showNotification("Notification posted", resp);
+      this.showNotification("Transaction posted", '', 'https://explorer.nebulas.io/#/tx/' + resp.txhash, 'Open in Explorer');
       console.log(`onTxPosted not implemented in Home.vue`);
       console.log(resp);
       //showStatus("Tx Posted", resp.txhash, 5000); // TODO status display

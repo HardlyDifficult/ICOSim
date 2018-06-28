@@ -26,7 +26,7 @@
                             <FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="advisor_bonus" :start="advisor_bonus" style="display:inline-block"/>%
                         </div>
                         <div class="col-md-2">
-                            <FundsContainer :places=8 :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block"/> NAS
+                            <FundsContainer :places=12 :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block"/> NAS
                         </div>
                     </div>
                 </div>
@@ -50,6 +50,8 @@
 <script>
   import FundsContainer from './FundsDisplay';
   import {BigNumber} from 'bignumber.js';
+
+  const token_denominator = new BigNumber(1000000000000000000);
 
   export default {
     name: "Details",
@@ -79,7 +81,7 @@
       },
       nas_value(){
         if(this.game && this.game.active_ico)
-          return this.game.active_ico.my_resources_nas_value;
+          return this.game.active_ico.my_resources_nas_value.div(token_denominator);
         return new BigNumber(0);
       },
       playerResources(){

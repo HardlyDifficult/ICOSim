@@ -3,7 +3,7 @@ const Nebulas = require('nebulas');
 const fs = require('fs');
 const consts = require('../static/consts');
 let conf = null;
-let contract_address = null;//"n1hgeDhch4Vu6JrrL6EtDj7PXCVbRwr6dGp"; //
+let contract_address = "n1mjmg5nhrh4zJgdSnS4tMZyW3gTj3oBLg9";//"n1hgeDhch4Vu6JrrL6EtDj7PXCVbRwr6dGp"; //
 
 try{
   conf = require('./config.json');
@@ -108,27 +108,27 @@ async function run(){
           // .0001 nas == .05 cents
           // $5 == 1 nas
           // Roadmap
-          {name: "Announce an Announcement", sort_id: 100,    start_price: "9",             nas_price: "50000000000", resources_per_s: "5"},
-          {name: item_make_a_commit, sort_id: 200,            start_price: "159",           nas_price: "500000000000" /* .0001 nas*/, resources_per_s: "1"},
-          {name: "Do a Giveaway on Twitter", sort_id: 300,    start_price: "1015",          nas_price: "1200000000000", resources_per_s: "25"},
-          {name: "Publish Performance Numbers", sort_id: 400, start_price: "8888",          nas_price: "3200000000000", resources_per_s: "10"},
+          {name: "Announce an Announcement", sort_id: 100,    start_price: "9",             nas_price: "50000000000", resources_per_s: "1"},
+          {name: item_make_a_commit, sort_id: 200,            start_price: "159",           nas_price: "500000000000" /* .0001 nas*/, resources_per_s: "5"},
+          {name: "Do a Giveaway on Twitter", sort_id: 300,    start_price: "1015",          nas_price: "1200000000000", resources_per_s: "10"},
+          {name: "Publish Performance Numbers", sort_id: 400, start_price: "8888",          nas_price: "3200000000000", resources_per_s: "25"},
           {name: "Incite FOMO", sort_id: 500,                 start_price: "42001",         nas_price: "7000000000000", resources_per_s: "50"},
-          {name: "Release Audit", sort_id: 600,               start_price: "302099",        nas_price: "15000000000000", resources_per_s: "10000"},
+          {name: "Release Audit", sort_id: 600,               start_price: "302099",        nas_price: "15000000000000", resources_per_s: "100"},
           {name: "Announce Partnership", sort_id: 700,        start_price: "5050050",       nas_price: "80000000000000", resources_per_s: "500"},
           {name: "Release Wallet", sort_id: 800,              start_price: "699999999",     nas_price: "1800000000000000", resources_per_s: "10000"},
-          {name: "Rebrand", sort_id: 900,                     start_price: "7500000000",    nas_price: "9500000000000000", resources_per_s: "10000"},
-          {name: "Buy Exchange Listing", sort_id: 1000,       start_price: "20000000000",   nas_price: "20000000000000000", resources_per_s: "100"},
+          {name: "Rebrand", sort_id: 900,                     start_price: "7500000000",    nas_price: "9500000000000000", resources_per_s: "50000"},
+          {name: "Buy Exchange Listing", sort_id: 1000,       start_price: "20000000000",   nas_price: "20000000000000000", resources_per_s: "100000"},
 
           // Advisors
           {name: "Tom Lee", sort_id: 1100,                    start_price: "420000000",     nas_price: "7000000000000000", bonus_multiplier: "1"},
           {name: "Craig Grant", sort_id: 1200,                start_price: "1250000000",    nas_price: "15000000000000000", bonus_multiplier: "2"},
           {name: "Ian Balina", sort_id: 1300,                 start_price: "5000000000",    nas_price: "42000000000000000", bonus_multiplier: "5"},
           {name: "Suppoman", sort_id: 1400,                   start_price: "20000000000",   nas_price: "70000000000000000", bonus_multiplier: "8"},
-          {name: "Dr Craig S Wright", sort_id: 1500,          start_price: "45000000000",   nas_price: "90000000000000000", bonus_multiplier: "25"},
-          {name: "Trevon James", sort_id: 1600,               start_price: "75000000000",   nas_price: "120000000000000000", bonus_multiplier: "10"},
-          {name: "Roger Ver", sort_id: 1700,                  start_price: "125000000000",  nas_price: "150000000000000000", bonus_multiplier: "13"},
-          {name: "John McAfee", sort_id: 1800,                start_price: "200000000000",  nas_price: "230000000000000000", bonus_multiplier: "15"},
-          {name: "Carlos Matos", sort_id: 1900,               start_price: "300000000000",  nas_price: "300000000000000000", bonus_multiplier: "20"},
+          {name: "Dr Craig S Wright", sort_id: 1500,          start_price: "45000000000",   nas_price: "90000000000000000", bonus_multiplier: "10"},
+          {name: "Trevon James", sort_id: 1600,               start_price: "75000000000",   nas_price: "120000000000000000", bonus_multiplier: "13"},
+          {name: "Roger Ver", sort_id: 1700,                  start_price: "125000000000",  nas_price: "150000000000000000", bonus_multiplier: "15"},
+          {name: "John McAfee", sort_id: 1800,                start_price: "200000000000",  nas_price: "230000000000000000", bonus_multiplier: "20"},
+          {name: "Carlos Matos", sort_id: 1900,               start_price: "300000000000",  nas_price: "300000000000000000", bonus_multiplier: "25"},
         ]
 
         for(var i = 0; i < items.length; i++)

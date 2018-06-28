@@ -155,6 +155,13 @@ module.exports =
     {
         neb.nebRead("getInfo", [ticker], function(info) 
         {
+            if(!info){
+              console.log('failed to fetch game!');
+              if(onError)
+                onError('failed to fetch game');
+              return;
+            }
+
             info.items.sort(function(a, b)
             {
                 return a.sort_id - b.sort_id;

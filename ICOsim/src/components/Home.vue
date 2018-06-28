@@ -169,9 +169,8 @@ export default {
 
         if(this.game.active_ico && !this.$route.params.ticker && this.$route.name === 'Home'){
           this.$router.push({name : 'ico', params : {ticker:  this.game.active_ico.ticker}});
-
         }else {
-          this.$router.push({name : '', params : {ticker: ''}});
+          //this.$router.push({name : '', params : {ticker: ''}});
         }
 
         this.game.roadmap_steps = [];

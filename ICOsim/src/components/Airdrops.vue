@@ -2,9 +2,8 @@
     <div class="airdrop-outer">
         <div class="airdrop-warning" v-if="!game.current_event || game.current_event.number_of_blocks_remaining === 0 || game.current_event.user_has_redeemed">
             <span v-if="game.current_event">
-                <i class="fas fa-check"></i>
-                Successfully claimed Airdrop worth $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="game.current_event.expected_reward" :start="game.current_event.expected_reward" style="display:inline-block"/>%
-                <i class="fas fa-check"></i>
+                Successfully claimed Airdrop!<br>
+                <!--$<FundsDisplay :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="game.current_event.expected_reward" :start="game.current_event.expected_reward" style="display:inline-block"/>-->
             </span>
             <span v-else>
                 <i class="fas fa-exclamation exclamation"></i>

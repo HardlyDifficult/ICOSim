@@ -40,9 +40,6 @@
                         <div class="col-12" v-if="isMyGame()">
                             <div class="col-12 line gray-on-disable"></div>
                             <div class="row cols-same-height buy-section">
-                                <div class="col-sm-4">
-                                    <button @click="onBuy(item, selections[item.name].number_to_buy.toString())" class="btn btn-buy">BUY</button>
-                                </div>
                                 <div class="col-sm-8 gray-on-disable">
                                     <div class="row">
                                         <div class="col-12">
@@ -65,6 +62,9 @@
                                             ></VueSlider>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <button @click="onBuy(item, selections[item.name].number_to_buy.toString())" class="btn btn-buy">BUY</button>
                                 </div>
                             </div>
                             <div class="row buy-with-nas-container" v-if="isMyGame()">

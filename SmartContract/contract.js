@@ -979,7 +979,7 @@ Contract.prototype =
     var user = this.getUser(Blockchain.transaction.from);
     var height = new BigNumber(Blockchain.block.height);
     var offset = height.mod(this.event_config.interval);
-    var current_event_source_block_height = height - offset;
+    var current_event_source_block_height = height.sub(offset);
     user.last_event_redeemed = current_event_source_block_height;
     this.addr_to_user.put(user.addr, user);
     var ico = this.getActiveICO();
@@ -1046,7 +1046,6 @@ Contract.prototype =
       data.active_ico = this.getICO(ico_id);
 
       data.active_ico.is_you = Blockchain.transaction.from == data.active_ico.player_addr;
-      data.active_ico.my_resources = this.getMyResources(ico_id);
       data.active_ico.my_resources_nas_value = this.getMyResourcesNasValue(ico_id);
       data.active_ico.my_production_rate = this.getMyProductionRate(ico_id);
       data.active_ico.my_bonus = this.getMyBonus(ico_id);
@@ -1122,8 +1121,11 @@ function addToList(lists, list_name, item)
     throw new Error("Adding null to a list? hmmm: " + item);
   }
   var list = lists.get(list_name);
-  list.push(item);
-  lists.put(list_name, list);
+  if(list.indexOf(item) < 0)
+  {
+    list.push(item);
+    lists.put(list_name, list);
+  }
 }
 
 function removeFromList(lists, list_name, item)

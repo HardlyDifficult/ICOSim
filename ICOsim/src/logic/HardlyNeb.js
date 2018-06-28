@@ -62,9 +62,9 @@ module.exports =
 
         let write_id = ++write_count;
 
-        this.nebRead(method, args, 
-            () => completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError, write_id), 
-            onError, nas_to_send);
+        //this.nebRead(method, args, () => 
+        completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError, write_id)
+        //, onError, nas_to_send);
     },
 
     nebSend(to, onTxPosted, value, onSuccess, onError)

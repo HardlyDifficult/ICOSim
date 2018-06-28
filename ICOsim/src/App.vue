@@ -24,6 +24,11 @@
     margin-top: 60px;
   }
 
+  .glow-white{
+    -webkit-box-shadow: 0px 0px 35px 1px rgba(255,255,255,0.22);
+    -moz-box-shadow: 0px 0px 35px 1px rgba(255,255,255,0.22);
+    box-shadow: 0px 0px 35px 1px rgba(255,255,255,0.22);
+  }
   .glow-1{
     -webkit-box-shadow: 0px 0px 35px 1px rgba(46,255,255,0.22);
     -moz-box-shadow: 0px 0px 35px 1px rgba(46,255,255,0.22);

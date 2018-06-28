@@ -23,13 +23,13 @@
                             </div>
                         </div>
 
-                        <div class="col-12 line"></div>
+                        <div class="col-12 line gray-on-disable"></div>
 
                         <div class="col-4">
                             <p>Count: {{item.user_holdings | count}}</p>
                             <p v-if="item.user_item_production">Production: {{item.user_item_production | resources}}</p>
                         </div>
-                        <div class="col-8">
+                        <div class="col-8 gray-on-disable">
                             <p>
                                 Current Price
                             </p>
@@ -38,12 +38,12 @@
 
 
                         <div class="col-12" v-if="isMyGame()">
-                            <div class="col-12 line"></div>
+                            <div class="col-12 line gray-on-disable"></div>
                             <div class="row cols-same-height buy-section">
                                 <div class="col-sm-4">
                                     <button @click="onBuy(item, selections[item.name].number_to_buy.toString())" class="btn btn-buy">BUY</button>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-8 gray-on-disable">
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="row">
@@ -67,13 +67,14 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" v-if="isMyGame()">
-                                <div class="col-12 line"></div>
+                            <div class="row buy-with-nas-container" v-if="isMyGame()">
+                                <div class="col-12 line gray-on-disable"></div>
                                 <button class="btn btn-secondary col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">Buy with NAS</button>
                                 <div class="col-12 mt-3" v-if="show_buy_nas[item.name]">
+                                    <p class="mb-3" style="color:orange"><small>100% of NAS goes into the contract and gets sent to players who "exit scam"</small></p>
                                     <div class="row cols-same-height">
                                         <div class="col-4">
-                                            <button v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-buy">
+                                            <button style="font-size:0.8em" v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-buy">
                                                 BUY <br>w/ NAS
                                             </button>
                                         </div>
@@ -269,9 +270,17 @@
         margin-bottom:15px;
     }
 
-    .locked.cannot_afford > .roadmap-step-inner{
+    .locked.cannot_afford  .roadmap-step-inner{
         opacity: 0.1;
+        -webkit-box-shadow: 0px 0px 35px 1px rgba(255,255,255,0.22);
+        -moz-box-shadow: 0px 0px 35px 1px rgba(255,255,255,0.22);
+        box-shadow: 0px 0px 35px 1px rgba(255,255,255,0.22);
+    }
+    .locked.cannot_afford  .btn{
         pointer-events: none;
+    }
+
+    .locked.cannot_afford .gray-on-disable{
         -webkit-filter: grayscale(100%);
         filter: grayscale(100%);
     }
@@ -287,6 +296,9 @@
         opacity: 0.5;
     }
     .locked.can_afford> .roadmap-step-inner:hover {
+        opacity: 0.9;
+    }
+    .locked.cannot_afford > .roadmap-step-inner:hover {
         opacity: 0.9;
     }
 
@@ -421,5 +433,16 @@
         visibility:visible;
         background:white;
     }
-
+    .buy-with-nas-container *{
+        pointer-events: all !important;
+    }
+    .buy-with-nas-container .btn{
+        cursor:pointer;
+    }
+    .buy-with-nas-container .btn-buy{
+        background-color:rgba(0,147,196,0.5);
+    }
+    .buy-with-nas-container .btn-buy:hover{
+        background-color:rgba(0,177,193,0.5);
+    }
 </style>

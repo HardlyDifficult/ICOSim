@@ -1,12 +1,14 @@
 <template>
   <span class="funds">
-      <FundNumber v-for="(part, index) in fund_parts" :class="(part === '.' ? 'fund-dot' : '')" 
-        v-bind:key="index" :mystyle="mystyle" :content="part"/>
-
+    <span v-for="(part, index) in fund_parts" v-bind:key="index">
+      <span :style="mystyle" :class="'fund_part ' + (part === '.' ? 'fund-dot' : 'num')">{{part}}</span>
+    </span>
+     
       <i v-if="showdirection && step.gt(0)" class="fas fa-caret-up" 
         :style="mystyle ? mystyle : {fontSize : '4em'}" style="color:green !important;"></i>
       <i v-if="showdirection && step.lt(0)" class="fas fa-caret-down" 
         :style="mystyle ? mystyle : {fontSize : '4em'}" style="color:red !important;"></i>
+
   </span>
 </template>
 
@@ -93,5 +95,18 @@
 <style scoped>
     .funds {
         pointer-events:none;
+    }
+     .fund_part{
+        font-family: monospace;
+        background-color: rgba(30,30,30,0.7);
+        color : rgba(7,190,215,1);
+        padding:0;
+        border-radius:15px;
+        margin:0;
+        font-size:4em;
+    }
+    .num{
+        padding-left:0.1em;
+        padding-right:0.1em;
     }
 </style>

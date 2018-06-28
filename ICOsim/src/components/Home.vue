@@ -1,7 +1,5 @@
 <template>
   <div class='container-fluid'>
-      
-
       <div class="fixed-bg"></div> 
       <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
       <Navbar :color="'rgba(7,190,215,1)'"/>
@@ -59,8 +57,6 @@ import Footer from './Footer';
 import neb from "../logic/HardlyNeb.js";
 import Notifications from "./Notifications";
 const game = require("../logic/game.js");
-const auto_refresh_time = 10000;
-
 
 export default {
   name: 'Home',
@@ -90,9 +86,6 @@ export default {
   },
 
   computed : {
-    playerResources(){
-      return (this.game && this.game.active_ico) ? this.game.active_ico.resources : new BigNumber(0);
-    },
     status(){
       return {
         onTxPosted : this.onTxPosted,
@@ -101,7 +94,6 @@ export default {
       }
     }
   },
-
 
   methods: {
     showNotification(title, message, href = null, href_text = null, length=3000){
@@ -198,10 +190,14 @@ export default {
             this.game.team_members.push(item);
           }
         }
-        setTimeout(this.getGame, auto_refresh_time);
+        setTimeout(this.getGame, game.auto_refresh_time);
       }, (error) =>
       {
-        setTimeout(this.getGame, auto_refresh_time);
+        if(!this.game)
+        { // Retry right away
+          return this.getGame();
+        }
+        setTimeout(this.getGame, game.auto_refresh_time);
       });
     },
     checkTicker()

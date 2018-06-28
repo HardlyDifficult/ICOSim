@@ -23,13 +23,13 @@
                             </div>
                         </div>
 
-                        <div class="col-12 line gray-on-disable"></div>
+                        <div class="col-12 line"></div>
 
                         <div class="col-4">
                             <p>Count: {{item.user_holdings | count}}</p>
-                            <p v-if="item.user_item_production">Production: {{item.user_item_production | resources}}</p>
+                            <p>Production: {{item.user_item_production | count}}</p>
                         </div>
-                        <div class="col-8 gray-on-disable">
+                        <div class="col-8">
                             <p>
                                 Current Price
                             </p>
@@ -38,19 +38,20 @@
 
 
                         <div class="col-12" v-if="isMyGame()">
-                            <div class="col-12 line gray-on-disable"></div>
+                            <div class="col-12 line"></div>
                             <div class="row cols-same-height buy-section">
                                 <div class="col-sm-4">
                                     <button @click="onBuy(item, selections[item.name].number_to_buy.toString())" class="btn btn-buy">BUY</button>
                                 </div>
-                                <div class="col-sm-8 gray-on-disable">
+                                <div class="col-sm-8">
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="row">
-                                                <div class="col">
-                                                    Buy {{selections[item.name].number_to_buy}} For
-                                                    ${{getBuyPrice(item) | resources}}<br>
-                                                    +${{ getBuyProductionGain(item) | resources }}/s
+                                                <div class="col-12">
+                                                    BUY {{selections[item.name].number_to_buy}} FOR<br>
+                                                </div>
+                                                <div class="col-12">
+                                                    $ {{getBuyPrice(item)}}
                                                 </div>
                                             </div>
                                         </div>
@@ -60,22 +61,21 @@
                                                     v-model="selections[item.name].number_to_buy"
                                                     :speed="0"
                                                     :tooltip="'hover'"
-                                                    :min="item.user_max_can_afford.gt(0) ? 1 : 0"
-                                                    :max="item.user_max_can_afford.toNumber()"
+                                                    :min="item.user_max_can_afford > 0 ? 1 : 0"
+                                                    :max="item.user_max_can_afford"
                                             ></VueSlider>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row buy-with-nas-container" v-if="isMyGame()">
-                                <div class="col-12 line gray-on-disable"></div>
-                                <button class="btn btn-secondary col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">Buy with NAS</button>
-                                <div class="col-12 mt-3" v-if="show_buy_nas[item.name]">
-                                    <p class="mb-3" style="color:orange"><small>100% of NAS goes into the contract and gets sent to players who "exit scam"</small></p>
+                            <div class="row" v-if="isMyGame()">
+                                <div class="col-12 line"></div>
+                                <div class="col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">Buy with NAS.</div>
+                                <div class="col-12" v-if="show_buy_nas[item.name]">
                                     <div class="row cols-same-height">
                                         <div class="col-4">
-                                            <button style="font-size:0.8em" v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-buy">
-                                                BUY <br>w/ NAS
+                                            <button v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-buy">
+                                                Buy
                                             </button>
                                         </div>
                                         <div class="col-8">
@@ -84,9 +84,7 @@
                                                     <input title="nas-buy-input" class="form-control" type="number" v-model="selections[item.name].number_to_buy_with_nas" @input="$forceUpdate()">
                                                 </div>
                                                 <div class="col-12" >
-                                                    Buy {{ selections[item.name].number_to_buy_with_nas | count }} For 
-                                                    {{ getBuyWithNasCost(item) | nas }}
-                                                    +${{ getBuyProductionGainWithNas(item) | resources }}/s
+                                                    Buy {{ selections[item.name].number_to_buy_with_nas | count }} for +{{ getBuyProductionGainWithNas(item) | count }}/s
                                                 </div>
                                             </div>
                                         </div>
@@ -159,11 +157,11 @@
         },
         getBuyProductionGain(item)
         {
-            return game.getBuyProductionGain(game, item, this.selections[item.name].number_to_buy);
+            return this.selections[item.name].number_to_buy * item.resources_per_s;
         },
         getBuyProductionGainWithNas(item)
         {
-            return game.getBuyProductionGain(game, item, this.selections[item.name].number_to_buy_with_nas);
+            return this.selections[item.name].number_to_buy_with_nas * item.resources_per_s;
         },
     },
     
@@ -268,19 +266,15 @@
     }
     .roadmap-step-team{
         margin-bottom:15px;
+
+    }
+    .roadmap-step-team .roadmap-step-inner{
+        border-radius : 55px 5px 55px 55px;
     }
 
-    .locked.cannot_afford  .roadmap-step-inner{
+    .locked.cannot_afford > .roadmap-step-inner{
         opacity: 0.1;
-        -webkit-box-shadow: 0px 0px 35px 1px rgba(255,255,255,0.22);
-        -moz-box-shadow: 0px 0px 35px 1px rgba(255,255,255,0.22);
-        box-shadow: 0px 0px 35px 1px rgba(255,255,255,0.22);
-    }
-    .locked.cannot_afford  .btn{
         pointer-events: none;
-    }
-
-    .locked.cannot_afford .gray-on-disable{
         -webkit-filter: grayscale(100%);
         filter: grayscale(100%);
     }
@@ -296,9 +290,6 @@
         opacity: 0.5;
     }
     .locked.can_afford> .roadmap-step-inner:hover {
-        opacity: 0.9;
-    }
-    .locked.cannot_afford > .roadmap-step-inner:hover {
         opacity: 0.9;
     }
 
@@ -382,8 +373,8 @@
 
     .corner-ribbon-container{
         position:absolute;
-        left:-1px;
-        top:-1px;
+        left:0;
+        top:0;
         height:100%;
         width:100%;
         overflow:hidden;
@@ -405,6 +396,13 @@
         color:black;
         font-weight:bolder;
         opacity:0.7;
+    }
+    .roadmap-step-team .corner-ribbon{
+        top: 20px;
+        right: -65px;
+        left: auto;
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
     }
     .unlocked .corner-ribbon{
         visibility:visible;
@@ -433,16 +431,5 @@
         visibility:visible;
         background:white;
     }
-    .buy-with-nas-container *{
-        pointer-events: all !important;
-    }
-    .buy-with-nas-container .btn{
-        cursor:pointer;
-    }
-    .buy-with-nas-container .btn-buy{
-        background-color:rgba(0,147,196,0.5);
-    }
-    .buy-with-nas-container .btn-buy:hover{
-        background-color:rgba(0,177,193,0.5);
-    }
+
 </style>

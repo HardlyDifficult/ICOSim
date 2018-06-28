@@ -39,7 +39,7 @@
                         </div>
                         <div class="col-md-2"></div>
                         <div class="col-md-2"></div>
-                        <div class="col-md-2"><button v-if="canExit()" class="btn btn-sm btn-primary">EXIT SCAM NOW</button></div>
+                        <div class="col-md-2"><button v-if="canExit()" class="btn btn-sm btn-primary" @click="exitscam">EXIT SCAM NOW</button></div>
                     </div>
                 </div>
             </div>
@@ -50,13 +50,13 @@
 <script>
   import FundsContainer from './FundsDisplay';
   import {BigNumber} from 'bignumber.js';
+    const game = require("../logic/game.js");
 
-  const token_denominator = new BigNumber(1000000000000000000);
 
   export default {
     name: "Details",
 
-    props : ['game', 'isMyGame'],
+    props : ['game', 'isMyGame', 'status'],
 
     components : {
       FundsContainer
@@ -65,7 +65,11 @@
     methods : {
       canExit(){
         return (this.game && this.game.active_ico && this.game.active_ico.my_resources_nas_value.gt(0));
-      }
+      },
+        exitScam()
+        {
+            game.exitScam(status.onTxPosted, status.onSuccess, status.onError);
+        },
     },
 
     computed : {
@@ -81,7 +85,7 @@
       },
       nas_value(){
         if(this.game && this.game.active_ico)
-          return this.game.active_ico.my_resources_nas_value.div(token_denominator);
+          return this.game.active_ico.my_resources_nas_value;
         return new BigNumber(0);
       },
       playerResources(){

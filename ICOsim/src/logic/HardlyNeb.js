@@ -12,7 +12,6 @@ let has_checked_for_wallet = false;
 let wallet_check_count = 0;
 const timeout_error_message = "Unexpected token < in JSON at position 0";
 const auto_retry_time = 3000;
-let read_timeout = null;
 let write_count = 0;
 
 module.exports = 
@@ -137,14 +136,29 @@ module.exports =
             }
         }
 
-        read_timeout = setTimeout(() => this.nebRead(method, args, onSuccess, onError, nas_to_send), auto_retry_time);
+        let done = false;
+        var read_timeout = setTimeout(() => {
+            if(done) 
+            {
+                return;
+            }
+            done = true;
+
+            this.nebRead(method, args, onSuccess, onError, nas_to_send)
+        }, auto_retry_time);
 
         log.debug("REQ nebRead: " + method);
         nebPay.simulateCall(neb_contract.contract, nas_to_send, method, global.JSON.stringify(args), {
             listener: (resp) =>
             {
-                log.debug("RES nebRead: " + method);
+                if(done) 
+                {
+                    return;
+                }
+                done = true;
                 clearTimeout(read_timeout);
+                
+                log.debug("RES nebRead: " + method);
 
                 if(resp == timeout_error_message) 
                 {

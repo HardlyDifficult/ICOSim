@@ -3,7 +3,7 @@ const Nebulas = require('nebulas');
 const fs = require('fs');
 const consts = require('../static/consts');
 let conf = null;
-let contract_address = "n1mjmg5nhrh4zJgdSnS4tMZyW3gTj3oBLg9";//"n1hgeDhch4Vu6JrrL6EtDj7PXCVbRwr6dGp"; //
+let contract_address = null;//"n1mjmg5nhrh4zJgdSnS4tMZyW3gTj3oBLg9";//"n1hgeDhch4Vu6JrrL6EtDj7PXCVbRwr6dGp"; //
 
 try{
   conf = require('./config.json');
@@ -18,7 +18,7 @@ if(conf.version !==  consts.CONF_VERSION){
 }
 
 const contractSource = fs.readFileSync('./contract.js').toString();
-const apiUrl = "https://mainnet.nebulas.io";//"http://localhost:8685";
+const apiUrl = "http://localhost:8685";//"https://mainnet.nebulas.io";
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -98,10 +98,10 @@ async function run(){
         await callMethod("setStartingResources", "1000"); 
         await callMethod("setWorldResources", "1000000000000"); 
         await callMethod("setEventConfig", {
-          interval: "10", 
+          interval: "50", 
           min_reward: "10000", max_reward: "10000000000", 
           min_reward_percent: "0.1", max_reward_percent: "100", 
-          min_length: "2", max_length: "7"});
+          min_length: "2", max_length: "15"});
 
         var item_make_a_commit = "Make a Commit on Github";
         var items = [

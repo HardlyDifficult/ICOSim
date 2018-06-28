@@ -171,7 +171,7 @@ module.exports =
             if(info.active_ico)
             {
                 delete info.active_ico.my_resources; // dupe info
-                info.active_ico.my_resources_nas_value = new BigNumber(info.active_ico.my_resources_nas_value);
+                info.active_ico.my_resources_nas_value = new BigNumber(info.active_ico.my_resources_nas_value).div(token_denominator);
                 info.active_ico.resources = new BigNumber(info.active_ico.resources).div(100);
                 info.active_ico.my_production_rate = new BigNumber(info.active_ico.my_production_rate).div(100);
                 info.active_ico.my_bonus = new BigNumber(info.active_ico.my_bonus);

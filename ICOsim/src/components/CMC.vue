@@ -60,7 +60,7 @@
                                     <td scope="row" class="num">
                                         <FundsContainer :showdirection=1 :target="ico.market_cap" :mystyle="number_style"/>
                                     </td>
-                                    <td scope="row" class="num">${{ico.total_production_rate | count}}/s</td>
+                                    <td scope="row" class="num">${{ico.total_production_with_bonus | resources}}/s</td>
                                     <td scope="row" >{{ico.player_addr | addr}}</td>
                             </tr>
                             <tr v-if="show_scammers" v-for="(scammer, index) in scammers" v-bind:key="scammer.id">

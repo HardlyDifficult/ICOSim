@@ -859,17 +859,17 @@ Contract.prototype =
     {
       ico.items[name] = new SafeNumber(ico.items[name]).plus(quantity);
     }
-
-    Event.Trigger("buy", {
-      ico,
-      name,
-      quantity,
-      price
-    });
     
     this.ico_id_to_ico.put(ico.id, ico);
-    ico.total_production_rate = this.getMyProductionRate();
-    ico.total_bonus = this.getMyBonus();
+    var item = this.getItemRaw(name);
+    if(item.resources_per_s)
+    {
+      ico.total_production_rate = this.getMyProductionRate();
+    }
+    else
+    {
+      ico.total_bonus = this.getMyBonus();
+    }
     this.ico_id_to_ico.put(ico.id, ico);
   },
   //#endregion

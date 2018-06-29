@@ -19,7 +19,7 @@
                             {{game.active_ico ? game.active_ico.ticker : ""}}
                         </div>
                         <div class="col-md-2">
-                            $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="total_production_rate" :start="total_production_rate" style="display:inline-block"/>/ s
+                            $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="total_production_with_bonus" :start="total_production_with_bonus" style="display:inline-block"/>/ s
                         </div>
                         <div class="col-md-2">
                             <FundsContainer :jumpprecision="0.0000000000001" :places=12 :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block"/> NAS
@@ -69,14 +69,9 @@
     },
 
     computed : {
-      total_production_rate(){
+      total_production_with_bonus(){
         if(this.game && this.game.active_ico)
-          return this.game.active_ico.total_production_rate;
-        return new BigNumber(0);
-      },
-      advisor_bonus(){
-        if(this.game && this.game.active_ico)
-          return this.game.active_ico.my_bonus;
+          return this.game.active_ico.total_production_with_bonus;
         return new BigNumber(0);
       },
       nas_value(){

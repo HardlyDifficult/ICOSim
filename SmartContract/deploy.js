@@ -168,7 +168,7 @@ async function run(){
         await callMethod("getTotalCostFor", [item_make_a_commit, "10000"]);
         await callMethod("getMyItemPrice", [item_make_a_commit, "10000"]);
         await callMethod("getMaxICanAfford", [item_make_a_commit]);
-        await callMethod("buy", ["Make a Commit on Github", "1"]);
+        await callMethod("buy", ["Make a Commit on Github", "2"]);
         await callMethod("getInfo");
         await callMethod("getBestKnownScammers");
         await callMethod("getBestKnownScammers", [1, 10]);
@@ -178,6 +178,7 @@ async function run(){
         await callMethod("getList", "all_items");
         await callMethod("exitScam");
         await callMethod("launchICO", ["HardlyValuable", "HV2"])
+        await callMethod("buy", ["Make a Commit on Github", "1"]);
 
 
 

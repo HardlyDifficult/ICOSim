@@ -172,12 +172,9 @@ module.exports =
 
                 let error = resp.execute_err;
                 let result;
-                if(!error) 
+                if(!error && resp.result) 
                 {
-                    if(resp.result) 
-                    {
-                        result = global.JSON.parse(resp.result);
-                    }
+                    result = global.JSON.parse(resp.result);
                 } 
                 else 
                 {

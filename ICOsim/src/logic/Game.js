@@ -114,7 +114,7 @@ module.exports =
         {
             for(var i = 0; i < scammers.length; i++)
             {
-                scammers[i].nas_redeemed = new BigNumber(scammers[i].nas_redeemed);
+                scammers[i].nas_redeemed = new BigNumber(scammers[i].nas_redeemed).div(token_denominator);
             }
             onSuccess(scammers);
         }, onError);
@@ -152,6 +152,14 @@ module.exports =
             quantity = parseInt(quantity);
         }
         return item.nas_price.mul(quantity);
+    },
+
+    getSellPriceNasPerResource(onSuccess, onError)
+    {
+        neb.nebRead("getSellPriceNasPerResource", [ticker], function(sell_price) {
+            sell_price = new BigNumber(sell_price).div(token_denominator);
+            onSuccess(sell_price);
+        }, onError);
     },
     
     getGame(onSuccess, onError)

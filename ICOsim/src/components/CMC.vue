@@ -4,27 +4,29 @@
         <div class="fixed-bg"></div><!--super stupid workaround-->
         <div class="col-12">
             <Navbar :color="'black'"/>
-            <div class="row">
+            <div class="row" >
                 <div class="col-12 hl"></div>
-                <div class="col-12">
-                    ICOs: {{ icos.length | count }}
+                <div class="col-12" v-if="icos">
+                    ICOs:
+                        <FundsContainer :places=0 :showdirection=0 :target="ico_count" :mystyle="number_style"/>                    
                     <span class="bullet">•</span>
-                    Market Cap: <FundsContainer :showdirection=1 :target="total_market_cap" :mystyle="number_style"/>
+                    Market Cap: <FundsContainer :jumpprecision="1" :showdirection=0 :target="total_market_cap" :mystyle="number_style"/>
                     <span class="bullet">•</span>
-                    Growth: ${{ total_growth | count }}/s
+                    Growth: $ <FundsContainer :showdirection=0 :target="total_growth" :mystyle="number_style"/>/s
                     <span class="bullet">•</span>
-                    Scammers: {{ scammers.length | count }}
+                    Scammers: 
+                        <FundsContainer :jumpprecision="1" :places=0 :showdirection=0 :target="scammer_count" :mystyle="number_style"/>                                        
                     <span class="bullet">•</span>
-                    Taken:  <FundsContainer :showdirection=1 :target="total_scammed" :mystyle="number_style"/>
+                    Taken:  <FundsContainer :showdirection=1 :target="total_scammed"  :jumpprecision="0.0000000000001" :label="'nas'" :places=12 :mystyle="number_style"/>
                 </div>
-                <div class="col-12 hl"></div>
-                <div class="col-12">
+                <div class="col-12 hl" v-if="icos"></div>
+                <div class="col-12" v-if="icos">
                     <h3 class="title" v-if="show_scammers">Top Scammers By NAS Taken</h3>
                     <h3 class="title" v-if="!show_scammers">Top ICOs By Market Capitalization</h3>
                 </div>
             </div>
         </div>
-        <div class="col-12 table-container">
+        <div class="col-12 table-container" v-if="icos">
             <div class="row">
                 <div class="col-lg-1"></div>
                 <div class="col-lg-10">
@@ -45,6 +47,7 @@
                                 <th scope="col" v-if="!show_scammers">Name</th>
                                 <th scope="col" class="num" v-if="!show_scammers">Market Cap</th>
                                 <th scope="col" class="num" v-if="!show_scammers">Growth</th>
+                                <th scope="col" class="num" v-if="!show_scammers">Exit Value</th>
                                 <th scope="col" >Owner</th>
                             </tr>
                         </thead>
@@ -58,16 +61,19 @@
                                         </router-link>
                                     </td>
                                     <td scope="row" class="num">
-                                        <FundsContainer :showdirection=1 :target="ico.market_cap" :mystyle="number_style"/>
+                                        <FundsContainer :showdirection=0 :target="ico.estimated_market_cap" :mystyle="number_style"/>
                                     </td>
                                     <td scope="row" class="num">${{ico.total_production_with_bonus | resources}}/s</td>
+                                    <td scope="row">
+                                        <FundsContainer v-if="ico.estimated_sell_price"  :jumpprecision="0.0000000000001" :label="'nas'" :places=12 :showdirection=1 :target="ico.estimated_sell_price" :mystyle="number_style"/>                                        
+                                    </td>
                                     <td scope="row" >{{ico.player_addr | addr}}</td>
                             </tr>
                             <tr v-if="show_scammers" v-for="(scammer, index) in scammers" v-bind:key="scammer.id">
                                 <td scope="row" class="border-right" >{{index + 1}}</td>
                                 
                                 <td scope="row" class="num">
-                                    <FundsContainer :showdirection=1 :target="scammer.nas_redeemed" :mystyle="number_style"/>                                    
+                                    <FundsContainer :showdirection=1 :target="scammer.nas_redeemed" :label="'nas'" :places=12 :mystyle="number_style"/>                                    
                                 </td>
                                     <td>
                                         <span v-for="(ticker, index) in scammer.retired_icos" v-bind:key="ticker">
@@ -86,14 +92,20 @@
 
         <div class="col-lg-1"></div>
     </div>
+       <Loading  v-if="!icos"/>
+      <Footer :style="'color:black'" />
     </div>
 </template>
 
 <script>
+import {BigNumber} from 'bignumber.js';
+
 import Navbar from './Navbar.vue';
 let gen = require('random-seed');
 let game = require("../logic/game.js");
 import FundsContainer from './FundsDisplay';
+import Loading from './Loading';
+import Footer from './Footer';
 const auto_refresh_time = 10000; // TODO auto refresh
 
 
@@ -109,8 +121,8 @@ const auto_refresh_time = 10000; // TODO auto refresh
     data () {
       return {
         show_scammers : false,
-        scammers: [],
-        icos: [],
+        scammers: null,
+        icos: null,
         total_market_cap: new BigNumber(0),
         total_growth: new BigNumber(0),
         total_scammed: new BigNumber(0),
@@ -119,13 +131,18 @@ const auto_refresh_time = 10000; // TODO auto refresh
             "font-size":"1.25rem",
             "color":"black",
             "display": "inline-block",
-        }
+        },
+        icos_last_updated: null,
+        ico_count: 0,
+        scammer_count: 0,
       };
     },
 
     components :{
         FundsContainer,
-      Navbar
+        Loading,
+    Footer,
+        Navbar,
     },
 
     methods : {
@@ -147,7 +164,17 @@ const auto_refresh_time = 10000; // TODO auto refresh
                 {
                     this.total_scammed = this.total_scammed.plus(this.scammers[i].nas_redeemed);
                 }
-            }, status.onError);
+                this.scammer_count = new BigNumber(this.scammers.length);
+                setTimeout(this.getBestKnownScammers, game.auto_refresh_time);
+            },
+            (error) =>
+            {
+                if(!this.scammers)
+                { // Retry right away
+                    return this.getBestKnownScammers;
+                }
+                setTimeout(this.getBestKnownScammers, game.auto_refresh_time);
+            });
         },
         getCoinMarketCaps()
         {
@@ -158,15 +185,74 @@ const auto_refresh_time = 10000; // TODO auto refresh
                 this.total_growth = new BigNumber(0);
                 for(var i = 0; i < this.icos.length; i++)
                 {
-                    this.total_market_cap = this.total_market_cap.plus(this.icos[i].market_cap);
-                    this.total_growth = this.total_growth.plus(this.icos[i].total_production_rate);
+                    this.icos[i].estimated_market_cap = this.icos[i].market_cap;
+                    this.total_market_cap = this.total_market_cap.plus(this.icos[i].estimated_market_cap);
+                    this.total_growth = this.total_growth.plus(this.icos[i].total_production_with_bonus);
+                    this.estimateSellPrice(this.icos[i]);
                 }
-            }, status.onError);
+                this.ico_count = new BigNumber(this.icos.length);
+                this.icos_last_updated = Date.now();
+
+                setTimeout(this.getCoinMarketCaps, game.auto_refresh_time);
+            },
+            (error) =>
+            {
+                if(!this.icos)
+                { // Retry right away
+                    return this.getCoinMarketCaps;
+                }
+                setTimeout(this.getCoinMarketCaps, game.auto_refresh_time);
+            });
         },
+        getSellPrice()
+        {
+            game.getSellPriceNasPerResource((sell_price) =>
+            {
+                this.sell_price = sell_price;
+
+                setTimeout(this.getSellPrice, game.auto_refresh_time);
+            },
+            (error) =>
+            {
+                if(!this.icos)
+                { // Retry right away
+                    return this.getSellPrice;
+                }
+                setTimeout(this.getSellPrice, game.auto_refresh_time);
+            });
+        },
+        estimateSellPrice(ico)
+        {
+            if(this.sell_price)
+            {
+                ico.estimated_sell_price = ico.estimated_market_cap.mul(this.sell_price);
+            }
+        }
+   
     },
     mounted() {
+        // TODO auto refresh.
         this.getCoinMarketCaps();
+        this.getSellPrice();
         this.getBestKnownScammers();
+
+        setInterval(() =>
+        {
+            if(this.icos)
+            {
+                let time_passed = (Date.now() - this.icos_last_updated) / 1000;
+
+                this.total_market_cap = new BigNumber(0);
+                for(var i = 0; i < this.icos.length; i++)
+                {
+                    this.icos[i].estimated_market_cap = this.icos[i].market_cap;
+                    let production = this.icos[i].total_production_with_bonus.mul(time_passed);
+                    this.icos[i].estimated_market_cap = this.icos[i].estimated_market_cap.plus(production);
+                    this.total_market_cap = this.total_market_cap.plus(this.icos[i].estimated_market_cap);
+                    this.estimateSellPrice(this.icos[i]);
+                }
+            }
+        }, 100);
     }
 
 }

@@ -197,7 +197,8 @@ export default {
 
         this.game = resp;
         setTimeout(this.getGame, game.auto_refresh_time);
-      }, (error) =>
+      },
+      (error) =>
       {
         if(!this.game)
         { // Retry right away
@@ -238,7 +239,7 @@ export default {
       {
         let time_passed = Date.now() - this.game.active_ico.date_of_last_refresh;
         let production = this.game.active_ico.total_production_with_bonus.mul(time_passed / 1000);
-        this.game.active_ico.estimated_resources = this.game.active_ico.resources.plus(production);
+        //this.game.active_ico.estimated_resources = this.game.active_ico.resources.plus(production);
       }
     }, 100);
   }

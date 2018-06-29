@@ -135,6 +135,7 @@ class ICO
     this.total_bonus = new SafeNumber(value.total_bonus);
     this.last_action_date = new Date(value.last_action_date);
     this.items = value.items;
+    this.exit_amount = value.exit_amount;
     this.validate();
   }
   
@@ -649,9 +650,11 @@ Contract.prototype =
 
   getMyPendingResources: function(ico_id)
   {
-    var base = this.getMyProductionSinceLastRedeem(ico_id);
-    var bonus = this.getMyBonus(ico_id);
-    return new SafeNumber(base.value.mul(bonus.value.plus(100)).div(100).plus(.001).toFixed(0));
+    var ico = this.getICO(ico_id);
+    var time_passed = this.getTimePassed(ico_id);
+    var production_rate = ico.total_production_rate.value.mul(ico.total_bonus.value.plus(100)).div(100);
+    var production = production_rate.mul(time_passed);
+    return new SafeNumber(production.plus(.001).toFixed(0));
   },
   
   redeemResources: function(ico_id)
@@ -700,6 +703,9 @@ Contract.prototype =
     this.nas = this.nas.sub(nas);
 
     var ico = this.getActiveICO();
+
+    ico.exit_amount = nas.toString();
+    this.ico_id_to_ico.put(ico.id, ico);
     this.total_resources = this.total_resources.sub(ico.resources);
     user.retired_icos.push(ico.ticker);
     user.active_ico_id = null;
@@ -719,6 +725,8 @@ Contract.prototype =
     assert(this.isOwner());
 
     var ico = this.getICO(ico_id);
+    ico.exit_amount = "0";
+    this.ico_id_to_ico.put(ico.id, ico);
     this.total_resources = this.total_resources.sub(ico.resources);
     var user = this.getUser(ico.player_addr);
     user.retired_icos.push(ico.ticker);
@@ -829,19 +837,12 @@ Contract.prototype =
     return new SafeNumber(count.plus(.001).toFixed(0));
   },
 
-  buy: function(name, quantity)
+  buy: function(name, quantity) 
   {
     this.redeemResources();
     var ico = this.getActiveICO();
 
-    if(!quantity)
-    { 
-      quantity = this.getMaxICanAfford(name);
-    }
-    else
-    {
-      quantity = new SafeNumber(quantity);
-    }
+    quantity = new SafeNumber(quantity);
 
     var price = this.getMyItemPrice(name, quantity);
     if(price.value.gt(ico.resources.value))
@@ -1084,15 +1085,10 @@ Contract.prototype =
   getICOStats(ico_id)
   {
     var ico = this.getICO(ico_id);
-    var time_passed = this.getTimePassed(ico_id);
 
     delete ico.items;
-    ico.market_cap = new SafeNumber(
-      ico.resources.plus(
-        ico.total_production_rate.mul(
-          ico.total_bonus.plus(new SafeNumber("100"))).mul(
-            time_passed)).value.div(
-              new SafeNumber("100")).toFixed(0));
+    
+    ico.market_cap = ico.resources.plus(this.getMyPendingResources(ico.id));
     
     return ico;
   },

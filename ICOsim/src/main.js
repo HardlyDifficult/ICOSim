@@ -63,7 +63,7 @@ Vue.filter('resources', function (value) {
   return numberWithCommas(value, 2);
 });
 Vue.filter('nas', function (value) {
-  return formatCoins(value, 4);
+  return formatCoins(value, 12);
 });
 Vue.filter('nasComplete', function (value) {
   return formatCoins(value, 18);

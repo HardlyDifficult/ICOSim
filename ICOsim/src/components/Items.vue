@@ -80,9 +80,9 @@
                                                     <input title="nas-buy-input" class="form-control" type="number" v-model="selections[item.name].number_to_buy_with_nas" @input="$forceUpdate()">
                                                 </div>
                                                 <div class="col-12" >
-                                                    Buy {{ selections[item.name].number_to_buy_with_nas | count }} For 
-                                                    {{ getBuyWithNasCost(item) | nas }}
-                                                    +${{ getBuyProductionGainWithNas(item) | resources }}/s
+                                                    Buy {{ selections[item.name].number_to_buy_with_nas | count }} <br>
+                                                    {{ getBuyWithNasCost(item) | nas }}<br>
+                                                    Gain: +${{ getBuyProductionGainWithNas(item) | resources }}/s
                                                 </div>
                                             </div>
                                         </div>

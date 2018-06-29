@@ -25,15 +25,30 @@
 
                         <div class="col-12 line gray-on-disable"></div>
 
-                        <div class="col-4">
-                            <p>Count: {{item.user_holdings | count}}</p>
-                            <p v-if="item.user_item_production">Production: {{item.user_item_production | resources}}</p>
-                        </div>
-                        <div class="col-8 gray-on-disable">
-                            <p>
-                                Current Price
-                            </p>
+
+                        <div class="col-12 gray-on-disable">
+                            <p>Current Price</p>
                             $<FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="item.user_price"/>
+                        </div>
+
+                        <div class="col-12 line gray-on-disable"></div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-5 text-right">
+                                    <small>Count</small>
+                                </div>
+                                <div class="col-7 text-center">
+                                    {{item.user_holdings | count}}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5 text-right">
+                                    <small>Production</small>
+                                </div>
+                                <div class="col-7 text-center">
+                                    <p v-if="item.user_item_production">$ {{item.user_item_production | resources}}/s</p>
+                                </div>
+                            </div>
                         </div>
 
 
@@ -45,8 +60,8 @@
                                         <div class="col-12">
                                             <div class="row">
                                                 <div class="col">
-                                                    Buy {{selections[item.name].number_to_buy}} For
-                                                    ${{getBuyPrice(item) | resources}}<br>
+                                                    Buy {{selections[item.name].number_to_buy}} <br>
+                                                    For ${{getBuyPrice(item) | resources}}<br>
                                                     +${{ getBuyProductionGain(item) | resources }}/s
                                                 </div>
                                             </div>

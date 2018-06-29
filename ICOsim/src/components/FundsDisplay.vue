@@ -90,14 +90,14 @@
       },
       red_style(){
         return {
-          fontSize : '4em',
+          'font-size': '4em',
           ...this.mystyle,
           color:'red'
         };
       },
       green_style(){
         return {
-          fontSize : '4em',
+          'font-size': '4em',
           ...this.mystyle,
           color:'green'
         };

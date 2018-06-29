@@ -6,7 +6,7 @@
                     <div class="row text-center details-header align-bottom">
                         <div class="col-md-4">Market Cap</div>
                         <div class="col-md-4">{{game.active_ico ? game.active_ico.name : ""}}</div>
-                        <div class="col-md-4 header-small align-bottom mt-3">Exit Scam Value</div>
+                        <div class="col-md-4 header-small align-bottom mt-3">Exit Scam Value <i style="cursor:pointer" @click="$refs.helpModal.show()" class="fas fa-question-circle"></i></div>
                     </div>
                 </div>
                 <div class="col-12">
@@ -34,12 +34,22 @@
                 </div>
             </div>
         </div>
+
+        <Modal ref="helpModal">
+            <h3>Whats an Exit Scam?</h3>
+            <p>
+                All NAS that players spend on ICOSim is stored in the smart contract.<br>
+                At any point players can exit scam, which grants them with a share of the NAS in the contract, calculated by the ICOs market cap.<br>
+                The more $ you have, the more NAS you get when exit scamming!
+            </p>
+        </Modal>
     </div>
 </template>
 
 <script>
   import FundsContainer from './FundsDisplay';
   import {BigNumber} from 'bignumber.js';
+  import Modal from './Modal';
     const game = require("../logic/game.js");
 
 
@@ -49,7 +59,8 @@
     props : ['game', 'isMyGame', 'status'],
 
     components : {
-      FundsContainer
+      FundsContainer,
+      Modal
     },
 
     methods : {

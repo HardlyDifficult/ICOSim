@@ -53,6 +53,7 @@ import NoExtensionWarning from './NoExtensionWarning';
 import LaunchIco from './LaunchIco';
 import Loading from './Loading';
 import Footer from './Footer';
+import Modal from './Modal';
 
 import neb from "../logic/HardlyNeb.js";
 import Notifications from "./Notifications";
@@ -69,7 +70,9 @@ export default {
       smart_contract_address: null,
       ticker_is_available: false, // for Launch ICO form
       is_wallet_missing: false, // for new user help
-      notifications : []
+      notifications : [],
+
+      show_help_modal : false
     }
   },
   components: {
@@ -83,6 +86,7 @@ export default {
     LaunchIco,
     Loading,
     Footer,
+    Modal
   },
 
   computed : {

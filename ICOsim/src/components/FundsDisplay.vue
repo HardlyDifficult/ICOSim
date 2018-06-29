@@ -105,6 +105,10 @@
     },
 
     created(){
+      if(this.mystyle && this.mystyle.fontSize){
+        this.mystyle['font-size'] = this.mystyle.fontSize;
+        delete this.mystyle.fontSize;
+      }
       this.lerp();
       if(this.start)
       {

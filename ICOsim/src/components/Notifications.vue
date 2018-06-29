@@ -3,7 +3,7 @@
         <div v-for="(notification, index) in notifications" class="notification glow-1" v-bind:key="index" @click="removeNotification(index)">
             <p v-if="notification.title" class="title">{{notification.title}}</p>
             <p v-if="notification.message" class="message">{{notification.message}}</p>
-            <a target="_blank" v-if="notification.href" :href="notification.href">{{notification.href_text}}</a>
+            <a onclick="event.stopPropagation();" target="_blank" v-if="notification.href" :href="notification.href">{{notification.href_text}}</a>
         </div>
     </div>
 </template>
@@ -33,7 +33,7 @@
             this.notifications[i].count = 0;
           this.notifications[i].count++;
 
-          if(this.notifications[i].count * this.interval > this.default_time)
+          if(!this.notifications[i].no_auto_remove &&  this.notifications[i].count * this.interval > this.default_time)
             this.notifications.splice(i,1);
         }
 

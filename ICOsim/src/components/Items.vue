@@ -211,6 +211,7 @@
           'Ian Balina': require('../assets/balina.png'),
           'Suppoman': require('../assets/suppoman.png'),
           'Trevon James': require('../assets/trevon.png'),
+          'Dr Craig S Wright': require('../assets/dr_fakesatoshi.png'),
         },
         show_buy_nas : {
 

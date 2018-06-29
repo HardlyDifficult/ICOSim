@@ -102,18 +102,20 @@ export default {
   },
 
   methods: {
-    showNotification(title, message, href = null, href_text = null, length=3000){
+    showNotification(title, message, href = null, href_text = null, length=3000, noAutoRemove = false){
       this.notifications.push({
         title : title,
         message : message,
         href :href,
         href_text : href_text,
-        length : length
+        length : length,
+        no_auto_remove : noAutoRemove
       });
     },
 
     onTxPosted(resp) {
-      this.showNotification("Transaction posted", '', 'https://explorer.nebulas.io/#/tx/' + resp.txhash, 'Open in Explorer');
+      this.showNotification( "Transaction posted", '', 'https://explorer.nebulas.io/#/tx/' + resp.txhash, 'Open in Explorer',3000,true);
+      alert('sup');
       console.log(resp);
     },
 

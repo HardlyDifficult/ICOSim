@@ -8,7 +8,7 @@
                 <div class="col-3"></div>
                 <div class="col-6 align-content-center">
                     <input v-model="coin_name" class="inp form-control" type="text" title="ico-name" placeholder="Coin Name (eg Bitconnect)"/>
-                    <input v-model="coin_ticker" class="inp form-control" type="text" title="ico-name" placeholder="Coin Ticker (eg BCC)"/>
+                    <input v-model="coin_ticker" class="inp form-control" style="text-transform: uppercase;" type="text" title="ico-name" placeholder="Coin Ticker (eg BCC)"/>
                 </div>
                 <div class="col-3"></div>
             </div>

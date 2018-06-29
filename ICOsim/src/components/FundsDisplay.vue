@@ -10,10 +10,12 @@
     </span>
     <span v-if="label" :style="labelstyle">{{this.label}}</span>
       
-      <i v-if="showdirection && step.gt(0)" class="fas fa-caret-up" 
-        :style="mystyle ? mystyle : {fontSize : '4em'}" style="color:green !important;"></i>
-      <i v-if="showdirection && step.lt(0)" class="fas fa-caret-down" 
-        :style="mystyle ? mystyle : {fontSize : '4em'}" style="color:red !important;"></i>
+      <i v-if="showdirection && step.gt(0)" class="fas fa-caret-up"
+        :style="green_style"></i>
+      <i v-else-if="showdirection && step.lt(0)" class="fas fa-caret-down"
+        :style="red_style"></i>
+      <i v-else-if="showdirection" class="fas fa-caret-right"
+         :style="mystyle ? mystyle : {fontSize : '4em'}" ></i>
 
   </span>
 </template>
@@ -85,6 +87,20 @@
       decimal_parts () {
         let parts = this.value.toFixed(this.places != null ? this.places : 2).toString().split(".");
         return parts[1];
+      },
+      red_style(){
+        return {
+          fontSize : '4em',
+          ...this.mystyle,
+          color:'red'
+        };
+      },
+      green_style(){
+        return {
+          fontSize : '4em',
+          ...this.mystyle,
+          color:'green'
+        };
       }
     },
 

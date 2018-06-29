@@ -40,7 +40,9 @@
             <p>
                 All NAS that players spend on ICOSim is stored in the smart contract.<br>
                 At any point players can exit scam, which grants them with a share of the NAS in the contract, calculated by the ICOs market cap.<br>
-                The more $ you have, the more NAS you get when exit scamming!
+                The more $ you have, the more NAS you get when exit scamming!<br>
+                Remember though, once you exit scam you'll have to start from scratch.<br>
+                Good Luck!
             </p>
         </Modal>
     </div>

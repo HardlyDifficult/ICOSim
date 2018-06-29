@@ -8,6 +8,7 @@
      <span v-for="(part, index) in decimal_parts" v-bind:key="'b' + index">
       <span :style="mystyle" class="fund_part num">{{part}}</span>
     </span>
+    <span v-if="label" :style="labelstyle">{{this.label}}</span>
       
       <i v-if="showdirection && step.gt(0)" class="fas fa-caret-up" 
         :style="mystyle ? mystyle : {fontSize : '4em'}" style="color:green !important;"></i>
@@ -22,7 +23,7 @@
 
     export default {
     name: "FundsDisplay",
-    props : ['target', 'mystyle', 'instant', 'showdirection', 'places', 'start', 'jumpprecision'],
+    props : ['target', 'mystyle', 'instant', 'showdirection', 'places', 'start', 'jumpprecision', 'label', 'labelstyle'],
     components : {
     },
 

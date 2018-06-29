@@ -34,5 +34,6 @@ export default {
 .footer
 {
     color: white;
+    font-size: .75em;
 }
 </style>

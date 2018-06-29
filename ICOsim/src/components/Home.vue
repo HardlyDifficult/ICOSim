@@ -60,6 +60,7 @@ import Modal from './Modal';
 import neb from "../logic/HardlyNeb.js";
 import Notifications from "./Notifications";
 const game = require("../logic/game.js");
+let is_destroyed = false;
 
 export default {
   name: 'Home',
@@ -151,6 +152,10 @@ export default {
     {
       game.getGame((resp) =>
       {
+        if(is_destroyed)
+        {
+            return;
+        }
         if(resp.active_ico && !this.$route.params.ticker && this.$route.name === 'Home'){
           this.$router.push({name : 'ico', params : {ticker:  resp.active_ico.ticker}});
         }else {
@@ -208,6 +213,10 @@ export default {
       },
       (error) =>
       {
+        if(is_destroyed)
+        {
+            return;
+        }
         if(!this.game)
         { // Retry right away
           return this.getGame();
@@ -241,8 +250,13 @@ export default {
       this.is_wallet_missing = !game.isWalletInstalled();
     }, 1000);
 
-    setInterval(() =>
+    let interval = setInterval(() =>
     {
+      if(is_destroyed)
+      {
+        clearInterval(interval);
+        return;
+      }
       if(this.game && this.game.active_ico)
       {
         let time_passed = Date.now() - this.game.active_ico.date_of_last_refresh;
@@ -250,6 +264,11 @@ export default {
         this.game.active_ico.estimated_resources = this.game.active_ico.resources.plus(production);
       }
     }, 100);
+  },
+  destroyed()
+  {
+    console.log("Home destroyed");
+    is_destroyed = true;
   }
 }
 </script>

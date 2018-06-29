@@ -6,7 +6,7 @@ let ticker;
 
 module.exports = 
 {
-    auto_refresh_time: 10000 * 5,
+    auto_refresh_time: 10000,
 
     // Call to store a ticker to use going forward (e.g. if it was provided in the URL)
     setTicker(_ticker)

@@ -17,7 +17,7 @@
                     Scammers: 
                         <FundsContainer :jumpprecision="1" :places=0 :showdirection=0 :target="scammer_count" :mystyle="number_style"/>                                        
                     <span class="bullet">•</span>
-                    Taken:  <FundsContainer :showdirection=1 :target="total_scammed"  :jumpprecision="0.0000000000001" :label="'nas'" :places=12 :mystyle="number_style"/>
+                    Taken:  <FundsContainer :showdirection=1 :target="total_scammed"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :mystyle="number_style"/>
                 </div>
                 <div class="col-12 hl" v-if="icos"></div>
                 <div class="col-12" v-if="icos">
@@ -63,9 +63,11 @@
                                     <td scope="row" class="num">
                                         <FundsContainer :showdirection=0 :target="ico.estimated_market_cap" :mystyle="number_style"/>
                                     </td>
-                                    <td scope="row" class="num">${{ico.total_production_with_bonus | resources}}/s</td>
-                                    <td scope="row">
-                                        <FundsContainer v-if="ico.estimated_sell_price"  :jumpprecision="0.0000000000001" :label="'nas'" :places=12 :showdirection=1 :target="ico.estimated_sell_price" :mystyle="number_style"/>                                        
+                                    <td scope="row" class="num">
+                                        $ <FundsContainer :showdirection=0 :target="ico.total_production_with_bonus" :mystyle="number_style"/>/s
+                                    </td>
+                                    <td scope="row" class="num">
+                                        <FundsContainer v-if="ico.estimated_sell_price"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :showdirection=1 :target="ico.estimated_sell_price" :mystyle="number_style"/>                                        
                                     </td>
                                     <td scope="row" >{{ico.player_addr | addr}}</td>
                             </tr>
@@ -73,7 +75,7 @@
                                 <td scope="row" class="border-right" >{{index + 1}}</td>
                                 
                                 <td scope="row" class="num">
-                                    <FundsContainer :showdirection=1 :target="scammer.nas_redeemed" :label="'nas'" :places=12 :mystyle="number_style"/>                                    
+                                    <FundsContainer :showdirection=1 :target="scammer.nas_redeemed" :label="'nas'" :places=18 :mystyle="number_style"/>                                    
                                 </td>
                                     <td>
                                         <span v-for="(ticker, index) in scammer.retired_icos" v-bind:key="ticker">
@@ -107,7 +109,7 @@ import FundsContainer from './FundsDisplay';
 import Loading from './Loading';
 import Footer from './Footer';
 const auto_refresh_time = 10000; // TODO auto refresh
-
+let is_destroyed = false;
 
   function randomInt (min, max, seed){
     return Math.floor(random(seed) * (max - min + 1)) + min;
@@ -158,6 +160,10 @@ const auto_refresh_time = 10000; // TODO auto refresh
         {
             game.getBestKnownScammers(null, null, (resp) =>
             { 
+                if(is_destroyed)
+                {
+                    return;
+                }
                 this.scammers = resp;
                 this.total_scammed = new BigNumber(0);
                 for(var i = 0; i < this.scammers.length; i++)
@@ -169,6 +175,10 @@ const auto_refresh_time = 10000; // TODO auto refresh
             },
             (error) =>
             {
+                if(is_destroyed)
+                {
+                    return;
+                }
                 if(!this.scammers)
                 { // Retry right away
                     return this.getBestKnownScammers;
@@ -180,6 +190,10 @@ const auto_refresh_time = 10000; // TODO auto refresh
         {
             game.getCoinMarketCaps(null, null, (resp) =>
             {
+                if(is_destroyed)
+                {
+                    return;
+                }
                 this.icos = resp;
                 this.total_market_cap = new BigNumber(0);
                 this.total_growth = new BigNumber(0);
@@ -197,6 +211,10 @@ const auto_refresh_time = 10000; // TODO auto refresh
             },
             (error) =>
             {
+                if(is_destroyed)
+                {
+                    return;
+                }
                 if(!this.icos)
                 { // Retry right away
                     return this.getCoinMarketCaps;
@@ -208,12 +226,20 @@ const auto_refresh_time = 10000; // TODO auto refresh
         {
             game.getSellPriceNasPerResource((sell_price) =>
             {
+                if(is_destroyed)
+                {
+                    return;
+                }
                 this.sell_price = sell_price;
 
                 setTimeout(this.getSellPrice, game.auto_refresh_time);
             },
             (error) =>
             {
+                if(is_destroyed)
+                {
+                    return;
+                }
                 if(!this.icos)
                 { // Retry right away
                     return this.getSellPrice;
@@ -230,14 +256,20 @@ const auto_refresh_time = 10000; // TODO auto refresh
         }
    
     },
-    mounted() {
+    mounted() 
+    {
         // TODO auto refresh.
         this.getCoinMarketCaps();
         this.getSellPrice();
         this.getBestKnownScammers();
 
-        setInterval(() =>
+        let interval = setInterval(() =>
         {
+            if(is_destroyed)
+            {
+                clearInterval(interval);
+                return;
+            }
             if(this.icos)
             {
                 let time_passed = (Date.now() - this.icos_last_updated) / 1000;
@@ -253,6 +285,11 @@ const auto_refresh_time = 10000; // TODO auto refresh
                 }
             }
         }, 100);
+    },
+    destroyed()
+    {
+        console.log("CMC destroyed");
+        is_destroyed = true;
     }
 
 }

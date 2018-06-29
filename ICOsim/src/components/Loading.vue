@@ -2,6 +2,8 @@
     <div class="row">
         <div class="col-12">
             <h3>Loading - please wait while we're {{loadingString}}{{ellipse}}</h3>
+            <br>
+            <h5 v-if="been_a_minute">(Nebulas has been having some issues recently, please be patient)</h5>
         </div>
     </div>
 </template>
@@ -30,7 +32,8 @@ let tick_count = 0;
         ],
         current : 0,
         destroyed : false,
-        ellipse: ""
+        ellipse: "",
+        been_a_minute: false,
       }
     },
 
@@ -48,9 +51,13 @@ let tick_count = 0;
           this.ellipse += ".";
         }
 
+        if(tick_count % 25 == 0)
+        {
+          this.been_a_minute = true;
+        }
+
         if(tick_count % 10 == 0)
         {
-          tick_count = 0;
           this.current++;
           if(this.current >= this.strings.length)
           {

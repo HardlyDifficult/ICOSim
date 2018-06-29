@@ -20,7 +20,7 @@
                             <br><small v-if="!isMyGame()">Not your ICO. <a style="color:white;" href="/">get to yours</a></small>
                         </div>
                         <div class="col-md-4">
-                            <FundsContainer :jumpprecision="0.0000000000001" :places=12 :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block" :label="'nas'" :labelstyle="''"/>
+                            <FundsContainer :jumpprecision="0.0000000000000000001" :places=18 :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block" :label="'nas'" :labelstyle="''"/>
                         <br><button v-if="canExit()" class="btn btn-sm btn-primary" @click="exitScam()">EXIT SCAM NOW</button>
                         </div>
                     </div>
@@ -36,14 +36,21 @@
         </div>
 
         <Modal ref="helpModal">
-            <h3>Whats an Exit Scam?</h3>
+            <h3>What's an Exit Scam?</h3>
+            <div style="max-width:40em">
             <p>
-                All NAS that players spend on ICOSim is stored in the smart contract.<br>
-                At any point players can exit scam, which grants them with a share of the NAS in the contract, calculated by the ICOs market cap.<br>
-                The more $ you have, the more NAS you get when exit scamming!<br>
-                Remember though, once you exit scam you'll have to start from scratch.<br>
+                100% of NAS spent is redistributed to players who "Exit Scam".  
+                The value you may claim is determined by the ICOs market cap. 
+                So hype your ICO before you dump your bags.  
+            </p>
+            <p>
+                The amount you can get when exit scamming may go down when others play.
+                Once you "Exit Scam" you may start over by launching a new ICO.
+            </p>
+            <p>
                 Good Luck!
             </p>
+            </div>
         </Modal>
     </div>
 </template>
@@ -64,6 +71,8 @@
       FundsContainer,
       Modal
     },
+    data() { return {
+    }},
 
     methods : {
       canExit(){
@@ -123,4 +132,9 @@
         background: linear-gradient(to top, rgba(17,203,255,0.0), rgba(17,203,255,0.3));
     }
 
+    .fas
+    {
+        font-size: .6em;
+        vertical-align:top;
+    }
 </style>

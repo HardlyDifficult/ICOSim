@@ -6,7 +6,7 @@ let ticker;
 
 module.exports = 
 {
-    auto_refresh_time: 10000,
+    auto_refresh_time: 10000 * 5,
 
     // Call to store a ticker to use going forward (e.g. if it was provided in the URL)
     setTicker(_ticker)
@@ -169,6 +169,9 @@ module.exports =
             {
                 return a.sort_id - b.sort_id;
             });
+
+            info.sell_price_nas_per_resource = new BigNumber(info.sell_price_nas_per_resource).div(token_denominator);
+
             if(info.active_ico)
             {
                 delete info.active_ico.my_resources; // dupe info

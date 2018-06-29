@@ -75,11 +75,11 @@
       },
       nas_value(){
         if(this.game && this.game.active_ico)
-          return this.game.active_ico.my_resources_nas_value;
+          return this.game.sell_price_nas_per_resource.mul(this.game.active_ico.estimated_resources);
         return new BigNumber(0);
       },
-      playerResources() {
-          
+      playerResources() 
+      {
         return (this.game && this.game.active_ico) ? this.game.active_ico.estimated_resources : new BigNumber(0);
       }
     }

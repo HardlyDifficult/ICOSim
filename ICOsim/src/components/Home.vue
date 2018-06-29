@@ -143,28 +143,26 @@ export default {
     {
       game.getGame((resp) =>
       {
-        this.game = resp;
-
-        if(this.game.active_ico && !this.$route.params.ticker && this.$route.name === 'Home'){
-          this.$router.push({name : 'ico', params : {ticker:  this.game.active_ico.ticker}});
+        if(resp.active_ico && !this.$route.params.ticker && this.$route.name === 'Home'){
+          this.$router.push({name : 'ico', params : {ticker:  resp.active_ico.ticker}});
         }else {
           //this.$router.push({name : '', params : {ticker: ''}});
         }
         
-        if(this.game.active_ico)
+        if(resp.active_ico)
         {
-          this.game.active_ico.estimated_resources = this.game.active_ico.resources;
-          this.game.active_ico.date_of_last_refresh = Date.now();
+          resp.active_ico.estimated_resources = resp.active_ico.resources;
+          resp.active_ico.date_of_last_refresh = Date.now();
         }
 
-        this.game.roadmap_steps = [];
-        this.game.team_members = [];
+        resp.roadmap_steps = [];
+        resp.team_members = [];
 
-        for(let i = 0; i < this.game.items.length; i++)
+        for(let i = 0; i < resp.items.length; i++)
         { // Init default user selections
-          let item = this.game.items[i];
+          let item = resp.items[i];
           let selection = this.selections[item.name];
-          if(selection == null){
+          if(selection == null) {
             let newSelections = {...this.selections};
             newSelections[item.name] = {
               number_to_buy: 0
@@ -189,14 +187,15 @@ export default {
           //roadmap
           if(item.resources_per_s !== null)
           {
-            this.game.roadmap_steps.push(item);
+            resp.roadmap_steps.push(item);
           }
           else
           {
-            this.game.team_members.push(item);
+            resp.team_members.push(item);
           }
         }
 
+        this.game = resp;
         setTimeout(this.getGame, game.auto_refresh_time);
       }, (error) =>
       {
@@ -238,10 +237,10 @@ export default {
       if(this.game && this.game.active_ico)
       {
         let time_passed = Date.now() - this.game.active_ico.date_of_last_refresh;
-        let production = this.game.active_ico.total_production_rate
-        this.game.active_ico.estimated_resources = this.game.active_ico.resources;
+        let production = this.game.active_ico.total_production_with_bonus.mul(time_passed / 1000);
+        this.game.active_ico.estimated_resources = this.game.active_ico.resources.plus(production);
       }
-    });
+    }, 100);
   }
 }
 </script>

@@ -110,6 +110,16 @@ module.exports =
 
     nebRead(method, args, onSuccess, onError, nas_to_send) 
     {
+        this.doNebRead(method, args, onSuccess, onError, nas_to_send, false);
+    },
+    
+    nebReadAnon(method, args, onSuccess, onError, nas_to_send) 
+    {
+        this.doNebRead(method, args, onSuccess, onError, nas_to_send, true);
+    },
+
+    doNebRead(method, args, onSuccess, onError, nas_to_send, is_anon)
+    {
         if(!args)
         {
             args = null;
@@ -119,7 +129,10 @@ module.exports =
         {
             if(has_checked_for_wallet)
             {
-                return this.nebReadAnon(method, args, onSuccess, onError);
+                if(!is_anon && !nas_to_send)
+                {
+                    return this.nebReadAnon(method, args, onSuccess, onError);
+                }
             }
             else
             {
@@ -130,7 +143,7 @@ module.exports =
                     {
                         has_checked_for_wallet = true;
                     }
-                    this.nebRead(method, args, onSuccess, onError, nas_to_send);
+                    this.doNebRead(method, args, onSuccess, onError, nas_to_send, is_anon);
                 }, 100);
                 return;
             }
@@ -144,98 +157,63 @@ module.exports =
             }
             done = true;
 
-            this.nebRead(method, args, onSuccess, onError, nas_to_send)
+            this.doNebRead(method, args, onSuccess, onError, nas_to_send, is_anon);
         }, auto_retry_time);
 
         log.debug("REQ nebRead: " + method);
-        nebPay.simulateCall(neb_contract.contract, nas_to_send, method, global.JSON.stringify(args), {
-            listener: (resp) =>
+        try 
+        {
+            if(!is_anon)
             {
-                if(done) 
-                {
-                    return;
-                }
-                done = true;
-                clearTimeout(read_timeout);
-                
-                log.debug("RES nebRead: " + method);
-
-                if(resp == timeout_error_message) 
-                {
-                    setTimeout(() =>
+                nebPay.simulateCall(neb_contract.contract, nas_to_send, method, global.JSON.stringify(args), {
+                    listener: (resp) =>
                     {
-                        console.log("Timeout!  Will retry...");
-                        this.nebRead(method, args, onSuccess, onError, nas_to_send);
-                    }, auto_retry_time);
-                    return;
-                }
-
-                let error = resp.execute_err;
-                let result;
-                if(!error && resp.result) 
-                {
-                    result = global.JSON.parse(resp.result);
-                } 
-                else 
-                {
-                    if(onError)
-                    {
-                        onError(error);
+                        if(done) 
+                        {
+                            return;
+                        }
+                        done = true;
+                        clearTimeout(read_timeout);
+                        nebReadResponse(method, args, onSuccess, onError, nas_to_send, is_anon, resp);
                     }
-                    console.log("Error: " + error);
-                    return;
-                }
-            
-                onSuccess(result);
-            }
-        });
-    },
-
-    nebReadAnon(method, args, onSuccess, onError) 
-    {
-        if(!args)
-        {
-            args = null;
-        }
-
-        log.debug("REQ nebReadAnon: " + method);
-        neb.api.call({
-            from: neb_contract.contract, // Using the contract here so this can be called without loggin on.
-            to: neb_contract.contract,
-            value: 0,
-            nonce: 0, // Nonce is irrelavant when read-only (there is no transaction charge)
-            gasPrice: 1000000,
-            gasLimit: 200000,
-            contract: {function: method, args: global.JSON.stringify(args)} 
-        }).then((resp) =>
-        {
-            log.debug("RES nebReadAnon: " + method);
-
-            if(resp == timeout_error_message) 
+                });
+            } 
+            else
             {
-                setTimeout(() =>
+                neb.api.call({
+                    from: neb_contract.contract, // Using the contract here so this can be called without loggin on.
+                    to: neb_contract.contract,
+                    value: 0,
+                    nonce: 0, // Nonce is irrelavant when read-only (there is no transaction charge)
+                    gasPrice: 1000000,
+                    gasLimit: 200000,
+                    contract: {function: method, args: global.JSON.stringify(args)} 
+                }).then((resp) =>
                 {
-                    console.log("Timeout!  Will retry...");
-                    this.nebReadAnon(method, args, onSuccess, onError);
-                }, auto_retry_time);
+                    if(done) 
+                    {
+                        return;
+                    }
+                    done = true;
+                    clearTimeout(read_timeout);
+                    nebReadResponse(method, args, onSuccess, onError, nas_to_send, is_anon, resp);
+                });
+            }
+        }
+        catch(error)
+        {
+            if(done) 
+            {
                 return;
             }
-
-            let error = resp.execute_err;
-            let result;
-            if(resp.result) 
+            done = true;
+            setTimeout(() =>
             {
-                result = global.JSON.parse(resp.result);
-            }
-            else 
-            {
-                onError(error);
-                console.log("Error: " + error);
-                return;
-            }
-        
-            onSuccess(result);
-        });        
+                console.log("Timeout!  Will retry...: " + error);
+                this.doNebRead(method, args, onSuccess, onError, nas_to_send, is_anon);
+            }, auto_retry_time);
+            return;
+        }
     },
 }
 
@@ -288,4 +266,37 @@ function completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError
             }
         }
     });
+}
+
+function nebReadResponse(method, args, onSuccess, onError, nas_to_send, is_anon, resp)
+{
+    log.debug("RES nebRead: " + method);
+
+    if(resp == timeout_error_message) 
+    {
+        setTimeout(() =>
+        {
+            console.log("Timeout!  Will retry...");
+            module.exports.doNebRead(method, args, onSuccess, onError, nas_to_send, is_anon);
+        }, auto_retry_time);
+        return;
+    }
+
+    let error = resp.execute_err;
+    let result;
+    if(!error && resp.result) 
+    {
+        result = global.JSON.parse(resp.result);
+    } 
+    else 
+    {
+        if(onError)
+        {
+            onError(error);
+        }
+        console.log("Error: " + error);
+        return;
+    }
+
+    onSuccess(result);
 }

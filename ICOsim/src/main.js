@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import VueParticles from 'vue-particles'
 import VueAnime from 'vue-animejs';
+require('./main.css');
 
 Vue.config.productionTip = false;
 

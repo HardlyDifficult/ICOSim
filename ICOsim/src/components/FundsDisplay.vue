@@ -10,13 +10,14 @@
     </span>
     <span v-if="label" :style="labelstyle">{{this.label}}</span>
       
+      <span :style="mystyle">
       <i v-if="showdirection && step.gt(0)" class="fas fa-caret-up"
         :style="green_style"></i>
       <i v-else-if="showdirection && step.lt(0)" class="fas fa-caret-down"
         :style="red_style"></i>
       <i v-else-if="showdirection" class="fas fa-caret-right"
-         :style="mystyle ? mystyle : {fontSize : '4em'}" ></i>
-
+         :style="{fontSize : '1em', color:'transparent'}" ></i>
+    </span>
   </span>
 </template>
 
@@ -90,15 +91,15 @@
       },
       red_style(){
         return {
-          'font-size': '4em',
-          ...this.mystyle,
+          'font-size': '1em',
+          //...this.mystyle,
           color:'red'
         };
       },
       green_style(){
         return {
-          'font-size': '4em',
-          ...this.mystyle,
+          'font-size': '1em',
+          //...this.mystyle,
           color:'green'
         };
       }
@@ -125,6 +126,8 @@
 <style scoped>
     .funds {
         pointer-events:none;
+        white-space: nowrap;
+        line-height: 1;
     }
      .fund_part{
         font-family: monospace;

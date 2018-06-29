@@ -56,6 +56,8 @@
 
 <script>
   import Modal from './Modal';
+const game = require("../logic/game.js");
+
 
   export default {
     name: "LaunchIco",

@@ -3,25 +3,38 @@
         <div class="col-12 details-container">
             <div class="row details-inner">
                 <div class="col-12">
-                    <div class="row text-center details-header align-bottom">
-                        <div class="col-md-4">Market Cap</div>
-                        <div class="col-md-4">{{game.active_ico ? game.active_ico.name : ""}}</div>
-                        <div class="col-md-4 header-small align-bottom mt-3">Exit Scam Value <i style="cursor:pointer" @click="$refs.helpModal.show()" class="fas fa-question-circle"></i></div>
+                    <div class="row text-center align-bottom" v-if="game.active_ico">
+                        <div class="col-xl-4">
+                            <div class="details-header">Market Cap</div>
+                            <div>$<FundsContainer :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :target="playerResources" :start="playerResources"/></div>
+                            <div>+ $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="total_production_with_bonus" :start="total_production_with_bonus" style="display:inline-block"/>/ s</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="details-header">
+                                <span  class="name">{{game.active_ico ? game.active_ico.name : ""}}
+                                    </span>
+                                </div>
+                            <div class="tickericon">
+                                <span v-if="game.active_ico" v-bind:style="{backgroundColor:game.active_ico.ticker_color, borderColor:game.active_ico.ticker_border_color}" class="ticker">{{game.active_ico.ticker}}</span>
+                            </div>
+                            <div class="notyours" v-if="game.active_ico && !isMyGame()">Not your ICO. <a style="color:white;" href="/">Launch Your Own ICO.</a></div>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="details-header header-small">
+                                Exit Scam Value <i style="cursor:pointer" @click="$refs.helpModal.show()" class="fas fa-question-circle"></i>
+                            </div>
+                            <FundsContainer :jumpprecision="0.0000000000000000001" :places=18 :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block" :label="'nas'" :labelstyle="''"/>
+                        <br><button v-if="canExit()" class="btn btn-sm btn-primary mt-2" @click="exitScam()">EXIT SCAM NOW</button>
+                        </div>
                     </div>
                 </div>
                 <div class="col-12">
                     <div class="row text-center">
                         <div class="col-md-4">
-                            $<FundsContainer :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :target="playerResources" :start="playerResources"/>
-                            <br>+ $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="total_production_with_bonus" :start="total_production_with_bonus" style="display:inline-block"/>/ s
                         </div>
                         <div class="col-md-4">
-                            {{game.active_ico ? game.active_ico.ticker : ""}}
-                            <br><small v-if="!isMyGame()">Not your ICO. <a style="color:white;" href="/">get to yours</a></small>
                         </div>
-                        <div class="col-md-4">
-                            <FundsContainer :jumpprecision="0.0000000000000000001" :places=18 :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block" :label="'nas'" :labelstyle="''"/>
-                        <br><button v-if="canExit()" class="btn btn-sm btn-primary" @click="exitScam()">EXIT SCAM NOW</button>
+                        <div class="col-xl-4">
                         </div>
                     </div>
                 </div>
@@ -136,5 +149,19 @@
     {
         font-size: .6em;
         vertical-align:top;
+    }
+    .name 
+    {
+        font-size: 2em;
+        font-weight: bolder;
+    }
+    .notyours
+    {
+        margin-top: 1.5em;
+        font-size: .75em;
+    }
+    .tickericon
+    {
+        margin-top: 1em;
     }
 </style>

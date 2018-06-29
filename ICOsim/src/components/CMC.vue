@@ -54,7 +54,9 @@
                         <tbody>
                             <tr v-if="!show_scammers" v-for="(ico, index) in icos" v-bind:key="ico.id">
                                     <td scope="row" class="border-right" >{{index + 1}}</td>
-                                    <td scope="row" ><span v-bind:style="{backgroundColor:randomColor(ico.ticker), borderColor:randomColor(ico.name + ico.ticker)}" class="ticker">{{ico.ticker}}</span></td>
+                                    <td scope="row" >
+                                        <span v-bind:style="{backgroundColor:ico.ticker_color, borderColor:ico.ticker_border_color}" class="ticker">{{ico.ticker}}</span>
+                                    </td>
                                     <td scope="row" class="text-left" >
                                         <router-link class="navbar-icosim" :to="{path:'/ico/' + ico.ticker}">
                                             {{ico.name}}
@@ -103,7 +105,6 @@
 import {BigNumber} from 'bignumber.js';
 
 import Navbar from './Navbar.vue';
-let gen = require('random-seed');
 let game = require("../logic/game.js");
 import FundsContainer from './FundsDisplay';
 import Loading from './Loading';
@@ -111,9 +112,6 @@ import Footer from './Footer';
 const auto_refresh_time = 10000; // TODO auto refresh
 let is_destroyed = false;
 
-  function randomInt (min, max, seed){
-    return Math.floor(random(seed) * (max - min + 1)) + min;
-  }
 
 
   export default {
@@ -148,14 +146,6 @@ let is_destroyed = false;
     },
 
     methods : {
-      randomColor:function(seed){
-        let rng = gen.create(seed);
-        let h = rng.intBetween(0, 360);
-        let s = rng.intBetween(42, 98);
-        let l = rng.intBetween(40, 90);
-
-        return `hsl(${h},${s}%,${l}%)`;
-      },
         getBestKnownScammers()
         {
             game.getBestKnownScammers(null, null, (resp) =>
@@ -311,13 +301,6 @@ let is_destroyed = false;
 
     .table-container{
         margin-top:4em;
-    }
-
-    .ticker{
-        padding: 5px;
-        border-radius:15px;
-        border:2px solid transparent;
-        color:black;
     }
 
     .cmc-row > div{

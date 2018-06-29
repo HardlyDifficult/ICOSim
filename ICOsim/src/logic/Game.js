@@ -1,6 +1,7 @@
 const neb = require("../logic/HardlyNeb.js");
 let settings = require("../static/settings.js");
 const token_denominator = 1000000000000000000;
+let gen = require('random-seed');
 
 let ticker;
 
@@ -103,6 +104,8 @@ module.exports =
                 icos[i].total_production_rate = new BigNumber(icos[i].total_production_rate).div(100);
                 icos[i].total_bonus = new BigNumber(icos[i].total_bonus).div(100);
                 icos[i].total_production_with_bonus = icos[i].total_production_rate.mul(icos[i].total_bonus.plus(1));
+                icos[i].ticker_color = randomColor(icos[i].ticker);
+                icos[i].ticker_border_color = randomColor(icos[i].name + icos[i].ticker);
             }
             onSuccess(icos);
         }, onError);
@@ -183,6 +186,8 @@ module.exports =
             if(info.active_ico)
             {
                 delete info.active_ico.my_resources; // dupe info
+                info.active_ico.ticker_color = randomColor(info.active_ico.ticker);
+                info.active_ico.ticker_border_color = randomColor(info.active_ico.name + info.active_ico.ticker);
                 info.active_ico.my_resources_nas_value = new BigNumber(info.active_ico.my_resources_nas_value).div(token_denominator);
                 info.active_ico.resources = new BigNumber(info.active_ico.resources).div(100);
                 //info.active_ico.total_production_rate = new BigNumber(info.active_ico.total_production_rate).div(100);
@@ -269,4 +274,14 @@ module.exports =
         neb.nebRead(method, args, onSuccess, onError) 
     },
     //#endregion
+}
+
+function randomColor(seed)
+{
+    let rng = gen.create(seed);
+    let h = rng.intBetween(0, 360);
+    let s = rng.intBetween(42, 98);
+    let l = rng.intBetween(40, 90);
+
+    return `hsl(${h},${s}%,${l}%)`;
 }

@@ -16,8 +16,10 @@
                                     <p class="title">{{item.name}}</p>
                                     <template v-if="isTeam">
                                         <p class="member-description">{{item.description}}</p>
+                                        <span v-if="game.active_ico">
                                         <p v-if="parseInt(item.user_holdings) > 0" class="member-buy">ADVISOR LEVEL {{item.user_holdings}}</p>
                                         <p v-else class="member-buy">BUY TO UNLOCK ADVISOR</p>
+                                        </span>
                                     </template>
                                 </div>
                             </div>
@@ -28,29 +30,23 @@
 
                         <div class="col-12 gray-on-disable">
                             <p>Current Price</p>
-                            $<FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="item.user_price"/>
+                            $<FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="item.user_price ? item.user_price : item.start_price"/>
                         </div>
 
-                        <div class="col-12 line gray-on-disable"></div>
-                        <div class="col-12">
+                        <div v-if="game.active_ico" class="col-12 line gray-on-disable"></div>
+                        <div v-if="game.active_ico" class="col-12">
                             <div class="row">
-                                <div class="col-5 text-right">
-                                    <small>Count</small>
-                                </div>
-                                <div class="col-7 text-center">
-                                    {{item.user_holdings | count}}
+                                <div class="col text-center">
+                                    {{item.user_holdings | count}}x 
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-5 text-right">
-                                    <small>Production</small>
-                                </div>
-                                <div class="col-7 text-center">
-                                    <p v-if="item.user_item_production">$ {{item.user_item_production | resources}}/s</p>
+                                <div class="col text-center" style="'white-space:nowrap'">
+                                    producing  
+                                    <span v-if="item.user_item_production"> ${{item.user_item_production | resources}}/s</span>
                                 </div>
                             </div>
                         </div>
-
 
                         <div class="col-12" v-if="isMyGame()">
                             <div class="row line gray-on-disable"></div>
@@ -150,10 +146,17 @@
           classes.push('unlocked');
         }
 
-        if(item.user_max_can_afford > 0){
+        if(item.user_max_can_afford > 0)
+        {
           classes.push('can_afford');
-        }else{
+        }
+        else if(this.game.active_ico) 
+        {
           classes.push('cannot_afford');
+        }
+        else
+        {
+            classes.push('newuser')
         }
 
         return classes;
@@ -430,6 +433,15 @@
     .unlocked.can_afford .corner-ribbon:before{
         content: "UPGRADE";
     }
+    
+    .newuser .corner-ribbon{
+        visibility:visible;
+        background:#288232;
+    }
+    .newuser .corner-ribbon:before{
+        content: "BUY NOW";
+    }
+
     .unlocked.cannot_afford .corner-ribbon{
         visibility:visible;
         background:#288232;
@@ -437,19 +449,19 @@
     .unlocked.cannot_afford .corner-ribbon:before{
         content: "BOUGHT";
     }
-    .locked.can_afford .corner-ribbon:before{
-        content:"BUY NOW";
-    }
-    .locked.can_afford .corner-ribbon{
-        visibility:visible;
-        background:orange;
-    }
     .locked.cannot_afford .corner-ribbon:before{
         content:"CANT AFFORD";
     }
     .locked.cannot_afford .corner-ribbon{
         visibility:visible;
         background:white;
+    }
+    .locked.can_afford .corner-ribbon:before{
+        content:"BUY NOW";
+    }
+    .locked.can_afford .corner-ribbon{
+        visibility:visible;
+        background:orange;
     }
     .buy-with-nas-container *{
         pointer-events: all !important;
@@ -466,5 +478,4 @@
     .buy-section-inner{
 
     }
-
 </style>

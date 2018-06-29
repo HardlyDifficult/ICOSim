@@ -1,7 +1,9 @@
 <template>
     <div class="row">
         <div class="col-12">
-            <h3>Loading - please wait while we're {{loadingString}}{{ellipse}}</h3>
+            <h3>Loading - please wait while we're {{loadingString}}
+              <span class="ellipse">{{ellipse}}</span>
+            </h3>
             <br>
             <h5 v-if="been_a_minute">(Nebulas has been having some issues recently, please be patient)</h5>
         </div>
@@ -86,5 +88,8 @@ let tick_count = 0;
 </script>
 
 <style scoped>
-
+.ellipse
+{
+  position:absolute;
+}
 </style>

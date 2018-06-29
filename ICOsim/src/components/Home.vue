@@ -19,7 +19,8 @@
         </div>
         <div class="row">
             <div class="col-xl-6">
-                <Items 
+                <Items
+                  :game="game"
                   :isTeam="false" 
                   :items="game.roadmap_steps"
                   :selections="selections"
@@ -27,7 +28,8 @@
                   :status="status" />
             </div>
             <div class="col-xl-6">
-                <Items 
+                <Items
+                  :game="game"
                   :isTeam="true"
                   :items="game.team_members" 
                   :selections="selections"

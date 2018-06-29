@@ -127,7 +127,7 @@
   export default {
     name: "Items",
 
-    props : ['items', 'selections', 'isMyGame', 'isTeam', 'status'],
+    props : ['items', 'selections', 'isMyGame', 'isTeam', 'status', 'game'],
 
     components : {
       FundsContainer,
@@ -176,11 +176,11 @@
         },
         getBuyProductionGain(item)
         {
-            return game.getBuyProductionGain(game, item, this.selections[item.name].number_to_buy);
+            return game.getBuyProductionGain(this.game, item, this.selections[item.name].number_to_buy);
         },
         getBuyProductionGainWithNas(item)
         {
-            return game.getBuyProductionGain(game, item, this.selections[item.name].number_to_buy_with_nas);
+            return game.getBuyProductionGain(this.game, item, this.selections[item.name].number_to_buy_with_nas);
         },
     },
     

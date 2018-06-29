@@ -250,7 +250,7 @@ module.exports =
         }
         else if(game.active_ico)
         {
-            return game.active_ico.my_production_rate.mul(item.bonus_multiplier.mul(number_to_buy));
+            return game.active_ico.total_production_rate.mul(item.bonus_multiplier.div(100)).mul(number_to_buy);
         } else
         {
             return new BigNumber(0);

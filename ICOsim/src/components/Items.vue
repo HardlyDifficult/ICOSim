@@ -40,7 +40,7 @@
                         <div class="col-12" v-if="isMyGame()">
                             <div class="col-12 line gray-on-disable"></div>
                             <div class="row cols-same-height buy-section">
-                                <div class="col-sm-8 gray-on-disable">
+                                <div class="col-sm-12 gray-on-disable">
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="row">
@@ -63,13 +63,15 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-12">
                                     <button @click="onBuy(item, selections[item.name].number_to_buy.toString())" class="btn btn-buy">BUY</button>
                                 </div>
                             </div>
                             <div class="row buy-with-nas-container" v-if="isMyGame()">
                                 <div class="col-12 line gray-on-disable"></div>
-                                <button class="btn btn-secondary col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">Buy with NAS</button>
+                                <div class="col-12">
+                                    <button class="btn btn-secondary col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">Buy with NAS</button>
+                                </div>
                                 <div class="col-12 mt-3" v-if="show_buy_nas[item.name]">
                                     <div class="row cols-same-height">
                                         <div class="col-8">
@@ -445,4 +447,8 @@
     .buy-with-nas-container .btn-buy:hover{
         background-color:rgba(0,177,193,0.5);
     }
+    .buy-section-inner{
+
+    }
+
 </style>

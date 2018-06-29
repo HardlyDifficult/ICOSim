@@ -9,8 +9,9 @@
             <a class="navbar-item" :style="{color : color}" href="/">
                 Home
             </a>
+            |
             <router-link class="navbar-item" :style="{color : color}" to="/icos">
-                ICos
+                ICOs
             </router-link>
         </div>
         <div class="col-sm-2"> </div>

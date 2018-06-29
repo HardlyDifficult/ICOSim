@@ -7,7 +7,6 @@
                         <div class="col-md-3">Market Cap</div>
                         <div class="col-md-3">{{game.active_ico ? game.active_ico.name : ""}}</div>
                         <div class="col-md-2 header-small">Growth Rate</div>
-                        <div class="col-md-2 header-small">Advisor Bonus</div>
                         <div class="col-md-2 header-small">Potential Exit Scam Value</div>
                     </div>
                 </div>
@@ -20,10 +19,7 @@
                             {{game.active_ico ? game.active_ico.ticker : ""}}
                         </div>
                         <div class="col-md-2">
-                            $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="production_rate" :start="production_rate" style="display:inline-block"/>/ s
-                        </div>
-                        <div class="col-md-2">
-                            <FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="advisor_bonus" :start="advisor_bonus" style="display:inline-block"/>%
+                            $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="total_production_rate" :start="total_production_rate" style="display:inline-block"/>/ s
                         </div>
                         <div class="col-md-2">
                             <FundsContainer :jumpprecision="0.0000000000001" :places=12 :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block"/> NAS
@@ -39,7 +35,7 @@
                         </div>
                         <div class="col-md-2"></div>
                         <div class="col-md-2"></div>
-                        <div class="col-md-2"><button v-if="canExit()" class="btn btn-sm btn-primary" @click="exitscam">EXIT SCAM NOW</button></div>
+                        <div class="col-md-2"><button v-if="canExit()" class="btn btn-sm btn-primary" @click="exitScam()">EXIT SCAM NOW</button></div>
                     </div>
                 </div>
             </div>
@@ -73,9 +69,9 @@
     },
 
     computed : {
-      production_rate(){
+      total_production_rate(){
         if(this.game && this.game.active_ico)
-          return this.game.active_ico.my_production_rate;
+          return this.game.active_ico.total_production_rate;
         return new BigNumber(0);
       },
       advisor_bonus(){
@@ -88,8 +84,9 @@
           return this.game.active_ico.my_resources_nas_value;
         return new BigNumber(0);
       },
-      playerResources(){
-        return (this.game && this.game.active_ico) ? this.game.active_ico.resources : new BigNumber(0);
+      playerResources() {
+          
+        return (this.game && this.game.active_ico) ? this.game.active_ico.estimated_resources : new BigNumber(0);
       }
     }
 

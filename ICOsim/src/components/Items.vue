@@ -71,13 +71,7 @@
                                 <div class="col-12 line gray-on-disable"></div>
                                 <button class="btn btn-secondary col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">Buy with NAS</button>
                                 <div class="col-12 mt-3" v-if="show_buy_nas[item.name]">
-                                    <p class="mb-3" style="color:orange"><small>100% of NAS goes into the contract and gets sent to players who "exit scam"</small></p>
                                     <div class="row cols-same-height">
-                                        <div class="col-4">
-                                            <button style="font-size:0.8em" v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-buy">
-                                                BUY <br>w/ NAS
-                                            </button>
-                                        </div>
                                         <div class="col-8">
                                             <div class="row">
                                                 <div class="col-12">
@@ -90,7 +84,13 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-4">
+                                            <button style="font-size:0.8em" v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-buy">
+                                                BUY <br>w/ NAS
+                                            </button>
+                                        </div>
                                     </div>
+                                    <p class="mt-3" style="color:orange"><small>100% of NAS goes to those who "exit scam"</small></p>
                                 </div>
                             </div>
                         </div>

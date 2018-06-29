@@ -100,7 +100,7 @@ module.exports =
             {
                 icos[i].market_cap = new BigNumber(icos[i].market_cap).div(100);
                 icos[i].resources = new BigNumber(icos[i].resources).div(100);
-                icos[i].total_production_rate = new BigNumber(icos[i].total_production_rate).div(100);
+                icos[i].total_production_rate = new BigNumber(icos[i].total_production_rate).div(100).mul(icos[i].total_bonus);
                 delete icos[i].my_total_production_rate;
             }
             onSuccess(icos);
@@ -175,7 +175,8 @@ module.exports =
                 info.active_ico.resources = new BigNumber(info.active_ico.resources).div(100);
                 info.active_ico.my_production_rate = new BigNumber(info.active_ico.my_production_rate).div(100);
                 info.active_ico.my_bonus = new BigNumber(info.active_ico.my_bonus);
-                info.active_ico.total_production_rate = new BigNumber(info.active_ico.total_production_rate).div(100);
+                //info.active_ico.total_production_rate = new BigNumber(info.active_ico.total_production_rate).div(100);
+                info.active_ico.total_production_rate = info.active_ico.my_production_rate.mul(info.active_ico.my_bonus.plus(100).div(100));
                 if(info.current_event)
                 {
                     info.current_event.reward_percent = new BigNumber(info.current_event.reward_percent).div(100);

@@ -181,7 +181,10 @@ module.exports =
                 } 
                 else 
                 {
-                    onError(error);
+                    if(onError)
+                    {
+                        onError(error);
+                    }
                     console.log("Error: " + error);
                     return;
                 }

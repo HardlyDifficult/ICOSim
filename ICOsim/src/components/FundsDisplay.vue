@@ -1,14 +1,14 @@
 <template>
   <span class="funds">
-    <span v-for="(part, index) in number_parts" v-bind:key="index">
+    <span v-for="(part, index) in number_parts" v-bind:key="'a' + index">
       <span :style="mystyle" class="fund_part num">{{part}}</span>
-      <span :style="mystyle"  class="fund_part comma" v-if="index < number_parts.length - 1">,</span>
+      <span :style="mystyle" class="fund_part comma" v-if="index < number_parts.length - 1">,</span>
     </span>
     <span :style="mystyle" class="fund_part fund-dot" v-if="decimal_parts.length > 0">.</span>
-    <span v-for="(part, index) in decimal_parts" v-bind:key="index">
+     <span v-for="(part, index) in decimal_parts" v-bind:key="'b' + index">
       <span :style="mystyle" class="fund_part num">{{part}}</span>
     </span>
-     
+      
       <i v-if="showdirection && step.gt(0)" class="fas fa-caret-up" 
         :style="mystyle ? mystyle : {fontSize : '4em'}" style="color:green !important;"></i>
       <i v-if="showdirection && step.lt(0)" class="fas fa-caret-down" 

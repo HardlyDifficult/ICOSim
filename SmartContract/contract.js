@@ -129,9 +129,10 @@ class ICO
     this.id = value.id;
     this.player_addr = value.player_addr;
     this.name = value.name;
-    this.ticker = value.ticker;
+    this.ticker = value.ticker.toUpperCase();
     this.resources = new SafeNumber(value.resources);
     this.total_production_rate = new SafeNumber(value.total_production_rate);
+    this.total_bonus = new SafeNumber(value.total_bonus);
     this.last_action_date = new Date(value.last_action_date);
     this.items = value.items;
     this.validate();
@@ -417,12 +418,15 @@ Contract.prototype =
   //#region ICO managment
   getIsTickerAvailable: function(ticker)
   {
+    ticker = ticker.toUpperCase();
     validateTicker(ticker);
     return this.ticker_to_ico_id.get(ticker) == null;
   },
 
   launchICO: function(name, ticker)
   {
+    ticker = ticker.toUpperCase();
+
     assert(!this.ticker_to_ico_id.get(ticker), "There was already an ICO by that name, choose something unique.  You entered: " + ticker);
 
     var user = this.getOrCreateUser();
@@ -435,6 +439,7 @@ Contract.prototype =
       ticker,
       resources: this.starting_resources, 
       total_production_rate: new SafeNumber(0),
+      total_bonus: new SafeNumber(0),
       last_action_date: Date.now(), 
       items: {}
     });
@@ -501,6 +506,7 @@ Contract.prototype =
 
     this.ico_id_to_ico.put(ico.id, ico);
     ico.total_production_rate = this.getMyProductionRate();
+    ico.total_bonus = this.getMyBonus();
     this.ico_id_to_ico.put(ico.id, ico);
 
     Event.Trigger("buyWithNas", {
@@ -863,6 +869,7 @@ Contract.prototype =
     
     this.ico_id_to_ico.put(ico.id, ico);
     ico.total_production_rate = this.getMyProductionRate();
+    ico.total_bonus = this.getMyBonus();
     this.ico_id_to_ico.put(ico.id, ico);
   },
   //#endregion
@@ -1047,8 +1054,6 @@ Contract.prototype =
 
       data.active_ico.is_you = Blockchain.transaction.from == data.active_ico.player_addr;
       data.active_ico.my_resources_nas_value = this.getMyResourcesNasValue(ico_id);
-      data.active_ico.my_production_rate = this.getMyProductionRate(ico_id);
-      data.active_ico.my_bonus = this.getMyBonus(ico_id);
     }
 
     return data;
@@ -1082,7 +1087,12 @@ Contract.prototype =
     var time_passed = this.getTimePassed(ico_id);
 
     delete ico.items;
-    ico.market_cap = ico.resources.plus(ico.total_production_rate.mul(time_passed));
+    ico.market_cap = new SafeNumber(
+      ico.resources.plus(
+        ico.total_production_rate.mul(
+          ico.total_bonus.plus(new SafeNumber("100"))).mul(
+            time_passed)).value.div(
+              new SafeNumber("100")).toFixed(0));
     
     return ico;
   },

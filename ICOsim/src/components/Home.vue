@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col-xl-6">
                 <Items 
                   :isTeam="false" 
                   :items="game.roadmap_steps"
@@ -26,7 +26,7 @@
                   :isMyGame="isMyGame"
                   :status="status" />
             </div>
-            <div class="col-lg-6">
+            <div class="col-xl-6">
                 <Items 
                   :isTeam="true"
                   :items="game.team_members" 
@@ -150,6 +150,12 @@ export default {
         }else {
           //this.$router.push({name : '', params : {ticker: ''}});
         }
+        
+        if(this.game.active_ico)
+        {
+          this.game.active_ico.estimated_resources = this.game.active_ico.resources;
+          this.game.active_ico.date_of_last_refresh = Date.now();
+        }
 
         this.game.roadmap_steps = [];
         this.game.team_members = [];
@@ -190,6 +196,7 @@ export default {
             this.game.team_members.push(item);
           }
         }
+
         setTimeout(this.getGame, game.auto_refresh_time);
       }, (error) =>
       {
@@ -225,6 +232,16 @@ export default {
     { // It takes a second for the wallet game to appear
       this.is_wallet_missing = !game.isWalletInstalled();
     }, 1000);
+
+    setInterval(() =>
+    {
+      if(this.game && this.game.active_ico)
+      {
+        let time_passed = Date.now() - this.game.active_ico.date_of_last_refresh;
+        let production = this.game.active_ico.total_production_rate
+        this.game.active_ico.estimated_resources = this.game.active_ico.resources;
+      }
+    });
   }
 }
 </script>

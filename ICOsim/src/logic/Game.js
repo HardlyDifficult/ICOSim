@@ -253,11 +253,6 @@ module.exports =
             return game.active_ico.my_production_rate.mul(item.bonus_multiplier.mul(number_to_buy));
         } else
         {
-          console.log("NOPE");
-          console.log('game');
-          console.log(game);
-          console.log('item');
-          console.log(item);
             return new BigNumber(0);
         }
     },

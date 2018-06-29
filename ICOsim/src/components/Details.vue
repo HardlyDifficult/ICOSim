@@ -3,10 +3,10 @@
         <div class="col-12 details-container">
             <div class="row details-inner">
                 <div class="col-12">
-                    <div class="row text-center details-header">
+                    <div class="row text-center details-header align-bottom">
                         <div class="col-md-4">Market Cap</div>
                         <div class="col-md-4">{{game.active_ico ? game.active_ico.name : ""}}</div>
-                        <div class="col-md-4 header-small">Exit Scam Value</div>
+                        <div class="col-md-4 header-small align-bottom mt-3">Exit Scam Value</div>
                     </div>
                 </div>
                 <div class="col-12">
@@ -17,9 +17,11 @@
                         </div>
                         <div class="col-md-4">
                             {{game.active_ico ? game.active_ico.ticker : ""}}
+                            <br><small v-if="!isMyGame()">Not your ICO. <a style="color:white;" href="/">get to yours</a></small>
                         </div>
                         <div class="col-md-4">
                             <FundsContainer :jumpprecision="0.0000000000001" :places=12 :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block" :label="'nas'" :labelstyle="''"/>
+                        <br><button v-if="canExit()" class="btn btn-sm btn-primary" @click="exitScam()">EXIT SCAM NOW</button>
                         </div>
                     </div>
                 </div>
@@ -27,9 +29,7 @@
                     <div class="row text-center">
                         <div class="col-md-4"></div>
                         <div class="col-md-4">
-                            <small v-if="!isMyGame()">Not your ICO. <a style="color:white;" href="/">get to yours</a></small>
                         </div>
-                        <div class="col-md-4"><button v-if="canExit()" class="btn btn-sm btn-primary" @click="exitScam()">EXIT SCAM NOW</button></div>
                     </div>
                 </div>
             </div>

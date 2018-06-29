@@ -38,7 +38,7 @@
 
 
                         <div class="col-12" v-if="isMyGame()">
-                            <div class="col-12 line gray-on-disable"></div>
+                            <div class="row line gray-on-disable"></div>
                             <div class="row cols-same-height buy-section">
                                 <div class="col-sm-12 gray-on-disable">
                                     <div class="row">
@@ -68,7 +68,7 @@
                                 </div>
                             </div>
                             <div class="row buy-with-nas-container" v-if="isMyGame()">
-                                <div class="col-12 line gray-on-disable"></div>
+                                <div class="col-12 line gray-on-disable mt-2"></div>
                                 <div class="col-12">
                                     <button class="btn btn-secondary col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">Buy with NAS</button>
                                 </div>

@@ -89,12 +89,12 @@ module.exports =
     
     getIsTickerAvailable(ticker, onSuccess, onError)
     {
-        return neb.nebRead("getIsTickerAvailable", [ticker], onSuccess, onError);
+        return neb.nebReadAnon("getIsTickerAvailable", [ticker], onSuccess, onError);
     },
     
     getCoinMarketCaps(start_index, count, onSuccess, onError)
     {
-        neb.nebRead("getCoinMarketCaps", null, function(icos)
+        neb.nebReadAnon("getCoinMarketCaps", null, function(icos)
         {
             for(var i = 0; i < icos.length; i++)
             {
@@ -110,7 +110,7 @@ module.exports =
     
     getBestKnownScammers(start_index, count, onSuccess, onError)
     {
-        neb.nebRead("getBestKnownScammers", null, function(scammers)
+        neb.nebReadAnon("getBestKnownScammers", null, function(scammers)
         {
             for(var i = 0; i < scammers.length; i++)
             {
@@ -156,7 +156,7 @@ module.exports =
 
     getSellPriceNasPerResource(onSuccess, onError)
     {
-        neb.nebRead("getSellPriceNasPerResource", [ticker], function(sell_price) {
+        neb.nebReadAnon("getSellPriceNasPerResource", [ticker], function(sell_price) {
             sell_price = new BigNumber(sell_price).div(token_denominator);
             onSuccess(sell_price);
         }, onError);

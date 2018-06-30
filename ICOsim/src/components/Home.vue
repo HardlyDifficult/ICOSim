@@ -203,10 +203,11 @@ export default {
         { // Init default user selections
           let item = resp.items[i];
           let selection = this.selections[item.name];
-          if(selection == null) {
+          if(selection == null) 
+          {
             let newSelections = {...this.selections};
             newSelections[item.name] = {
-              number_to_buy: 0
+              number_to_buy: item.user_max_can_afford
             };
             this.selections = newSelections;
           }
@@ -216,13 +217,15 @@ export default {
             this.selections[item.name].number_to_buy_with_nas = 1;
           }
 
-          if(item.user_max_can_afford <= 0)
+          if(!this.selections[item.name].number_to_buy
+            || this.selections[item.name].number_to_buy > item.user_max_can_afford)
           {
-            this.selections[item.name].number_to_buy = 0;
+            this.selections[item.name].number_to_buy = item.user_max_can_afford;
           }
-          else if(!this.selections[item.name].number_to_buy)
+
+          if(this.selections[item.name].number_to_buy == this.selections[item.name].previous_max)
           {
-            this.selections[item.name].number_to_buy = 1;
+            this.selections[item.name].number_to_buy = item.user_max_can_afford;
           }
 
           //roadmap
@@ -234,6 +237,8 @@ export default {
           {
             resp.team_members.push(item);
           }
+
+          this.selections[item.name].previous_max = item.user_max_can_afford;
         }
 
         this.game = resp;

@@ -179,7 +179,7 @@ module.exports =
     getSellPriceNasPerResource(onSuccess, onError)
     {
         neb.nebReadAnon("getSellPriceNasPerResource", [ticker], function(sell_price) {
-            sell_price = new BigNumber(sell_price).div(token_denominator);
+            sell_price = new BigNumber(sell_price).mul(100).div(token_denominator);
             onSuccess(sell_price);
         }, onError);
     },
@@ -200,7 +200,7 @@ module.exports =
                 return a.sort_id - b.sort_id;
             });
 
-            info.sell_price_nas_per_resource = new BigNumber(info.sell_price_nas_per_resource).div(token_denominator);
+            info.sell_price_nas_per_resource = new BigNumber(info.sell_price_nas_per_resource).mul(100).div(token_denominator);
 
             if(info.active_ico)
             {

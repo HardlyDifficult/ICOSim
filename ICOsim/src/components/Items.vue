@@ -192,11 +192,11 @@
       },
       onBuy(item, count)
     {
-      game.buy(item, count, status.onTxPosted, status.onSuccess, status.onError);
+      game.buy(item, count, this.status.onTxPosted, this.status.onSuccess, this.status.onError);
     },
     buyWithNas(item, count)
     {
-      game.buyWithNas(item, count, status.onTxPosted, status.onSuccess, status.onError);
+      game.buyWithNas(item, count, this.status.onTxPosted, this.status.onSuccess, this.status.onError);
     },
         getBuyPrice(item)
         {

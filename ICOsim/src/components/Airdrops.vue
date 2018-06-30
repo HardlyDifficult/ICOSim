@@ -1,7 +1,7 @@
 <template>
     <div class="airdrop-outer">
         <div class="airdrop-warning" v-if="!game.current_event || game.current_event.number_of_blocks_remaining === 0 || game.current_event.user_has_redeemed">
-            <span v-if="game.current_event">
+            <span v-if="game.current_event && game.current_event.user_has_redeemed">
                 Successfully claimed Airdrop!<br>
                 <!--$<FundsDisplay :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="game.current_event.expected_reward" :start="game.current_event.expected_reward" style="display:inline-block"/>-->
             </span>
@@ -77,10 +77,13 @@
       getExpectedReward(){
         return this.game.current_event ? this.game.current_event.expected_reward : new BigNumber(0);
       },
-        redeemEvent()
-        {
-            game.redeemEvent(status.onTxPosted, status.onSuccess, status.onError);
-        },
+    redeemEvent()
+    {
+        game.redeemEvent(this.status.onTxPosted, function(resp) {
+            this.game.current_event.user_has_redeemed = true;
+            this.status.onSuccess(resp);
+        }, this.status.onError);
+    },
     },
   }
 

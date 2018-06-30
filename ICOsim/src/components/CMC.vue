@@ -18,7 +18,7 @@
                         Scammers: 
                             <FundsContainer :jumpprecision="1" :places=0 :showdirection=0 :target="scammer_count" :mystyle="number_style"/>                                        
                         <span class="bullet">•</span>
-                        Taken:  <FundsContainer :showdirection=1 :target="total_scammed"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :mystyle="number_style"/>
+                        Taken:  <FundsContainer instant :showdirection=1 :target="total_scammed"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :mystyle="number_style"/>
                     </span>
                 </div>
                 <div class="col-12 hl" v-if="icos"></div>
@@ -173,7 +173,7 @@ let is_destroyed = false;
                 }
                 if(!this.scammers)
                 { // Retry right away
-                    return this.getBestKnownScammers;
+                    return this.getBestKnownScammers();
                 }
                 setTimeout(this.getBestKnownScammers, game.auto_refresh_time);
             });
@@ -209,7 +209,7 @@ let is_destroyed = false;
                 }
                 if(!this.icos)
                 { // Retry right away
-                    return this.getCoinMarketCaps;
+                    return this.getCoinMarketCaps();
                 }
                 setTimeout(this.getCoinMarketCaps, game.auto_refresh_time);
             });
@@ -234,7 +234,7 @@ let is_destroyed = false;
                 }
                 if(!this.icos)
                 { // Retry right away
-                    return this.getSellPrice;
+                    return this.getSellPrice();
                 }
                 setTimeout(this.getSellPrice, game.auto_refresh_time);
             });

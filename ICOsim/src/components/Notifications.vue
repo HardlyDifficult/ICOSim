@@ -2,7 +2,7 @@
     <div class="notifications-container">
         <div v-for="(notification, index) in notifications" class="notification glow-1" v-bind:key="index" @click="removeNotification(index)">
             <p v-if="notification.title" class="title">{{notification.title}}</p>
-            <p v-if="notification.message" class="message">{{notification.message}}</p>
+            <p v-if="notification.message" class="message">{{notification.message.toString()}}</p>
             <a onclick="event.stopPropagation();" target="_blank" v-if="notification.href" :href="notification.href">{{notification.href_text}}</a>
         </div>
     </div>
@@ -27,6 +27,11 @@
       tick(){
         if(this.removed)
           return;
+
+        while(this.notifications.length > 1)
+        {
+          this.notifications.splice(0,1);
+        }
 
         for(let i = this.notifications.length -1;i>=0;i--){
           if(!this.notifications[i].count)

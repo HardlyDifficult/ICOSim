@@ -115,18 +115,23 @@ export default {
     },
 
     onTxPosted(resp) {
-      this.showNotification( "Transaction posted", '', 'https://explorer.nebulas.io/#/tx/' + resp.txhash, 'Open in Explorer',3000,true);
-      alert('sup');
+      this.showNotification( "Transaction posted", '', game.getBlockExplorerURLForTx(resp.txhash), 'Open in Explorer',3000,true);
       console.log(resp);
     },
 
-    onError(error) {
+    onError(error) 
+    {
+      if(error == "Error: Transaction rejected by user"
+        || error == "Error: Network Error")
+      { // Ignore
+        return;
+      }
       this.showNotification("Error", error);
       console.log(error);
     },
 
     onSuccess(resp) {
-      this.showNotification("Great Success!", resp);
+      this.showNotification("Success", resp);
       console.log(resp);
     },
 
@@ -135,7 +140,7 @@ export default {
       console.log(`launching ico ${icoName} ticker ${icoTicker}`);
       game.launchICO(icoName, icoTicker, this.onTxPosted, (resp) => {
         this.$router.push({name : 'ico', params : {ticker:  this.launch_ico_ticker}});
-        onSuccess(resp);
+        this.onSuccess(resp);
       }, this.onError);
     },
     

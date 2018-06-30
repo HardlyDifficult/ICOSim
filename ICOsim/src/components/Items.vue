@@ -10,12 +10,18 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-12" v-if="isTeam">
-                                    <div class="image" :style="{backgroundImage:'url(' + pictures[item.name]+ ')'}"></div>
+                                    <div class="row cols-same-height">
+                                        <div class="col-xl-6 col-lg-12">
+                                            <div class="image" :style="{backgroundImage:'url(' + team[item.name].img+ ')'}"></div>
+                                        </div>
+                                        <div class="col-xl-6 col-lg-12 member-description-outer">
+                                            <p class="member-description">{{team[item.name].desc}}</p>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <p class="title">{{item.name}}</p>
                                     <template v-if="isTeam">
-                                        <p class="member-description">{{item.description}}</p>
                                         <span v-if="game.active_ico">
                                         <p v-if="parseInt(item.user_holdings) > 0" class="member-buy">ADVISOR LEVEL {{item.user_holdings}}</p>
                                         <p v-else class="member-buy">BUY TO UNLOCK ADVISOR</p>
@@ -234,6 +240,44 @@
         player_money : 75,
         amount_to_invest: 0,
         page_title: this.isTeam == true ? "Team" : "Roadmap",
+        team : {
+          'Roger Ver' : {
+            img:require('../assets/ver.png'),
+            desc : 'For a bit of $$$, your coin could be the real Bitcoin!'
+          } ,
+          'John McAfee' : {
+            img:require('../assets/mcafee.png'),
+            desc : 'The undisputed king of shillers.'
+          },
+          'Carlos Matos': {
+            img:require('../assets/matos.png'),
+            desc : 'The best Hype Man crypto has ever seen.'
+          },
+          'Tom Lee' : {
+            img:require('../assets/lee.png'),
+            desc : 'Permabull'
+          },
+          'Craig Grant': {
+            img:require('../assets/grant.png'),
+            desc : ''
+          },
+          'Ian Balina': {
+            img:require('../assets/balina.png'),
+            desc : ''
+          },
+          'Suppoman': {
+            img:require('../assets/suppoman.png'),
+            desc : ''
+          },
+          'Trevon James': {
+            img:require('../assets/trevon.png'),
+            desc : ''
+          },
+          'Dr Craig S Wright': {
+            img:require('../assets/dr_fakesatoshi.png'),
+            desc : 'Imagine that, having Satoshi as your advisor!'
+          },
+        },
         pictures : {
           'Roger Ver' : require('../assets/ver.png'),
           'John McAfee' : require('../assets/mcafee.png'),
@@ -413,15 +457,27 @@
         font-size:1.5em;
         padding:0;
     }
+    .member-description-outer{
+        min-height: 3em;
+
+    }
     .member-description{
         font-size:0.9em;
         padding:0;
+
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
+
     .image{
         margin: 0 auto;
         margin-bottom:10px;
         height:150px;
         width:150px;
+        max-width: 100%;
         background-size:cover;
         background-position:center;
         background-repeat:no-repeat;

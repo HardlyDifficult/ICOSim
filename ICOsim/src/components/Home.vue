@@ -63,6 +63,7 @@ import neb from "../logic/HardlyNeb.js";
 import Notifications from "./Notifications";
 const game = require("../logic/game.js");
 let is_destroyed = false;
+let get_game_timeout = null;
 
 function b64DecodeUnicode(str) {
   // Going backwards: from bytestream, to percent-encoding, to original string.
@@ -155,6 +156,11 @@ export default {
     },
 
     onSuccess(resp) {
+      if(get_game_timeout)
+      {
+        clearTimeout(get_game_timeout);
+      }
+      this.getGame();
       this.showNotification( "Transaction successful", this.getSuccessMessage(resp), game.getBlockExplorerURLForTx(resp.hash), 'Open in Explorer', 3000,true);
       console.log(resp);
     },
@@ -245,7 +251,7 @@ export default {
         this.game = resp;
         if(!is_anon)
         {
-          setTimeout(this.getGame, game.auto_refresh_time);
+          get_game_timeout = setTimeout(this.getGame, game.auto_refresh_time);
         }
       },
       (error) =>
@@ -262,10 +268,10 @@ export default {
         }
         if(!this.game)
         { // Retry right away
-          setTimeout(this.getGame, 3000);
+          get_game_timeout = setTimeout(this.getGame, 3000);
           return;
         }
-        setTimeout(this.getGame, game.auto_refresh_time);
+        get_game_timeout = setTimeout(this.getGame, game.auto_refresh_time);
       }, is_anon);
     },
     checkTicker()

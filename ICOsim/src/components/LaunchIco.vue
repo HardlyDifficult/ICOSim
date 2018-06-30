@@ -25,30 +25,29 @@
         <div class="col-lg-3"></div>
         <Modal ref="helpModal">
             <h3>About ICOSim.io</h3>
-            <div style="max-width:40em">
-            <p>
-                Launch your own coin, meet milestones on your roadmap, hire the best shillers in the business, and finally,
-                 culminate all that worth into a lucrative exit scam. The path to your very own moon Lambo starts here*.
-            </p>
-            <p>
-                100% of NAS spent is redistributed to players who "Exit Scam".  
-                The value you may claim is determined by the ICOs market cap. 
-                So hype your ICO before you dump your bags.  
-            </p>
-            <p>
-                The amount you can get when exit scamming may go down when others play.
-                Once you "Exit Scam" you may start over by launching a new ICO.
-            </p>
-            <p>
-                Good Luck!
-            </p>
-
-            <p class="disclaimer">
-                * May not prove profitable.  This is a game!  Do not spend more than you are willing to lose.
-                <br>
-                The funds are managed by our open-source 
-                <a target="_blank" v-bind:href="explorer_smart_contract_url">Smart Contract</a>.
-            </p>
+            <div style="modalbody">
+                <p>
+                    Launch your own coin, meet milestones on your roadmap, hire the best shillers in the business, and finally,
+                    culminate all that worth into a lucrative exit scam. The path to your very own moon Lambo starts here*.
+                </p>
+                <p>
+                    100% of NAS spent is redistributed to players who "Exit Scam".  
+                    The value you may claim is determined by the ICOs market cap. 
+                    So hype your ICO before you dump your bags.  
+                </p>
+                <p>
+                    The amount you can get when exit scamming may go down when others play.
+                    Once you "Exit Scam" you may start over by launching a new ICO.
+                </p>
+                <p>
+                    Good Luck!
+                </p>
+                <p class="disclaimer">
+                    * May not prove profitable.  This is a game!  Do not spend more than you are willing to lose.
+                    <br>
+                    The funds are managed by our open-source 
+                    <a target="_blank" v-bind:href="explorer_smart_contract_url">Smart Contract</a>.
+                </p>
             </div>
         </Modal>
     </div>

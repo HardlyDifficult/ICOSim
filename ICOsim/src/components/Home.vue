@@ -164,7 +164,7 @@ export default {
         
         if(resp.active_ico)
         {
-          resp.active_ico.estimated_resources = resp.active_ico.resources;
+          resp.active_ico.original_resources = resp.active_ico.resources;
           resp.active_ico.date_of_last_refresh = Date.now();
         }
 
@@ -261,7 +261,7 @@ export default {
       {
         let time_passed = Date.now() - this.game.active_ico.date_of_last_refresh;
         let production = this.game.active_ico.total_production_with_bonus.mul(time_passed / 1000);
-        this.game.active_ico.estimated_resources = this.game.active_ico.resources.plus(production);
+        this.game.active_ico.resources = this.game.active_ico.original_resources.plus(production);
       }
     }, 100);
   },

@@ -5,3 +5,12 @@
     border:2px solid transparent;
     color:black;
 }
+.mono
+{
+    font-family: monospace;
+    font-size: 1.25em;
+}
+.modalbody
+{
+    max-width:40em;
+}

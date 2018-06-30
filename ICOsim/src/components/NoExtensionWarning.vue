@@ -3,6 +3,7 @@
         <div class="col-lg-1"></div>
         <div class="col-lg-10 warning-container glow-1">
         <h3>Hello! looks like you're new here.</h3>
+            <div style="modalbody">
             <p>
                 To play ICOSim you need the Nebulas <a target="_blank" class="highlight underline" href="https://chrome.google.com/webstore/detail/nasextwallet/gehjkhmhclgnkkhpfamakecfgakkfkco">WebExtensionWallet</a> <a target="_blank" class="highlight underline" href="https://github.com/nebulasio/WebExtensionWallet">(Github)</a> and some <a target="_blank" class="highlight underline" href="http://givemenas.com/home.html">NAS</a>.<br>
                 No worries, you can get more than enough NAS to play for FREE from <a target="_blank" class="highlight underline" href="http://givemenas.com/home.html">givemenas.com</a><br>
@@ -11,6 +12,7 @@
                 Reload this page when you have the wallet installed and a small amount of NAS in your account.
                 </small>
             </p>
+            </div>
         </div>
         <div class="col-lg-1"></div>
     </div>

@@ -1,7 +1,8 @@
 <template>
   <span class="funds">
-    <span v-for="(part, index) in number_parts" v-bind:key="'a' + index">
-      <span :style="mystyle" class="fund_part num">{{part}}</span>
+    <span v-if="prefix" :style="labelstyle">{{this.prefix}}</span><span
+     v-for="(part, index) in number_parts" v-bind:key="'a' + index"><span 
+     :class="index==0?'first':''" class="fund_part num" :style="mystyle">{{part}}</span>
       <span :style="mystyle" class="fund_part comma" v-if="index < number_parts.length - 1">,</span>
     </span>
     <span :style="mystyle" class="fund_part fund-dot" v-if="decimal_parts && decimal_parts.length > 0">.</span>
@@ -23,10 +24,11 @@
 
 <script>
     import {BigNumber} from 'bignumber.js';
-
+    let first = true;
+    
     export default {
     name: "FundsDisplay",
-    props : ['target', 'mystyle', 'instant', 'showdirection', 'places', 'start', 'jumpprecision', 'label', 'labelstyle'],
+    props : ['target', 'mystyle', 'instant', 'showdirection', 'places', 'start', 'jumpprecision', 'label', 'labelstyle', 'prefix'],
     components : {
     },
 
@@ -34,7 +36,7 @@
       return {
         value : new BigNumber("0"),
         step: new BigNumber("0.0005"),
-        removed : false
+        removed : false,
       }
     },
 
@@ -52,7 +54,8 @@
           this.step = this.target.minus(this.value).div(50);
           let diff = this.getDiff(this.value, this.target);
 
-          if(this.instant !== undefined){
+          if(this.instant !== undefined && first){
+            first = false;
             if(diff.gt(0))
               this.value = this.target;
 
@@ -149,5 +152,8 @@
       position: relative;
       margin-left: -.3em;
       margin-right: -.1em;
+    }
+    .first
+    {
     }
 </style>

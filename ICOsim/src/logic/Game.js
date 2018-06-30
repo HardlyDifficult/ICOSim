@@ -18,11 +18,21 @@ module.exports =
     //#region Write
     buy(item, count, onTxPosted, onSuccess, onError)
     {
+        if(!count)
+        {
+            return;
+        }
+
         neb.nebWrite("buy", [item.name, count], onTxPosted, 0, onSuccess, onError);
     },
 
     buyWithNas(item, count, onTxPosted, onSuccess, onError)
     {
+        if(!count)
+        {
+            return;
+        }
+
         let cost = this.getBuyWithNasCost(item, count) / token_denominator;
         neb.nebWrite("buyWithNas", [item.name, count], onTxPosted, cost, onSuccess, onError);
     },
@@ -39,6 +49,13 @@ module.exports =
 
     launchICO(name, ticker, onTxPosted, onSuccess, onError)
     {
+        if(!name || !ticker)
+        {
+            return;
+        }
+
+        ticker = ticker.toUpperCase();
+
         neb.nebWrite("launchICO", [name, ticker], function(resp)
         {
             onTxPosted(resp);
@@ -125,6 +142,10 @@ module.exports =
     
     getTotalCostFor(item, quantity)
     {
+        if(!quantity)
+        {
+            return new BigNumber(0);
+        }
         quantity = new BigNumber(quantity);
         return new BigNumber(item.start_price).mul(quantity).mul(quantity);
     },
@@ -133,12 +154,10 @@ module.exports =
     {
         if(!quantity)
         {
-            quantity = 1;
+            return new BigNumber(0);
         } 
-        else
-        {
-            quantity = parseInt(quantity);
-        }
+
+        quantity = parseInt(quantity);
         let item_count = parseInt(item.user_holdings);
         let max = item_count + quantity;
         return this.getTotalCostFor(item, max).sub(this.getTotalCostFor(item, item_count));
@@ -249,6 +268,10 @@ module.exports =
 
     getBuyProductionGain(game, item, number_to_buy)
     {
+        if(!number_to_buy)
+        {
+            return BigNumber(0);
+        }
         if(item.resources_per_s != null)
         {
             return item.resources_per_s.mul(number_to_buy);

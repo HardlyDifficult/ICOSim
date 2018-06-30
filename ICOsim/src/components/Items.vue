@@ -29,21 +29,42 @@
 
 
                         <div class="col-12 gray-on-disable">
-                            <p>Current Price</p>
+                            <p>Price</p>
                             $<FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="item.user_price ? item.user_price : item.start_price"/>
+                            <span v-if="item.resources_per_s">
+                                <p class="mt-1">Production</p>
+                                <span class="mono">${{item.resources_per_s | resources}}/s</span>
+                            </span>
+                            <span v-else>
+                                <p class="mt-1">Bonus</p>
+                                <span class="mono">+{{item.bonus_multiplier | percent}}</span>
+                            </span>
                         </div>
 
                         <div v-if="game.active_ico" class="col-12 line gray-on-disable"></div>
                         <div v-if="game.active_ico" class="col-12">
                             <div class="row">
                                 <div class="col text-center">
-                                    {{item.user_holdings | count}}x 
+                                    You have: 
+                                    <FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.25em', color:'white', backgroundColor:'transparent'}" 
+                                        :target="item.user_holdings" :places="'0'" :showdirection=0 />                                    
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col text-center" style="'white-space:nowrap'">
-                                    producing  
-                                    <span v-if="item.user_item_production"> ${{item.user_item_production | resources}}/s</span>
+                                    <span v-if="item.user_item_production"> 
+                                        <FundsContainer
+                                            :prefix="'+$'"
+                                            :label="'/s'"
+                                            instant 
+                                            style="display:inline-block" 
+                                            :mystyle="{fontSize:'1.25em', color:'white', backgroundColor:'transparent'}" 
+                                            :target="item.user_item_production" 
+                                            :places=2
+                                            :showdirection=0 /> 
+
+                                    </span>
+                                    <span v-else> +${{item.user_item_bonus | percent}}</span>
                                 </div>
                             </div>
                         </div>
@@ -56,9 +77,9 @@
                                         <div class="col-12">
                                             <div class="row">
                                                 <div class="col">
-                                                    Buy {{selections[item.name].number_to_buy}} <br>
-                                                    For ${{getBuyPrice(item) | resources}}<br>
-                                                    +${{ getBuyProductionGain(item) | resources }}/s
+                                                    Buy <span class="mono">{{selections[item.name].number_to_buy | count}}</span>
+                                                        <br>
+                                                    <span class="mono">+${{ getBuyProductionGain(item) | resources }}/s</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -75,7 +96,9 @@
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
-                                    <button @click="onBuy(item, selections[item.name].number_to_buy.toString())" class="btn btn-buy">BUY</button>
+                                    <button @click="onBuy(item, selections[item.name].number_to_buy.toString())" class="btn btn-buy">
+                                        BUY for <span class="mono">${{getBuyPrice(item) | resourcesApprox}}</span>
+                                        </button>
                                 </div>
                             </div>
                             <div class="row buy-with-nas-container" v-if="isMyGame()">
@@ -85,25 +108,31 @@
                                 </div>
                                 <div class="col-12 mt-3" v-if="show_buy_nas[item.name]">
                                     <div class="row cols-same-height">
-                                        <div class="col-8">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <input title="nas-buy-input" class="form-control" type="number" v-model="selections[item.name].number_to_buy_with_nas" @input="$forceUpdate()">
+                                        <div class="col-12">
+                                            <div class="row text-bottom">
+                                                <div class="col-2 mt-2">
+                                                    Buy:
                                                 </div>
-                                                <div class="col-12" >
-                                                    Buy {{ selections[item.name].number_to_buy_with_nas | count }} <br>
-                                                    {{ getBuyWithNasCost(item) | nas }}<br>
-                                                    Gain: +${{ getBuyProductionGainWithNas(item) | resources }}/s
+                                                <div class="col-10">
+                                                    <input title="nas-buy-input" class="form-control" type="number" min="1" onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : event.charCode >= 48 && event.charCode <= 57" 
+                                                        v-model="selections[item.name].number_to_buy_with_nas" @input="$forceUpdate()">
+                                                </div>
+                                                <div class="col-12 mt-2 mono">
+                                                    +${{ getBuyProductionGainWithNas(item) | resources }}/s
+                                                    <br>
+                                                    {{ getBuyWithNasCost(item) | nas }}
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-4">
+                                    </div>
+                                    <div class="row mt-2 justify-content-center">
+                                        <div class="col-12">
                                             <button style="font-size:0.8em" v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-buy">
                                                 BUY <br>w/ NAS
                                             </button>
                                         </div>
+                                    <p class="mt-1" style="color:orange"><small>100% of NAS goes back to players</small></p>
                                     </div>
-                                    <p class="mt-3" style="color:orange"><small>100% of NAS goes to those who "exit scam"</small></p>
                                 </div>
                             </div>
                         </div>

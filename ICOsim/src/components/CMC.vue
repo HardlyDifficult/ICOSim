@@ -63,13 +63,13 @@
                                         </router-link>
                                     </td>
                                     <td scope="row" class="num">
-                                        <FundsContainer :showdirection=0 :target="ico.estimated_market_cap" :mystyle="number_style"/>
+                                        <FundsContainer :showdirection=0 :target="ico.market_cap" :mystyle="number_style"/>
                                     </td>
                                     <td scope="row" class="num">
                                         $ <FundsContainer :showdirection=0 :target="ico.total_production_with_bonus" :mystyle="number_style"/>/s
                                     </td>
                                     <td scope="row" class="num">
-                                        <FundsContainer v-if="ico.estimated_sell_price"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :showdirection=1 :target="ico.estimated_sell_price" :mystyle="number_style"/>                                        
+                                        <FundsContainer v-if="ico.sell_price"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :showdirection=1 :target="ico.sell_price" :mystyle="number_style"/>                                        
                                     </td>
                                     <td scope="row" >{{ico.player_addr | addr}}</td>
                             </tr>
@@ -189,8 +189,8 @@ let is_destroyed = false;
                 this.total_growth = new BigNumber(0);
                 for(var i = 0; i < this.icos.length; i++)
                 {
-                    this.icos[i].estimated_market_cap = this.icos[i].market_cap;
-                    this.total_market_cap = this.total_market_cap.plus(this.icos[i].estimated_market_cap);
+                    this.icos[i].original_market_cap = this.icos[i].market_cap;
+                    this.total_market_cap = this.total_market_cap.plus(this.icos[i].market_cap);
                     this.total_growth = this.total_growth.plus(this.icos[i].total_production_with_bonus);
                     this.estimateSellPrice(this.icos[i]);
                 }
@@ -241,7 +241,7 @@ let is_destroyed = false;
         {
             if(this.sell_price)
             {
-                ico.estimated_sell_price = ico.estimated_market_cap.mul(this.sell_price);
+                ico.sell_price = ico.market_cap.mul(this.sell_price);
             }
         }
    
@@ -267,10 +267,9 @@ let is_destroyed = false;
                 this.total_market_cap = new BigNumber(0);
                 for(var i = 0; i < this.icos.length; i++)
                 {
-                    this.icos[i].estimated_market_cap = this.icos[i].market_cap;
                     let production = this.icos[i].total_production_with_bonus.mul(time_passed);
-                    this.icos[i].estimated_market_cap = this.icos[i].estimated_market_cap.plus(production);
-                    this.total_market_cap = this.total_market_cap.plus(this.icos[i].estimated_market_cap);
+                    this.icos[i].market_cap = this.icos[i].original_market_cap.plus(production);
+                    this.total_market_cap = this.total_market_cap.plus(this.icos[i].market_cap);
                     this.estimateSellPrice(this.icos[i]);
                 }
             }

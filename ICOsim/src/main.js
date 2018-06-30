@@ -63,6 +63,37 @@ Vue.filter('resources', function (value) {
   }
   return numberWithCommas(value, 2);
 });
+Vue.filter('resourcesApprox', function (value) {
+  if(!(value instanceof BigNumber))
+  {
+    throw new Error("Error!  This should be using a BigNumber");
+  }
+
+  if(value.lt(1000))
+  {
+    return numberWithCommas(value, 2);
+  }
+  else if(value.lt(100000))
+  {
+    return numberWithCommas(value, 0);
+  }
+  else if(value.lt(1000000000))
+  {
+    value = value.div(1000);
+    return numberWithCommas(value, 0) + "k";
+  }
+  else if(value.lt(1000000000000))
+  {
+    value = value.div(1000000);
+    return numberWithCommas(value, 0) + "m";
+  }
+  else
+  {
+    value = value.div(1000000000);
+    return numberWithCommas(value, 0) + "b";
+  }
+
+});
 Vue.filter('nas', function (value) {
   return formatCoins(value, 12);
 });

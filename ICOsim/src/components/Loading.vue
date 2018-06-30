@@ -6,6 +6,9 @@
             </h3>
             <br>
             <h5 v-if="been_a_minute">(Nebulas has been having some issues recently, please be patient)</h5>
+            
+            <br>
+            <h5 v-if="been_a_while">...wow...</h5>
         </div>
     </div>
 </template>
@@ -36,6 +39,7 @@ let tick_count = 0;
         destroyed : false,
         ellipse: "",
         been_a_minute: false,
+        been_a_while: false,
       }
     },
 
@@ -56,6 +60,10 @@ let tick_count = 0;
         if(tick_count % 25 == 0)
         {
           this.been_a_minute = true;
+        }
+        if(tick_count % 100 == 0)
+        {
+          this.been_a_while = true;
         }
 
         if(tick_count % 10 == 0)

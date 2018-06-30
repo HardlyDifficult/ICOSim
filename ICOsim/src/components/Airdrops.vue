@@ -98,6 +98,7 @@
     }
     .airdrop-outer *{
         pointer-events:all;
+        z-index: 2;
     }
     .airdrop-warning{
         position:fixed;

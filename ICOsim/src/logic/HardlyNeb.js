@@ -11,7 +11,7 @@ neb.setRequest(new nebulas.HttpRequest(neb_contract.apiUrl));
 let has_checked_for_wallet = false;
 let wallet_check_count = 0;
 const timeout_error_message = "Unexpected token < in JSON at position 0";
-const auto_retry_time = 3000;
+const auto_retry_time = 6000;
 let write_count = 0;
 
 module.exports = 

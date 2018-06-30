@@ -2,8 +2,8 @@
     <div class="row roadmap-container">
         <div class="col-sm-12">
             <h2>{{ page_title }}</h2>
-            <h5>
-                <span v-if="!isTeam">
+            <h5 v-if="game.active_ico">
+                <span v-if="game.active_ico.total_production_rate != null">
                     Production: 
                     <FundsContainer
                         :prefix="'$'"
@@ -15,7 +15,7 @@
                         :places=2
                         :showdirection=0 /> 
                 </span>
-                <span v-else>
+                <span v-if="game.active_ico.total_bonus != null">
                     Bonus:
                     <FundsContainer
                         :label="'%'"

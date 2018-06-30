@@ -4,9 +4,9 @@
       <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
       <Navbar :color="'rgba(7,190,215,1)'"/>
       <Notifications :notifications="notifications"/>
-      <NoExtensionWarning v-if="is_wallet_missing"/>
+      <NoExtensionWarning v-if="is_wallet_missing || insufficient_balance"/>
       <div v-if="game !== null"> 
-        <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined && !is_wallet_missing"/>
+        <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined && !is_wallet_missing && !insufficient_balance"/>
         <Airdrops 
           :game="game" 
           :status="status"
@@ -38,7 +38,7 @@
             </div>
         </div>
       </div>
-       <Loading v-else/>
+       <Loading v-if="game==null && (!is_wallet_missing && !insufficient_balance)"/>
       <Footer />
       <!--<Particles/>-->
   </div>
@@ -84,7 +84,8 @@ export default {
       is_wallet_missing: false, // for new user help
       notifications : [],
 
-      show_help_modal : false
+      show_help_modal : false,
+      insufficient_balance: false,
     }
   },
   components: {
@@ -176,7 +177,7 @@ export default {
       }
       return this.game.active_ico.is_you;
     },
-    getGame()
+    getGame(is_anon)
     {
       game.getGame((resp) =>
       {
@@ -242,7 +243,10 @@ export default {
         }
 
         this.game = resp;
-        setTimeout(this.getGame, game.auto_refresh_time);
+        if(!is_anon)
+        {
+          setTimeout(this.getGame, game.auto_refresh_time);
+        }
       },
       (error) =>
       {
@@ -250,12 +254,18 @@ export default {
         {
             return;
         }
+        if(error == "insufficient balance")
+        {
+          this.insufficient_balance = true;
+          this.getGame(true);
+          return;
+        }
         if(!this.game)
         { // Retry right away
           return this.getGame();
         }
         setTimeout(this.getGame, game.auto_refresh_time);
-      });
+      }, is_anon);
     },
     checkTicker()
     {

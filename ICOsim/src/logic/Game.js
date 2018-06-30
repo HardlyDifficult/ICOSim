@@ -184,9 +184,9 @@ module.exports =
         }, onError);
     },
     
-    getGame(onSuccess, onError)
+    getGame(onSuccess, onError, is_anon)
     {
-        neb.nebRead("getInfo", [ticker], function(info) 
+        neb.doNebRead("getInfo", [ticker], function(info) 
         {
             if(!info){
               console.log('failed to fetch game!');
@@ -263,7 +263,7 @@ module.exports =
             }
 
             onSuccess(info);
-        }, onError);
+        }, onError, 0, is_anon);
     },
 
     getBuyProductionGain(game, item, number_to_buy)

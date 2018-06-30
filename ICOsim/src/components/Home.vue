@@ -5,6 +5,7 @@
       <Navbar :color="'rgba(7,190,215,1)'"/>
       <Notifications :notifications="notifications"/>
       <NoExtensionWarning v-if="is_wallet_missing || insufficient_balance"/>
+      <WrongNetworkWarning v-if="is_wrong_network"/>
       <div v-if="game !== null"> 
         <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined && !is_wallet_missing && !insufficient_balance"/>
         <Airdrops 
@@ -38,7 +39,7 @@
             </div>
         </div>
       </div>
-       <Loading v-if="game==null && (!is_wallet_missing && !insufficient_balance)"/>
+       <Loading v-if="game==null && !is_wallet_missing && !insufficient_balance && !is_wrong_network"/>
       <Footer />
       <!--<Particles/>-->
   </div>
@@ -53,6 +54,7 @@ import Items from './Items';
 import Airdrops from './Airdrops';
 import Details from './Details';
 import NoExtensionWarning from './NoExtensionWarning';
+import WrongNetworkWarning from './WrongNetworkWarning';
 import LaunchIco from './LaunchIco';
 import Loading from './Loading';
 import Footer from './Footer';
@@ -87,6 +89,7 @@ export default {
 
       show_help_modal : false,
       insufficient_balance: false,
+      is_wrong_network: false,
     }
   },
   components: {
@@ -98,6 +101,7 @@ export default {
     Airdrops,
     Details,
     NoExtensionWarning,
+    WrongNetworkWarning,
     LaunchIco,
     Loading,
     Footer,
@@ -136,6 +140,11 @@ export default {
       if(error == "Error: Transaction rejected by user"
         || error == "Error: Network Error")
       { // Ignore
+        return;
+      }
+      if(error == "Error: contract check failed")
+      {
+        this.is_wrong_network = true;
         return;
       }
       this.showNotification("Error", error);
@@ -190,6 +199,10 @@ export default {
         if(is_destroyed)
         {
             return;
+        }
+        if(this.is_wrong_network)
+        {
+          return;
         }
         if(resp.active_ico && !this.$route.params.ticker && this.$route.name === 'Home'){
           this.$router.push({name : 'ico', params : {ticker:  resp.active_ico.ticker}});
@@ -264,6 +277,11 @@ export default {
         {
           this.insufficient_balance = true;
           this.getGame(true);
+          return;
+        }
+        if(error == "contract check failed")
+        {
+          this.is_wrong_network = true;
           return;
         }
         if(!this.game)

@@ -458,7 +458,6 @@
         padding:0;
     }
     .member-description-outer{
-        min-height: 3em;
 
     }
     .member-description{

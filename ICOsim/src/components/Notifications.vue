@@ -3,7 +3,11 @@
         <div v-for="(notification, index) in notifications" class="notification glow-1" v-bind:key="index" @click="removeNotification(index)">
             <p v-if="notification.title" class="title">{{notification.title}}</p>
             <p v-if="notification.message" class="message">{{notification.message.toString()}}</p>
-            <a onclick="event.stopPropagation();" target="_blank" v-if="notification.href" :href="notification.href">{{notification.href_text}}</a>
+            <a onclick="event.stopPropagation();" target="_blank" v-if="notification.href" :href="notification.href">
+                <button class="btn btn-sm btn-primary">
+                    {{notification.href_text}}
+                </button>
+            </a>
         </div>
     </div>
 </template>
@@ -82,6 +86,10 @@
         pointer-events:none;
     }
     .notification{
+        display:flex;
+        flex-direction: column;
+        justify-content: space-around;
+
         animation-name:notification-slide;
         animation-duration:1s;
 
@@ -92,5 +100,9 @@
         background-color:rgba(0,0,0,0.9);
         margin-top:5px;
         pointer-events:all;
+    }
+    .notification > *{
+        margin:0;
+        padding:0;
     }
 </style>

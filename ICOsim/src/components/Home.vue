@@ -6,7 +6,7 @@
       <Notifications :notifications="notifications"/>
       <NoExtensionWarning v-if="is_wallet_missing"/>
       <div v-if="game !== null"> 
-        <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined"/>
+        <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined && !is_wallet_missing"/>
         <Airdrops 
           :game="game" 
           :status="status"

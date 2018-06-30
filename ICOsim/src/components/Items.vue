@@ -462,6 +462,8 @@
         display: table;
     }
     .member-description{
+        width:calc(100% + 30px);
+
         font-size:0.9em;
         padding:0;
 

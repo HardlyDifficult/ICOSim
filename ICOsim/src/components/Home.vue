@@ -64,6 +64,13 @@ import Notifications from "./Notifications";
 const game = require("../logic/game.js");
 let is_destroyed = false;
 
+function b64DecodeUnicode(str) {
+  // Going backwards: from bytestream, to percent-encoding, to original string.
+  return decodeURIComponent(atob(str).split('').map(function(c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+}
+
 export default {
   name: 'Home',
   data () {
@@ -133,8 +140,21 @@ export default {
       console.log(error);
     },
 
+    getSuccessMessage(resp){
+      try{
+        let obj = JSON.parse(b64DecodeUnicode(resp.data));
+        if(obj['Function'] === 'buy'){
+          let args = JSON.parse(obj['Args']);
+          return `Bought ${args[1]} [${args[0]}]`;
+        }
+      }catch (e) {
+        console.log(e);
+      }
+      return '';
+    },
+
     onSuccess(resp) {
-      this.showNotification("Success", resp);
+      this.showNotification( "Transaction successful", this.getSuccessMessage(resp), game.getBlockExplorerURLForTx(resp.hash), 'Open in Explorer', 3000,true);
       console.log(resp);
     },
 

@@ -262,7 +262,8 @@ export default {
         }
         if(!this.game)
         { // Retry right away
-          return this.getGame();
+          setTimeout(this.getGame, 3000);
+          return;
         }
         setTimeout(this.getGame, game.auto_refresh_time);
       }, is_anon);

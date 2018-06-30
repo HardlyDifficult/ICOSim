@@ -130,8 +130,8 @@ module.exports =
             if(has_checked_for_wallet)
             {
                 if(!is_anon && !nas_to_send)
-                {
-                    return this.nebReadAnon(method, args, onSuccess, onError);
+                { // Fall back to an anon read
+                    return this.doNebRead(method, args, onSuccess, onError, nas_to_send, true);
                 }
             }
             else
@@ -150,7 +150,7 @@ module.exports =
         }
 
         let done = false;
-        var read_timeout = setTimeout(() => {
+        setTimeout(() => {
             if(done) 
             {
                 return;
@@ -173,7 +173,6 @@ module.exports =
                             return;
                         }
                         done = true;
-                        clearTimeout(read_timeout);
                         nebReadResponse(method, args, onSuccess, onError, nas_to_send, is_anon, resp);
                     }
                 });
@@ -195,7 +194,6 @@ module.exports =
                         return;
                     }
                     done = true;
-                    clearTimeout(read_timeout);
                     nebReadResponse(method, args, onSuccess, onError, nas_to_send, is_anon, resp);
                 });
             }
@@ -209,6 +207,11 @@ module.exports =
             done = true;
             setTimeout(() =>
             {
+                if(done) 
+                {
+                    return;
+                }
+                done = true;
                 console.log("Timeout!  Will retry...: " + error);
                 this.doNebRead(method, args, onSuccess, onError, nas_to_send, is_anon);
             }, auto_retry_time);
@@ -216,7 +219,6 @@ module.exports =
         }
     },
 }
-
 
 function completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError, write_id)
 {

@@ -2,6 +2,31 @@
     <div class="row roadmap-container">
         <div class="col-sm-12">
             <h2>{{ page_title }}</h2>
+            <h5>
+                <span v-if="!isTeam">
+                    Production: 
+                    <FundsContainer
+                        :prefix="'$'"
+                        :label="'/s'"
+                        instant 
+                        style="display:inline-block" 
+                        :mystyle="{fontSize:'1.25em', color:'white', backgroundColor:'transparent'}" 
+                        :target="game.active_ico.total_production_rate" 
+                        :places=2
+                        :showdirection=0 /> 
+                </span>
+                <span v-else>
+                    Bonus:
+                    <FundsContainer
+                        :label="'%'"
+                        instant 
+                        style="display:inline-block" 
+                        :mystyle="{fontSize:'1.25em', color:'white', backgroundColor:'transparent'}" 
+                        :target="game.active_ico.total_bonus.mul(100)" 
+                        :places=0
+                        :showdirection=0 /> 
+                </span>
+            </h5>
         </div>
         <template v-for="(item, index) in items">
             <div class="col-6 roadmap-step" :key="index" :class="getStepClasses(item, index)">

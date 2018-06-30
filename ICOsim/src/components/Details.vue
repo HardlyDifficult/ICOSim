@@ -9,7 +9,7 @@
                             <div>$<FundsContainer :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :target="playerResources" :start="playerResources"/></div>
                             <div>+ $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="total_production_with_bonus" :start="total_production_with_bonus" style="display:inline-block"/>/ s</div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-xl-4 mb-3">
                             <div class="details-header">
                                 <span  class="name">{{game.active_ico ? game.active_ico.name : ""}}
                                     </span>

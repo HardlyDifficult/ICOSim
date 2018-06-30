@@ -40,6 +40,7 @@
       </div>
        <Loading v-else/>
       <Footer />
+      <!--<Particles/>-->
   </div>
 </template>
 
@@ -56,6 +57,7 @@ import LaunchIco from './LaunchIco';
 import Loading from './Loading';
 import Footer from './Footer';
 import Modal from './Modal';
+import Particles from './Particles';
 
 import neb from "../logic/HardlyNeb.js";
 import Notifications from "./Notifications";
@@ -79,6 +81,7 @@ export default {
     }
   },
   components: {
+    Particles,
     Notifications,
     Navbar,
     FundsContainer,

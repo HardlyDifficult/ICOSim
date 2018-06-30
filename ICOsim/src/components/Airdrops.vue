@@ -79,7 +79,7 @@
       },
     redeemEvent()
     {
-        game.redeemEvent(this.status.onTxPosted, function(resp) {
+        game.redeemEvent(this.status.onTxPosted, (resp) => {
             this.game.current_event.user_has_redeemed = true;
             this.status.onSuccess(resp);
         }, this.status.onError);

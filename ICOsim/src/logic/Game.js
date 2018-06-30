@@ -270,11 +270,11 @@ module.exports =
     {
         if(!number_to_buy)
         {
-            return BigNumber(0);
+            return new BigNumber(0);
         }
         if(item.resources_per_s != null)
         {
-            return item.resources_per_s.mul(number_to_buy);
+            return item.resources_per_s.mul(number_to_buy).mul(game.active_ico.total_bonus.plus(1));
         }
         else if(game.active_ico)
         {

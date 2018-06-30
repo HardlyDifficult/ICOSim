@@ -83,9 +83,9 @@
                                 </td>
                                     <td>
                                         <span v-for="(ticker, index) in scammer.retired_icos" v-bind:key="ticker">
-                                            <span>
-                                                <a v-bind:href="'/?' + ticker + '#'">{{ticker}}</a>
-                                            </span><span v-if="index != scammer.retired_icos.length - 1">, </span>
+                                            <router-link class="navbar-icosim" :to="{path:'/ico/' + ticker}">
+                                                <span>{{ticker}}</span>
+                                            </router-link><span v-if="index != scammer.retired_icos.length - 1">, </span>
                                         </span>
                                     </td>
                                 <td scope="row" >{{scammer.addr | addr}}</td>

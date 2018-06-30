@@ -35,7 +35,7 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-12" v-if="isTeam">
-                                    <div class="row cols-same-height">
+                                    <div class="row cols-same-height mt-1">
                                         <div class="col-xl-6 col-lg-12 member-description-outer">
                                             <p class="member-description">{{team[item.name].desc}}</p>
                                         </div>
@@ -48,7 +48,14 @@
                                     <p class="title">{{item.name}}</p>
                                     <template v-if="isTeam">
                                         <span v-if="game.active_ico">
-                                        <p v-if="parseInt(item.user_holdings) > 0" class="member-buy">ADVISOR LEVEL {{item.user_holdings}}</p>
+                                        <p v-if="parseInt(item.user_holdings) > 0" class="member-buy">
+                                            <span v-if="team[item.name].quote">
+                                                "{{quote(team[item.name].quote)}}"
+                                            </span>
+                                            <span v-else>
+                                                ADVISOR LEVEL {{item.user_holdings}}
+                                            </span>
+                                        </p>
                                         <p v-else class="member-buy">BUY TO UNLOCK ADVISOR</p>
                                         </span>
                                     </template>
@@ -247,11 +254,12 @@
         {
             return game.getBuyProductionGain(this.game, item, this.selections[item.name].number_to_buy_with_nas);
         },
+        quote(value)
+        {
+            return value.replace("TICKER", this.game.active_ico.ticker);
+        }
     },
     
-  filters: {
-  },
-
     data (){
       return {
         value : 5,
@@ -270,51 +278,49 @@
         team : {
           'Roger Ver' : {
             img:require('../assets/ver.png'),
-            desc : 'For a bit of $$$, your coin could be the real Bitcoin!'
+            desc : 'The most pastionate in the business',
+            quote: 'TICKER is the real Bitcoin'
           } ,
           'John McAfee' : {
             img:require('../assets/mcafee.png'),
-            desc : 'The undisputed king of shillers.'
+            desc : 'Each tweet averages $3 million in revenue',
+            quote: 'No. Not joking. TICKER is a legitimate privacy coin and it\'s also selling for less than three cents.'
           },
           'Carlos Matos': {
             img:require('../assets/matos.png'),
-            desc : 'The best Hype Man crypto has ever seen.'
+            desc : 'The best Hype Man crypto has ever seen',
+            quote: 'Wassa Wassa Wassa Wassa Up TICKER'
           },
           'Tom Lee' : {
             img:require('../assets/lee.png'),
-            desc : 'Permabull'
+            desc : 'The Permabull',
+            quote: 'TICKER to $25k by 2019'
           },
           'Craig Grant': {
             img:require('../assets/grant.png'),
-            desc : ''
+            desc : 'I started with $100 six months ago',
+            quote : 'Look at the TICKER I earned, and didn\'t buy',
           },
           'Ian Balina': {
             img:require('../assets/balina.png'),
-            desc : ''
+            desc : '\'Hacking the System\' and only hacked once',
+            quote: 'ICO Grade for TICKER is 99%'
           },
           'Suppoman': {
             img:require('../assets/suppoman.png'),
-            desc : ''
+            desc : 'Your superhero of cryptocurrency',
+            quote: 'TICKER is one of the TOP 5 BEST ICOs of the year'
           },
           'Trevon James': {
             img:require('../assets/trevon.png'),
-            desc : ''
+            desc : 'Don\'t talk to me unless it\'s about intangible coins',
+            quote: 'This is day 30 of TICKER, I\'ve earned 30 Bitcoin so far',
           },
           'Dr Craig S Wright': {
             img:require('../assets/dr_fakesatoshi.png'),
-            desc : 'Imagine that, having Satoshi as your advisor!'
+            desc : 'Imagine that, having Satoshi as your advisor!',
+            quote: 'I am going full billionaire mode on TICKER'
           },
-        },
-        pictures : {
-          'Roger Ver' : require('../assets/ver.png'),
-          'John McAfee' : require('../assets/mcafee.png'),
-          'Carlos Matos': require('../assets/matos.png'),
-          'Tom Lee' : require('../assets/lee.png'),
-          'Craig Grant': require('../assets/grant.png'),
-          'Ian Balina': require('../assets/balina.png'),
-          'Suppoman': require('../assets/suppoman.png'),
-          'Trevon James': require('../assets/trevon.png'),
-          'Dr Craig S Wright': require('../assets/dr_fakesatoshi.png'),
         },
         show_buy_nas : {
 
@@ -328,8 +334,7 @@
         newShowBuyNas[this.items[i].name] = false;
       }
       this.show_buy_nas = newShowBuyNas;
-    }
-
+    },
   }
 
 </script>
@@ -489,7 +494,7 @@
         display: table;
     }
     .member-description{
-        width:calc(100% + 30px);
+        width:calc(100% + 1em);
 
         font-size:0.9em;
         padding:0;

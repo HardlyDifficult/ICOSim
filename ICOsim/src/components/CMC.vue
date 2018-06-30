@@ -14,10 +14,12 @@
                     <span class="bullet">•</span>
                     Growth: $ <FundsContainer :showdirection=0 :target="total_growth" :mystyle="number_style"/>/s
                     <span class="bullet">•</span>
-                    Scammers: 
-                        <FundsContainer :jumpprecision="1" :places=0 :showdirection=0 :target="scammer_count" :mystyle="number_style"/>                                        
-                    <span class="bullet">•</span>
-                    Taken:  <FundsContainer :showdirection=1 :target="total_scammed"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :mystyle="number_style"/>
+                    <span v-if="scammers">
+                        Scammers: 
+                            <FundsContainer :jumpprecision="1" :places=0 :showdirection=0 :target="scammer_count" :mystyle="number_style"/>                                        
+                        <span class="bullet">•</span>
+                        Taken:  <FundsContainer :showdirection=1 :target="total_scammed"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :mystyle="number_style"/>
+                    </span>
                 </div>
                 <div class="col-12 hl" v-if="icos"></div>
                 <div class="col-12" v-if="icos">

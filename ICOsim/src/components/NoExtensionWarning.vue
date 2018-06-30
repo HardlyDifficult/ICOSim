@@ -2,16 +2,21 @@
     <div class="row mb-5">
         <div class="col-lg-1"></div>
         <div class="col-lg-10 warning-container glow-1">
-        <h3>Hello! looks like you're new here.</h3>
-            <div style="modalbody">
+        <h3>Getting Started</h3>
+        <div class="row justify-content-center">
+
+            <div class="modalbody">
             <p>
-                To play ICOSim you need the Nebulas <a target="_blank" class="highlight underline" href="https://chrome.google.com/webstore/detail/nasextwallet/gehjkhmhclgnkkhpfamakecfgakkfkco">WebExtensionWallet</a> <a target="_blank" class="highlight underline" href="https://github.com/nebulasio/WebExtensionWallet">(Github)</a> and some <a target="_blank" class="highlight underline" href="http://givemenas.com/home.html">NAS</a>.<br>
-                No worries, you can get more than enough NAS to play for FREE from <a target="_blank" class="highlight underline" href="http://givemenas.com/home.html">givemenas.com</a><br>
-                <small>
-                NAS transactions are super cheap so even a fraction of a cent will allow you to play for weeks.<br>
-                Reload this page when you have the wallet installed and a small amount of NAS in your account.
-                </small>
+                To play ICOSim you need the Nebulas <a target="_blank" class="highlight underline" href="https://chrome.google.com/webstore/detail/nasextwallet/gehjkhmhclgnkkhpfamakecfgakkfkco">WebExtensionWallet</a>
+                 and some 
+               NAS.<br>
+                You can get more than enough NAS to play for FREE from 
+                <a target="_blank" class="highlight underline" href="http://givemenas.com/home.html">GiveMeNAS.com</a><br>
             </p>
+            <small class="row justify-content-center mb-3">
+                NAS transactions are super cheap, you can play for weeks for a just a penny.
+            </small>
+        </div>
             </div>
         </div>
         <div class="col-lg-1"></div>

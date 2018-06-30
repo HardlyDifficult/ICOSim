@@ -458,17 +458,18 @@
         padding:0;
     }
     .member-description-outer{
-
+        min-height:4em;
+        display: table;
     }
     .member-description{
         font-size:0.9em;
         padding:0;
 
-        display: block;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+        display: table-row;
     }
 
     .image{

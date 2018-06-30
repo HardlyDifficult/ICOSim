@@ -216,13 +216,13 @@ let is_destroyed = false;
         },
         getSellPrice()
         {
-            game.getSellPriceNasPerResource((sell_price) =>
+            game.getGame((info) =>
             {
                 if(is_destroyed)
                 {
                     return;
                 }
-                this.sell_price = sell_price;
+                this.sell_price = info.sell_price_nas_per_resource;
 
                 setTimeout(this.getSellPrice, game.auto_refresh_time);
             },

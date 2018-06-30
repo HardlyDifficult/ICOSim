@@ -135,7 +135,9 @@
                             <div class="row buy-with-nas-container" v-if="isMyGame()">
                                 <div class="col-12 line gray-on-disable mt-2"></div>
                                 <div class="col-12">
-                                    <button class="btn btn-secondary col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">Buy with NAS</button>
+                                    <button class="btn btn-secondary col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">
+                                        Buy for {{ item.nas_price | nasApprox }}
+                                    </button>
                                 </div>
                                 <div class="col-12 mt-3" v-if="show_buy_nas[item.name]">
                                     <div class="row cols-same-height">

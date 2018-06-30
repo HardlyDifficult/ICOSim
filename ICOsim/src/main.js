@@ -13,7 +13,7 @@ Vue.use(VueAnime);
 Vue.use(VueParticles);
 
 // From https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-const numberWithCommas = (x, decimals) => 
+const numberWithCommas = (x, decimals, trim_zeros) => 
 {
   if(x == null)
   {
@@ -25,12 +25,25 @@ const numberWithCommas = (x, decimals) =>
     }
     let parts = new BigNumber(x).toFixed(decimals).split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    if(parts.length > 1 && trim_zeros)
+    {
+      let i;
+      for(i = parts[1].length - 1; i >= 0; i--)
+      {
+        if(parts[1][i] != '0')
+        {
+          break;
+        }
+      }
+      i++;
+      parts[1] = parts[1].substring(0, i);
+    }
     return parts.join(".");
 }
 
 const token_denominator = new BigNumber(1000000000000000000);
 
-function formatCoins(number, digits, unit) 
+function formatCoins(number, digits, unit, trim_zeros) 
 {
     if(!unit)
     {
@@ -41,7 +54,7 @@ function formatCoins(number, digits, unit)
         digits = 8;
     }
     let x = new BigNumber(number).div(token_denominator);
-    return numberWithCommas(x, digits) + " " + unit;
+    return numberWithCommas(x, digits, trim_zeros) + " " + unit;
 }
 
 Vue.filter('count', function (value) {
@@ -96,6 +109,10 @@ Vue.filter('resourcesApprox', function (value) {
 });
 Vue.filter('nas', function (value) {
   return formatCoins(value, 12);
+});
+Vue.filter('nasApprox', function (value) {
+  
+  return formatCoins(value, 12, "NAS", true);
 });
 Vue.filter('nasComplete', function (value) {
   return formatCoins(value, 18);

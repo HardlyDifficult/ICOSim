@@ -11,11 +11,11 @@
                             <div class="row">
                                 <div class="col-12" v-if="isTeam">
                                     <div class="row cols-same-height">
-                                        <div class="col-xl-6 col-lg-12">
-                                            <div class="image" :style="{backgroundImage:'url(' + team[item.name].img+ ')'}"></div>
-                                        </div>
                                         <div class="col-xl-6 col-lg-12 member-description-outer">
                                             <p class="member-description">{{team[item.name].desc}}</p>
+                                        </div>
+                                        <div class="col-xl-6 col-lg-12">
+                                            <div class="image" :style="{backgroundImage:'url(' + team[item.name].img+ ')'}"></div>
                                         </div>
                                     </div>
                                 </div>

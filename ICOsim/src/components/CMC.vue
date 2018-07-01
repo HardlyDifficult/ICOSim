@@ -10,7 +10,7 @@
                     ICOs:
                         <FundsContainer :places=0 :showdirection=0 :target="ico_count" :mystyle="number_style"/>                    
                     <span class="bullet">•</span>
-                    Market Cap: <FundsContainer :jumpprecision="1" :showdirection=0 :target="total_market_cap" :mystyle="number_style"/>
+                    Market Cap: <FundsContainer :jumpprecision="1" :showdirection=0 :target="total_resources" :mystyle="number_style"/>
                     <span class="bullet">•</span>
                     Growth: $ <FundsContainer :showdirection=0 :target="total_growth" :mystyle="number_style"/>/s
                     <span class="bullet">•</span>
@@ -49,7 +49,7 @@
                                 <th scope="col" v-if="!show_scammers">Name</th>
                                 <th scope="col" class="num" v-if="!show_scammers">Market Cap</th>
                                 <th scope="col" class="num" v-if="!show_scammers">Growth</th>
-                                <!-- <th scope="col" class="num" v-if="!show_scammers">Exit Value</th> -->
+                                <th scope="col" class="num" v-if="!show_scammers">Exit Value</th>
                                 <th scope="col" >Owner</th>
                             </tr>
                         </thead>
@@ -65,14 +65,14 @@
                                         </router-link>
                                     </td>
                                     <td scope="row" class="num">
-                                        <FundsContainer :showdirection=0 :target="ico.market_cap" :mystyle="number_style"/>
+                                        <FundsContainer :showdirection=0 :target="ico.resources" :mystyle="number_style"/>
                                     </td>
                                     <td scope="row" class="num">
                                         $ <FundsContainer :showdirection=0 :target="ico.total_production_with_bonus" :mystyle="number_style"/>/s
                                     </td>
-                                    <!-- <td scope="row" class="num">
+                                    <td scope="row" class="num">
                                         <FundsContainer v-if="ico.sell_price"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :showdirection=1 :target="ico.sell_price" :mystyle="number_style"/>                                        
-                                    </td> -->
+                                    </td>
                                     <td scope="row" >{{ico.player_addr | addr}}</td>
                             </tr>
                             <tr v-if="show_scammers" v-for="(scammer, index) in scammers" v-bind:key="scammer.id">
@@ -125,7 +125,7 @@ let is_destroyed = false;
         show_scammers : false,
         scammers: null,
         icos: null,
-        total_market_cap: new BigNumber(0),
+        total_resources: new BigNumber(0),
         total_growth: new BigNumber(0),
         total_scammed: new BigNumber(0),
         number_style: {
@@ -137,6 +137,8 @@ let is_destroyed = false;
         icos_last_updated: null,
         ico_count: 0,
         scammer_count: 0,
+        smart_contract_balance: null,
+        total_player_resources: null,
       };
     },
 
@@ -187,12 +189,12 @@ let is_destroyed = false;
                     return;
                 }
                 this.icos = resp;
-                this.total_market_cap = new BigNumber(0);
+                this.total_resources = new BigNumber(0);
                 this.total_growth = new BigNumber(0);
                 for(var i = 0; i < this.icos.length; i++)
                 {
-                    this.icos[i].original_market_cap = this.icos[i].market_cap;
-                    this.total_market_cap = this.total_market_cap.plus(this.icos[i].market_cap);
+                    this.icos[i].original_resources = this.icos[i].resources;
+                    this.total_resources = this.total_resources.plus(this.icos[i].resources);
                     this.total_growth = this.total_growth.plus(this.icos[i].total_production_with_bonus);
                     this.estimateSellPrice(this.icos[i]);
                 }
@@ -214,17 +216,24 @@ let is_destroyed = false;
                 setTimeout(this.getCoinMarketCaps, game.auto_refresh_time);
             });
         },
-        getSellPrice()
+        estimateSellPrice(ico)
         {
-            game.getGame((info) =>
+            ico.sell_price = game.estimateSellPrice(ico, this.smart_contract_balance, this.total_player_resources);
+        },
+        getTotalResources()
+        {
+            game.getTotalResources((resp) =>
             {
                 if(is_destroyed)
                 {
                     return;
                 }
-                this.sell_price = info.sell_price_nas_per_resource;
+                this.total_player_resources = {
+                    value: resp,
+                    date: Date.now()
+                };
 
-                setTimeout(this.getSellPrice, game.auto_refresh_time);
+                setTimeout(this.getTotalResources, game.auto_refresh_time);
             },
             (error) =>
             {
@@ -232,28 +241,37 @@ let is_destroyed = false;
                 {
                     return;
                 }
-                if(!this.icos)
-                { // Retry right away
-                    return this.getSellPrice();
-                }
-                setTimeout(this.getSellPrice, game.auto_refresh_time);
+                setTimeout(this.getTotalResources, game.auto_refresh_time);
             });
         },
-        estimateSellPrice(ico)
+        getSmartContractBalance()
         {
-            if(this.sell_price)
+            game.getSmartContractBalance((resp) =>
             {
-                ico.sell_price = ico.market_cap.mul(this.sell_price);
-            }
-        }
-   
+                if(is_destroyed)
+                {
+                    return;
+                }
+                this.smart_contract_balance = resp;
+
+                setTimeout(this.getSmartContractBalance, game.auto_refresh_time);
+            },
+            (error) =>
+            {
+                if(is_destroyed)
+                {
+                    return;
+                }
+                setTimeout(this.getSmartContractBalance, game.auto_refresh_time);
+            });
+        },
     },
     mounted() 
     {
-        // TODO auto refresh.
         this.getCoinMarketCaps();
-        this.getSellPrice();
         this.getBestKnownScammers();
+        this.getSmartContractBalance();
+        this.getTotalResources();
 
         let interval = setInterval(() =>
         {
@@ -264,14 +282,14 @@ let is_destroyed = false;
             }
             if(this.icos)
             {
-                let time_passed = (Date.now() - this.icos_last_updated) / 1000;
-
-                this.total_market_cap = new BigNumber(0);
+                
+                this.total_resources = new BigNumber(0);
                 for(var i = 0; i < this.icos.length; i++)
                 {
-                    let production = this.icos[i].total_production_with_bonus.mul(time_passed);
-                    this.icos[i].market_cap = this.icos[i].original_market_cap.plus(production);
-                    this.total_market_cap = this.total_market_cap.plus(this.icos[i].market_cap);
+                    let time_passed = (Date.now() - new Date(this.icos[i].last_action_date)) / 1000;
+                    this.icos[i].production = this.icos[i].total_production_with_bonus.mul(time_passed);
+                    this.icos[i].resources = this.icos[i].original_resources.plus(this.icos[i].production);
+                    this.total_resources = this.total_resources.plus(this.icos[i].resources);
                     this.estimateSellPrice(this.icos[i]);
                 }
             }

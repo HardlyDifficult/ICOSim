@@ -19,11 +19,14 @@
                             </div>
                             <div class="notyours" v-if="game.active_ico && !isMyGame()">Not your ICO. <a style="color:white;" href="/">Launch Your Own ICO.</a></div>
                         </div>
-                        <div class="col-xl-4">
+                        <div class="col-xl-4" >
                             <div class="details-header header-small">
                                 Exit Scam Value <i style="cursor:pointer" @click="$refs.helpModal.show()" class="fas fa-question-circle"></i>
                             </div>
-                            <FundsContainer :jumpprecision="0.0000000000000000001" :places=18 :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value" :start="nas_value" style="display:inline-block" :label="'nas'" :labelstyle="''"/>
+                            <FundsContainer 
+                                v-if="nas_value() != null"  
+                                :jumpprecision="0.0000000000000000001" 
+                                :places=18 :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value()" :start="nas_value()" style="display:inline-block" :label="'nas'" :labelstyle="''"/>
                         <br><button v-if="canExit()" class="btn btn-sm btn-primary mt-2" @click="exitScam()">EXIT SCAM NOW</button>
                         </div>
                     </div>
@@ -72,13 +75,13 @@
   import FundsContainer from './FundsDisplay';
   import {BigNumber} from 'bignumber.js';
   import Modal from './Modal';
-    const game = require("../logic/game.js");
+const game = require("../logic/game.js");
 
 
   export default {
     name: "Details",
 
-    props : ['game', 'isMyGame', 'status'],
+    props : ['game', 'isMyGame', 'status', 'totalplayerresources', 'ico'],
 
     components : {
       FundsContainer,
@@ -95,17 +98,17 @@
         {
             game.exitScam(status.onTxPosted, status.onSuccess, status.onError);
         },
+        nas_value()
+        {
+          let value = game.estimateSellPrice(this.ico, this.game.smart_contract_balance, this.totalplayerresources);
+          return value;
+        },
     },
 
     computed : {
       total_production_with_bonus(){
         if(this.game && this.game.active_ico)
           return this.game.active_ico.total_production_with_bonus;
-        return new BigNumber(0);
-      },
-      nas_value(){
-        if(this.game && this.game.active_ico)
-          return this.game.sell_price_nas_per_resource.mul(this.game.active_ico.resources);
         return new BigNumber(0);
       },
       playerResources() 

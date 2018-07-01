@@ -15,7 +15,11 @@
           v-if="isMyGame() && game !== null && (game.current_event !== null || game.blocks_till_next_event)" />
         <div class='row'>
             <div class='col-lg-12'>
-                <Details :isMyGame="isMyGame" :game="game"/>
+                <Details 
+                  :isMyGame="isMyGame" 
+                  :game="game"
+                  :ico="ico"
+                  :totalplayerresources="totalplayerresources"/>
             </div>
         </div>
         <div class="row">
@@ -86,10 +90,11 @@ export default {
       ticker_is_available: false, // for Launch ICO form
       is_wallet_missing: false, // for new user help
       notifications : [],
-
+      totalplayerresources: null,
       show_help_modal : false,
       insufficient_balance: false,
       is_wrong_network: false,
+      ico: null,
     }
   },
   components: {
@@ -262,6 +267,12 @@ export default {
         }
 
         this.game = resp;
+        
+        if(resp.active_ico)
+        {
+          this.estimateProduction();
+        }
+
         if(!is_anon)
         {
           get_game_timeout = setTimeout(this.getGame, game.auto_refresh_time);
@@ -292,6 +303,60 @@ export default {
         get_game_timeout = setTimeout(this.getGame, game.auto_refresh_time);
       }, is_anon);
     },
+    getICO()
+    {
+      if(!this.game || !this.game.active_ico)
+      {
+        setTimeout(this.getICO, 3000);
+        return;
+      }
+      game.getICO(this.game.active_ico.id, (resp) =>
+      {
+        if(is_destroyed)
+        {
+            return;
+        }
+
+        this.ico = resp;
+        setTimeout(this.getICO, game.auto_refresh_time);
+      },
+      (error) =>
+      {
+        if(is_destroyed)
+        {
+            return;
+        }
+        setTimeout(this.getICO, game.auto_refresh_time);
+      });
+    },
+    getTotalResources()
+    {
+      game.getTotalResources((resp) =>
+      {
+        if(is_destroyed)
+        {
+            return;
+        }
+        if(this.is_wrong_network)
+        {
+          return;
+        }
+        this.totalplayerresources = {
+          value: resp,
+          date: Date.now()
+        };
+
+        setTimeout(this.getTotalResources, game.auto_refresh_time);
+      },
+      (error) =>
+      {
+        if(is_destroyed)
+        {
+            return;
+        }
+        setTimeout(this.getTotalResources, game.auto_refresh_time);
+      });
+    },
     checkTicker()
     {
       game.getIsTickerAvailable(this.launch_ico_ticker, () =>
@@ -302,6 +367,15 @@ export default {
         this.ticker_is_available = false;
       })
     },
+    estimateProduction()
+    {
+      if(this.game && this.game.active_ico)
+       {
+        let time_passed = Date.now() - this.game.active_ico.date_of_last_refresh;
+        this.game.active_ico.production = this.game.active_ico.total_production_with_bonus.mul(time_passed / 1000);
+        this.game.active_ico.resources = this.game.active_ico.original_resources.plus(this.game.active_ico.production);
+       }
+    }
   },
   mounted() {
     this.smart_contract_address = game.getSmartContractAddress();
@@ -312,6 +386,8 @@ export default {
     }
 
     this.getGame();
+    this.getTotalResources();
+    this.getICO();
 
     setTimeout(() =>
     { // It takes a second for the wallet game to appear
@@ -325,12 +401,7 @@ export default {
         clearInterval(interval);
         return;
       }
-      if(this.game && this.game.active_ico)
-      {
-        let time_passed = Date.now() - this.game.active_ico.date_of_last_refresh;
-        let production = this.game.active_ico.total_production_with_bonus.mul(time_passed / 1000);
-        this.game.active_ico.resources = this.game.active_ico.original_resources.plus(production);
-      }
+      this.estimateProduction();
     }, 100);
   },
   destroyed()

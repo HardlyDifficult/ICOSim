@@ -74,6 +74,51 @@ module.exports =
         return neb.isWalletInstalled();
     },
 
+    estimateSellPrice(ico, smart_contract_balance, total_player_resources, total_world_resources = new BigNumber(10000000000.00))
+    {
+        if(total_player_resources == null || smart_contract_balance == null || ico == null)
+        {
+            return null;
+        }
+        if(!smart_contract_balance.gt(0))
+        {
+            return new BigNumber(0);
+        }
+        
+        let time_passed = Date.now() - new Date(ico.last_action_date);
+        let production = ico.total_production_with_bonus.mul(time_passed / 1000);
+        let player_resources = ico.original_resources.plus(production);
+        let total_resources = total_player_resources.value.plus(total_world_resources).plus(production);
+        let sell_price = smart_contract_balance.div(total_resources.mul(100).plus(0.001).toFixed(0));
+        if(sell_price.lte(new BigNumber(1).div(token_denominator)))
+        {
+            sell_price = new BigNumber(new BigNumber(1).div(token_denominator));
+        }
+        let value = sell_price.mul(player_resources.mul(100));
+
+        //console.log("resources: " + ico.resources + " vs " + (production.plus(ico.original_resources)));
+        //console.log("Value: " + value.toString() + " total_resources: " + total_resources + " production: " + production + " ico resources: " + ico.resources + " delta:" + (total_resources - ico.resources));
+        return value;
+    },
+
+    getSmartContractBalance(onSuccess, onError)
+    {
+        neb.nebReadAnon("getSmartContractBalance", null, function(resp)
+        {
+            var balance = new BigNumber(resp).div(token_denominator);
+            onSuccess(balance);
+        }, onError);
+    },
+
+    getTotalResources(onSuccess, onError)
+    {
+        neb.nebReadAnon("getTotalPlayerResources", null, function(resp)
+        {
+            var resources = new BigNumber(resp).div(100);
+            onSuccess(resources);
+        }, onError);
+    },
+
     getExplorerURL()
     {
         if(neb_contract.apiUrl.indexOf("mainnet") >= 0)
@@ -188,19 +233,13 @@ module.exports =
     {
         neb.doNebRead("getInfo", [ticker], function(info) 
         {
-            if(!info){
-              console.log('failed to fetch game!');
-              if(onError)
-                onError('failed to fetch game');
-              return;
-            }
-
             info.items.sort(function(a, b)
             {
                 return a.sort_id - b.sort_id;
             });
 
             info.sell_price_nas_per_resource = new BigNumber(info.sell_price_nas_per_resource).mul(100).div(token_denominator);
+            info.smart_contract_balance = new BigNumber(info.smart_contract_balance).div(token_denominator);
 
             if(info.active_ico)
             {
@@ -209,7 +248,6 @@ module.exports =
                 info.active_ico.ticker_border_color = randomColor(info.active_ico.name + info.active_ico.ticker);
                 info.active_ico.my_resources_nas_value = new BigNumber(info.active_ico.my_resources_nas_value).div(token_denominator);
                 info.active_ico.resources = new BigNumber(info.active_ico.resources).div(100);
-                //info.active_ico.total_production_rate = new BigNumber(info.active_ico.total_production_rate).div(100);
                 info.active_ico.total_production_rate = new BigNumber(info.active_ico.total_production_rate).div(100);
                 info.active_ico.total_bonus = new BigNumber(info.active_ico.total_bonus).div(100);
                 info.active_ico.total_production_with_bonus = info.active_ico.total_production_rate.mul(info.active_ico.total_bonus.plus(1));
@@ -264,6 +302,19 @@ module.exports =
 
             onSuccess(info);
         }, onError, 0, is_anon);
+    },
+    
+    getICO(icoid, onSuccess, onError)
+    {
+        neb.nebReadAnon("getICO", [icoid], function(ico) 
+        {
+            ico.resources = new BigNumber(ico.resources).div(100);
+            ico.original_resources = ico.resources;
+            ico.total_production_rate = new BigNumber(ico.total_production_rate).div(100);
+            ico.total_bonus = new BigNumber(ico.total_bonus).div(100);
+            ico.total_production_with_bonus = ico.total_production_rate.mul(ico.total_bonus.plus(1));
+            onSuccess(ico);
+        }, onError);
     },
 
     getBuyProductionGain(game, item, number_to_buy)

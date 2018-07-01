@@ -107,7 +107,7 @@ module.exports =
     
     getIsTickerAvailable(ticker, onSuccess, onError)
     {
-        return neb.nebReadAnon("getIsTickerAvailable", [ticker], onSuccess, onError);
+        neb.nebReadAnon("getIsTickerAvailable", [ticker], onSuccess, onError);
     },
     
     getCoinMarketCaps(start_index, count, onSuccess, onError)

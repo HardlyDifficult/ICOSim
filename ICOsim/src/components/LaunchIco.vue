@@ -10,11 +10,17 @@
             <div class="row">
                 <div class="col-2"></div>
                 <div class="col-8 align-content-center form">
-                    Name:
-                    <input v-model="coin_name" class="inp form-control" type="text" title="ico-name" placeholder="BitConnect"/>
-                    <br>
-                    Ticker:
-                    <input v-model="coin_ticker" class="inp form-control" style="text-transform: uppercase;" type="text" title="ico-name" placeholder="BCC"/>
+                        Name:
+                        <input v-model="coin_name" class="inp form-control" type="text" title="ico-name" placeholder="BitConnect"/>
+                        <br>
+                        Ticker:
+                        <input v-model="coin_ticker" class="inp form-control" style="text-transform: uppercase;" type="text" title="ico-name" placeholder="BCC"  @change="checkTicker()" @input="checkTicker()" />
+                        <i class="fa fa-check status_icon" v-if="ticker_is_available" aria-hidden="true"></i>
+                        <i class="fa fa-spinner status_icon" aria-hidden="true" v-if="coin_ticker != '' && ticker_is_available == null"></i>
+                        <span v-if="ticker_is_available == false">
+                            <i class="fa fa-ban status_icon"  aria-hidden="true"></i>
+                            Not Available
+                        </span>
                 </div>
                 <div class="col-2"></div>
             </div>
@@ -65,6 +71,7 @@ const game = require("../logic/game.js");
         coin_name : '',
         coin_ticker : '',
         explorer_smart_contract_url: null,
+        ticker_is_available: null,
       }
     },
     mounted () 
@@ -80,7 +87,25 @@ const game = require("../logic/game.js");
       launch(){
         console.log('launching');
         this.onClickLaunch(this.coin_name, this.coin_ticker);
-      }
+      },
+        checkTicker()
+        {
+            this.ticker_is_available = null;
+            let ticker = this.coin_ticker;
+            game.getIsTickerAvailable(ticker, (resp) =>
+            {
+                if(ticker == this.coin_ticker)
+                {
+                    this.ticker_is_available = resp;
+                }
+            }, () =>
+            {
+                if(ticker == this.coin_ticker && this.ticker_is_available == null)
+                {
+                    setTimeout(this.checkTicker, 3000);
+                }
+            })
+        },
     }
   }
 </script>
@@ -126,5 +151,9 @@ const game = require("../logic/game.js");
     .launchform
     {
         padding-bottom: 2em;
+    }
+    .status_icon
+    {
+        width: 2em;
     }
 </style>

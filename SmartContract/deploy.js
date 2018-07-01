@@ -98,14 +98,13 @@ async function run(){
         await callMethod("setStartingResources", "1000"); 
         await callMethod("setWorldResources", "1000000000000"); 
         await callMethod("setEventConfig", {
-          "interval":"20",
-          "min_reward":"100000",
-          "max_reward":"4200000000",
-          "min_reward_percent":"5",
-          "max_reward_percent":"300",
-          "min_length":"3",
-          "max_length":"6"});
-          {
+          "interval": "20", 
+          "min_reward": "100000", 
+          "max_reward": "42000000000", 
+          "min_reward_percent": "1", 
+          "max_reward_percent": "300", 
+          "min_length": "3", 
+          "max_length": "6"});
           //{"name": "Exit Scam NOW! (new contract coming)", "sort_id": 1,    "start_price": "9",             "nas_price": "50000000000", "resources_per_s": "1"},
 
         var item_make_a_commit = "Make a Commit on Github";

@@ -10,9 +10,15 @@
                         To play ICOSim you need the Nebulas 
                         <a target="_blank" class="highlight underline" href="https://chrome.google.com/webstore/detail/nasextwallet/gehjkhmhclgnkkhpfamakecfgakkfkco">WebExtensionWallet</a>
                         and some NAS.
-                        <br>
-                        You can get more than enough NAS to play for FREE from 
-                        <a target="_blank" class="highlight underline" href="http://givemenas.com/home.html">GiveMeNAS.com</a>
+                    </p>
+                    <p>
+                        I'll give you money to play!  Leave a comment with your NAS address on my 
+                        <a target="_blank" class="highlight underline" href="https://youtu.be/v0w3dg82_Vs">YouTube</a>, 
+                        <a target="_blank" class="highlight underline" href="https://steemit.com/cryptocurrency/@hardlydifficult/crypto-news-june-30-2018-green-day">SteemIt</a>,
+                         or 
+                        <a target="_blank" class="highlight underline" href="https://twitter.com/HardlyDifficult/status/1013213108301516800">Twitter</a>.
+                        You can also buy NAS from
+                        <a target="_blank" class="highlight underline" href="https://binance.com/?ref=15811261">Binance</a>.
                     </p>
                     <small class="row justify-content-center mb-3 mt-3">
                         NAS transactions are super cheap, you can play for weeks for a just a penny.

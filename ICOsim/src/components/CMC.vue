@@ -13,8 +13,8 @@
                     Market Cap: <FundsContainer :jumpprecision="1" :showdirection=0 :target="total_resources" :mystyle="number_style"/>
                     <span class="bullet">•</span>
                     Growth: $ <FundsContainer :showdirection=0 :target="total_growth" :mystyle="number_style"/>/s
-                    <span class="bullet">•</span>
                     <span v-if="scammers">
+                        <span class="bullet">•</span>
                         Scammers: 
                             <FundsContainer :jumpprecision="1" :places=0 :showdirection=0 :target="scammer_count" :mystyle="number_style"/>                                        
                         <span class="bullet">•</span>

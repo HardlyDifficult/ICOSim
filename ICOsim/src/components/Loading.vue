@@ -57,13 +57,19 @@ let tick_count = 0;
           this.ellipse += ".";
         }
 
-        if(tick_count % 25 == 0)
+        if(tick_count % 10 == 0)
         {
           this.been_a_minute = true;
         }
-        if(tick_count % 100 == 0)
+        if(tick_count % 15 == 0)
         {
           this.been_a_while = true;
+        }
+
+        if(tick_count >= 20)
+        {
+          location.reload();
+          return;
         }
 
         if(tick_count % 10 == 0)

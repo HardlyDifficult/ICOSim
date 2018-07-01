@@ -31,7 +31,7 @@
         <div class="col-lg-3"></div>
         <Modal ref="helpModal">
             <h3>About ICOSim.io</h3>
-            <div style="modalbody">
+            <div class="modalbody">
                 <p>
                     Launch your own coin, meet milestones on your roadmap, hire the best shillers in the business, and finally,
                     culminate all that worth into a lucrative exit scam. The path to your very own moon Lambo starts here*.

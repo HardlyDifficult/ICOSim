@@ -50,7 +50,7 @@
 
         <Modal ref="helpModal">
             <h3>What's an Exit Scam?</h3>
-            <div style="max-width:40em">
+            <div style="modalbody">
             <p>
                 100% of NAS spent is redistributed to players who "Exit Scam".  
                 The value you may claim is determined by the ICOs market cap. 

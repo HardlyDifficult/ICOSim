@@ -274,7 +274,7 @@
         ],
         player_money : 75,
         amount_to_invest: 0,
-        page_title: this.isTeam == true ? "Team" : "Roadmap",
+        page_title: this.isTeam == true ? "Advisors" : "Roadmap",
         team : {
           'Roger Ver' : {
             img:require('../assets/ver.png'),

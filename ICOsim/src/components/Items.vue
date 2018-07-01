@@ -278,7 +278,7 @@
         team : {
           'Roger Ver' : {
             img:require('../assets/ver.png'),
-            desc : 'The most pastionate in the business',
+            desc : 'The most passionate in the business',
             quote: 'TICKER is the real Bitcoin'
           } ,
           'John McAfee' : {

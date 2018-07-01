@@ -83,7 +83,7 @@
                         <div v-if="game.active_ico" class="col-12">
                             <div class="row">
                                 <div class="col text-center">
-                                    You have: 
+                                    <span v-if="isTeam">Level</span><span v-else>You have</span>: 
                                     <FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.25em', color:'white', backgroundColor:'transparent'}" 
                                         :target="item.user_holdings" :places="'0'" :showdirection=0 />                                    
                                 </div>

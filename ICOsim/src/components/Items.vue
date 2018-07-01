@@ -75,7 +75,7 @@
                             </span>
                             <span v-else>
                                 <p class="mt-1">Bonus</p>
-                                <span class="mono">+{{item.bonus_multiplier | percent}}</span>
+                                <span class="mono">{{item.bonus_multiplier | percent}}</span>
                             </span>
                         </div>
 
@@ -92,7 +92,7 @@
                                 <div class="col text-center" style="'white-space:nowrap'">
                                     <span v-if="item.user_item_production"> 
                                         <FundsContainer
-                                            :prefix="'+$'"
+                                            :prefix="'$'"
                                             :label="'/s'"
                                             instant 
                                             style="display:inline-block" 
@@ -102,7 +102,16 @@
                                             :showdirection=0 /> 
 
                                     </span>
-                                    <span v-else> +${{item.user_item_bonus | percent}}</span>
+                                    <span v-else>
+                                        <FundsContainer
+                                            :label="'%'"
+                                            instant 
+                                            style="display:inline-block" 
+                                            :mystyle="{fontSize:'1.25em', color:'white', backgroundColor:'transparent'}" 
+                                            :target="item.user_item_bonus" 
+                                            :places=0
+                                            :showdirection=0 />
+                                    </span>
                                 </div>
                             </div>
                         </div>

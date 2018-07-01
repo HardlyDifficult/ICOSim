@@ -49,7 +49,7 @@
                                 <th scope="col" v-if="!show_scammers">Name</th>
                                 <th scope="col" class="num" v-if="!show_scammers">Market Cap</th>
                                 <th scope="col" class="num" v-if="!show_scammers">Growth</th>
-                                <th scope="col" class="num" v-if="!show_scammers">Exit Value</th>
+                                <!-- <th scope="col" class="num" v-if="!show_scammers">Exit Value</th> -->
                                 <th scope="col" >Owner</th>
                             </tr>
                         </thead>
@@ -70,9 +70,9 @@
                                     <td scope="row" class="num">
                                         $ <FundsContainer :showdirection=0 :target="ico.total_production_with_bonus" :mystyle="number_style"/>/s
                                     </td>
-                                    <td scope="row" class="num">
+                                    <!-- <td scope="row" class="num">
                                         <FundsContainer v-if="ico.sell_price"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :showdirection=1 :target="ico.sell_price" :mystyle="number_style"/>                                        
-                                    </td>
+                                    </td> -->
                                     <td scope="row" >{{ico.player_addr | addr}}</td>
                             </tr>
                             <tr v-if="show_scammers" v-for="(scammer, index) in scammers" v-bind:key="scammer.id">

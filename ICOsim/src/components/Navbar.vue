@@ -2,7 +2,7 @@
     <div class="row navbar">
         <div class="col-sm-2">
             <a class="navbar-icosim" :style="{color : color}" href="/">
-                ICOSim.io
+                <img src="../assets/icosim.png"/>
             </a>
         </div>
         <div class="col-sm-8">

@@ -252,6 +252,10 @@ module.exports =
                 info.active_ico.total_production_rate = new BigNumber(info.active_ico.total_production_rate).div(100);
                 info.active_ico.total_bonus = new BigNumber(info.active_ico.total_bonus).div(100);
                 info.active_ico.total_production_with_bonus = info.active_ico.total_production_rate.mul(info.active_ico.total_bonus.plus(1));
+                if(info.active_ico.exit_amount != null)
+                {
+                    info.active_ico.exit_amount = new BigNumber(info.active_ico.exit_amount).div(token_denominator);
+                }
                 if(info.current_event)
                 {
                     info.current_event.reward_percent = new BigNumber(info.current_event.reward_percent).div(100);

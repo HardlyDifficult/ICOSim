@@ -1,7 +1,8 @@
 <template>
   <div class='container-fluid'>
       <div class="fixed-bg"></div> 
-      <vue-particles class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
+      <Penis v-if="is_scam" />
+      <vue-particles v-if="!is_scam" class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
       <Navbar :color="'rgba(7,190,215,1)'"/>
       <Notifications :notifications="notifications"/>
       <NoExtensionWarning v-if="is_wallet_missing || insufficient_balance"/>
@@ -12,10 +13,11 @@
           :game="game" 
           :status="status"
           :isMyGame="isMyGame"
-          v-if="isMyGame() && game !== null && (game.current_event !== null || game.blocks_till_next_event)" />
+          v-if="!is_scam && isMyGame() && game !== null && (game.current_event !== null || game.blocks_till_next_event)" />
         <div class='row'>
             <div class='col-lg-12'>
                 <Details 
+                  :isscam="is_scam"
                   :isMyGame="isMyGame" 
                   :game="game"
                   :ico="ico"
@@ -67,6 +69,7 @@ import Particles from './Particles';
 
 import neb from "../logic/HardlyNeb.js";
 import Notifications from "./Notifications";
+import Penis from "./Penis";
 const game = require("../logic/game.js");
 let is_destroyed = false;
 let get_game_timeout = null;
@@ -95,11 +98,13 @@ export default {
       insufficient_balance: false,
       is_wrong_network: false,
       ico: null,
+      is_scam: false
     }
   },
   components: {
     Particles,
     Notifications,
+    Penis,
     Navbar,
     FundsContainer,
     Items,
@@ -120,7 +125,8 @@ export default {
         onSuccess : this.onSuccess,
         onError : this.onError
       }
-    }
+    },
+   
   },
 
   methods: {
@@ -267,6 +273,7 @@ export default {
         }
 
         this.game = resp;
+        this.is_scam = this.game != null && this.game.active_ico != null && this.game.active_ico.exit_amount != null;
         
         if(resp.active_ico)
         {
@@ -369,6 +376,10 @@ export default {
     },
     estimateProduction()
     {
+      if(this.is_scam)
+      {
+        return;
+      }
       if(this.game && this.game.active_ico)
        {
         let time_passed = Date.now() - this.game.active_ico.date_of_last_refresh;

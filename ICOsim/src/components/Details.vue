@@ -5,9 +5,11 @@
                 <div class="col-12">
                     <div class="row text-center align-bottom" v-if="game.active_ico">
                         <div class="col-xl-4">
-                            <div class="details-header">Market Cap</div>
-                            <div>$<FundsContainer :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :target="playerResources" :start="playerResources"/></div>
-                            <div>+ $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="total_production_with_bonus" :start="total_production_with_bonus" style="display:inline-block"/>/ s</div>
+                            <span v-if="!isscam">
+                                <div class="details-header">Market Cap</div>
+                                <div>$<FundsContainer :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :target="playerResources" :start="playerResources"/></div>
+                                <div>+ $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="total_production_with_bonus" :start="total_production_with_bonus" style="display:inline-block"/>/ s</div>
+                            </span>
                         </div>
                         <div class="col-xl-4 mb-3">
                             <div class="details-header">
@@ -21,12 +23,16 @@
                         </div>
                         <div class="col-xl-4" >
                             <div class="details-header header-small">
-                                Exit Scam Value <i style="cursor:pointer" @click="$refs.helpModal.show()" class="fas fa-question-circle"></i>
+                                Exit Scam 
+                                <div v-if="!isscam">Value <i style="cursor:pointer" @click="$refs.helpModal.show()" class="fas fa-question-circle"></i></div>
+                                <span class="details-header header-small" v-else>Amount Taken</span>
                             </div>
                             <FundsContainer 
                                 v-if="nas_value() != null"  
                                 :jumpprecision="0.0000000000000000001" 
-                                :places=18 :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :showdirection=1 :target="nas_value()" :start="nas_value()" style="display:inline-block" :label="'nas'" :labelstyle="''"/>
+                                :places=18 :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" 
+                                :showdirection=1 :target="nas_value()" 
+                                :start="nas_value()" style="display:inline-block" :label="'nas'" :labelstyle="''"/>
                         <br><button v-if="canExit()" class="btn btn-sm btn-primary mt-2" @click="exitScam()">EXIT SCAM NOW</button>
                         </div>
                     </div>
@@ -81,7 +87,7 @@ const game = require("../logic/game.js");
   export default {
     name: "Details",
 
-    props : ['game', 'isMyGame', 'status', 'totalplayerresources', 'ico'],
+    props : ['game', 'isMyGame', 'status', 'totalplayerresources', 'ico', 'isscam'],
 
     components : {
       FundsContainer,
@@ -100,8 +106,15 @@ const game = require("../logic/game.js");
         },
         nas_value()
         {
-          let value = game.estimateSellPrice(this.ico, this.game.smart_contract_balance, this.totalplayerresources);
-          return value;
+            if(!this.isscam)
+            {
+                let value = game.estimateSellPrice(this.ico, this.game.smart_contract_balance, this.totalplayerresources);
+                return value;
+            }
+            else
+            {
+                return this.game.active_ico.exit_amount;
+            }
         },
     },
 

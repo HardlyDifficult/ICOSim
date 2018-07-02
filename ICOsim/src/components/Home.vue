@@ -181,7 +181,7 @@ export default {
         clearTimeout(get_game_timeout);
       }
       this.getGame();
-      this.showNotification( "Transaction successful", this.getSuccessMessage(resp), game.getBlockExplorerURLForTx(resp.hash), 'Open in Explorer', 3000,true);
+      this.showNotification( "Transaction successful", this.getSuccessMessage(resp), game.getBlockExplorerURLForTx(resp.hash), 'Open in Explorer', 3000,false);
       console.log(resp);
     },
 

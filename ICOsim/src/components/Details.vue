@@ -24,7 +24,7 @@
                         <div class="col-xl-4" >
                             <div class="details-header header-small">
                                 Exit Scam 
-                                <div v-if="!isscam">Value <i style="cursor:pointer" @click="$refs.helpModal.show()" class="fas fa-question-circle"></i></div>
+                                <span class="details-header header-small" v-if="!isscam">Value <i style="cursor:pointer" @click="$refs.helpModal.show()" class="fas fa-question-circle"></i></span>
                                 <span class="details-header header-small" v-else>Amount Taken</span>
                             </div>
                             <FundsContainer 

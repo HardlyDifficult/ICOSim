@@ -438,6 +438,15 @@ export default {
         { // It takes a second for the wallet game to appear
             this.is_wallet_missing = !game.isWalletInstalled();
         }, 1000);
+
+        // game.directNebWrite("setEventConfig", [{
+        //   "interval": "20", 
+        //   "min_reward": "1000000", 
+        //   "max_reward": "42000000000", 
+        //   "min_reward_percent": "1", 
+        //   "max_reward_percent": "300", 
+        //   "min_length": "3", 
+        //   "max_length": "6"}]);
     }
 }
 

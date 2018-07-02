@@ -25,6 +25,7 @@
 <script>
     import {BigNumber} from 'bignumber.js';
     let first = true;
+    const auto_refresh_time = 50;
     
     export default {
     name: "FundsDisplay",
@@ -62,7 +63,7 @@
             if(!this.removed){
               setTimeout(()=>{
                 this.lerp();
-              }, 10);
+              }, auto_refresh_time);
             }
           }else{
             if(diff.lt(this.jumpprecision ? this.jumpprecision : 0.001)){
@@ -75,7 +76,7 @@
             if(!this.removed){
               setTimeout(()=>{
                 this.lerp();
-              }, 10);
+              }, auto_refresh_time);
             }
           }
         }

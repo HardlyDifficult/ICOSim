@@ -402,7 +402,7 @@ export default {
         return;
       }
       this.estimateProduction();
-    }, 100);
+    }, game.number_refresh_time);
   },
   destroyed()
   {

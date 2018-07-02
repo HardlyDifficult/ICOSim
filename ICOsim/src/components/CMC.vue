@@ -293,7 +293,7 @@ let is_destroyed = false;
                     this.estimateSellPrice(this.icos[i]);
                 }
             }
-        }, 100);
+        }, game.number_refresh_time);
     },
     destroyed()
     {

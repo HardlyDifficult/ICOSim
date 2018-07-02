@@ -12,7 +12,7 @@
                     <span class="bullet">•</span>
                     Market Cap: <FundsContainer :jumpprecision="1" :showdirection=0 :target="total_resources" :mystyle="number_style"/>
                     <span class="bullet">•</span>
-                    Growth: $ <FundsContainer :showdirection=0 :target="total_growth" :mystyle="number_style"/>/s
+                    Growth: <FundsContainer :prefix="'$'" :showdirection=0 :target="total_growth" :mystyle="number_style" :label="'/s'"/>
                     <span v-if="scammers">
                         <span class="bullet">•</span>
                         Scammers: 
@@ -68,7 +68,10 @@
                                         <FundsContainer :showdirection=0 :target="ico.resources" :mystyle="number_style"/>
                                     </td>
                                     <td scope="row" class="num">
-                                        $ <FundsContainer :showdirection=0 :target="ico.total_production_with_bonus" :mystyle="number_style"/>/s
+                                        <FundsContainer
+                                            :prefix="'$'"
+                                            :label="'/s'" 
+                                            :showdirection=0 :target="ico.total_production_with_bonus" :mystyle="number_style"/>
                                     </td>
                                     <td scope="row" class="num">
                                         <FundsContainer v-if="ico.sell_price"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :showdirection=1 :target="ico.sell_price" :mystyle="number_style"/>                                        

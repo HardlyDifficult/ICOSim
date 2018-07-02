@@ -5,6 +5,7 @@
             100% of NAS spent is redistributed to players who "exit scam".
             Created by <a target="_blank" href="https://youtube.com/HardlyDifficult">HardlyDifficult</a> and Metjm.
             View the <a target="_blank" v-bind:href="explorer_smart_contract_url">Smart Contract</a>.
+            <br>Questions, issues, or just want to hang out? Join our <a target="_blank"  class="highlight underline" href="https://discord.gg/2bsDfkv">Discord</a>.
             <br>Do not spend more than you are willing to lose.
         </div>
     </div>

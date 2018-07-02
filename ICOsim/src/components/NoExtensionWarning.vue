@@ -12,11 +12,7 @@
                         and some NAS.
                     </p>
                     <p>
-                        I'll give you money to play!  Leave a comment with your NAS address on my 
-                        <a target="_blank" class="highlight underline" href="https://youtu.be/v0w3dg82_Vs">YouTube</a>, 
-                        <a target="_blank" class="highlight underline" href="https://steemit.com/cryptocurrency/@hardlydifficult/crypto-news-june-30-2018-green-day">SteemIt</a>,
-                         or 
-                        <a target="_blank" class="highlight underline" href="https://twitter.com/HardlyDifficult/status/1013213108301516800">Twitter</a>.
+                        I'll give you money to play!  Just post your address in our <a target="_blank"  class="highlight underline" href="https://discord.gg/2bsDfkv">Discord</a>.
                         You can also buy NAS from
                         <a target="_blank" class="highlight underline" href="https://binance.com/?ref=15811261">Binance</a>.
                     </p>

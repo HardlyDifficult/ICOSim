@@ -2,7 +2,7 @@
   <div class='container-fluid'>
       <div class="fixed-bg"></div> 
       <Penis v-if="is_scam" />
-      <vue-particles v-if="!is_scam" class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
+      <vue-particles v-if="!is_scam" class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles> 
       <Navbar :color="'rgba(7,190,215,1)'"/>
       <Notifications :notifications="notifications"/>
       <NoExtensionWarning v-if="is_wallet_missing"/>

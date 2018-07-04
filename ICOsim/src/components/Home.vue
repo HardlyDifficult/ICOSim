@@ -5,7 +5,8 @@
       <vue-particles v-if="!is_scam" class="particles_bg" color="#02E1FF" linesColor="#02E1FF" :clickEffect="false"></vue-particles>
       <Navbar :color="'rgba(7,190,215,1)'"/>
       <Notifications :notifications="notifications"/>
-      <NoExtensionWarning v-if="is_wallet_missing || insufficient_balance"/>
+      <NoExtensionWarning v-if="is_wallet_missing"/>
+      <YouArePoorWarning v-if="insufficient_balance"/>
       <WrongNetworkWarning v-if="is_wrong_network"/>
       <div v-if="game !== null"> 
         <LaunchIco :onClickLaunch="launchICO" v-if="game.active_ico === undefined && !is_wallet_missing && !insufficient_balance"/>
@@ -60,6 +61,7 @@ import Items from './Items';
 import Airdrops from './Airdrops';
 import Details from './Details';
 import NoExtensionWarning from './NoExtensionWarning';
+import YouArePoorWarning from './YouArePoorWarning';
 import WrongNetworkWarning from './WrongNetworkWarning';
 import LaunchIco from './LaunchIco';
 import Loading from './Loading';
@@ -111,6 +113,7 @@ export default {
     Airdrops,
     Details,
     NoExtensionWarning,
+    YouArePoorWarning,
     WrongNetworkWarning,
     LaunchIco,
     Loading,

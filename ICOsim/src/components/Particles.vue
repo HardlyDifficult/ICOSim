@@ -1,7 +1,7 @@
 <template>
     <div class="particles-container" @click="testAddParticle">
 
-        <div v-for="particle in particles" v-bind:key="particle.particleId" :style="particle.style" class="particle">
+        <div v-for="particle in particles" v-bind:key="particle.particleId" :style="particle.style" class="particle" :class="particle.classes">
             <div class="particle-inner">
                 {{particle.text}}
             </div>
@@ -60,7 +60,10 @@
             left : left + 'px',
             top : right + 'px',
             fontSize: (Math.random()*200) + 'px'
-          }
+          },
+          classes : [
+            (Math.random() < 0.5) ? 'left-to-right' : 'right-to-left'
+          ]
         });
       },
 
@@ -92,17 +95,34 @@
     .particle-inner{
         font-size:20px;
     }
+
     .particle{
-        animation: particle-drop 2s linear, particle-movement 2s linear;
+    }
+
+    .left-to-right{
+        animation: particle-drop 2s linear, particle-movement-left-to-right 2s linear;
+        animation-fill-mode: forwards;
+
+    }
+    .right-to-left{
+        animation: particle-drop 2s linear, particle-movement-right-to-left 2s linear;
         animation-fill-mode: forwards;
     }
 
-    @keyframes particle-movement{
+    @keyframes particle-movement-left-to-right{
         0%   {
             margin-left:0;
         }
         100%  {
             margin-left:5em;
+        }
+    }
+    @keyframes particle-movement-right-to-left{
+        0%   {
+            margin-left:0;
+        }
+        100%  {
+            margin-left:-5em;
         }
     }
     @keyframes particle-drop{

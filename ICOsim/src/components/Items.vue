@@ -615,5 +615,10 @@
             font-size: 1.5vw;
         }
     }
+    @media only screen and (min-width: 1920px) {
+        .btn{
+            font-size: 1em;
+        }
+    }
 
 </style>

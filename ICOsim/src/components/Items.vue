@@ -151,7 +151,7 @@
                             <div class="row buy-with-nas-container" v-if="isMyGame()">
                                 <div class="col-12 line gray-on-disable mt-2"></div>
                                 <div class="col-12">
-                                    <button class="btn btn-secondary col-12" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">
+                                    <button class="btn btn-secondary col-12 btn-buy-w-nas" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">
                                         Buy for {{ item.nas_price | nasApprox }}
                                     </button>
                                 </div>
@@ -606,4 +606,14 @@
     .buy-section-inner{
 
     }
+    .btn{
+        font-size: 1vw;
+    }
+
+    @media only screen and (max-width: 1199px) {
+        .btn{
+            font-size: 1.5vw;
+        }
+    }
+
 </style>

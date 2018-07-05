@@ -66,10 +66,12 @@
 
                         <div class="col-12 gray-on-disable">
                             <p>{{ $t("items.price") }}</p>
-                            $<FundsContainer 
+                            <FundsContainer 
+                                :prefix="'$'"
                                 instant 
                                 style="display:inline-block" 
-                                :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" 
+                                :mystyle="{fontSize:'1.5em', backgroundColor:'transparent', 
+                                color:(item.user_max_can_afford > 0 ? 'rgba(7,190,215,1)' : '#6c757d')}" 
                                 :target="item.user_price ? item.user_price : item.start_price"/>
                             <span v-if="item.resources_per_s">
                                 <p class="mt-1">{{ $t("items.production") }}</p>

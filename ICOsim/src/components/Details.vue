@@ -28,7 +28,7 @@
                                 {{ $t("details.not_your_ico") }}.
                                  <a style="color:white;" href="/">{{ $t("details.launch_your_own") }}</a>.</div>
                         </div>
-                        <div class="col-xl-4" >
+                        <div class="col-xl-4">
                             <div class="details-header header-small">
                                 {{ $t("details.exit_scam") }} 
                                 <span class="details-header header-small" v-if="!isscam">
@@ -45,16 +45,6 @@
                                 :showdirection=1 :target="nas_value()" 
                                 :start="nas_value()" style="display:inline-block" :label="'nas'" :labelstyle="''"/>
                         <br><button v-if="canExit()" class="btn btn-sm btn-primary mt-2" @click="exitScam()">{{ $t("details.exit_scam_now") }}</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="row text-center">
-                        <div class="col-md-4">
-                        </div>
-                        <div class="col-md-4">
-                        </div>
-                        <div class="col-xl-4">
                         </div>
                     </div>
                 </div>

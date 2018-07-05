@@ -19,7 +19,7 @@ export default {
     setLang(lang){
       this.$i18n.locale = lang;
       this.$localStorage.set('locale', this.$i18n.locale);
-
+      location.reload();
     }
   }
 }

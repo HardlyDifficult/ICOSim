@@ -87,12 +87,15 @@
                                     <td scope="row" class="num">
                                         <FundsContainer
                                             :prefix="'$'"
-                                            :label="'/s'" 
-                                            :update="()=>updateICOExitValue(ico)"
+                                            :label="$t('units.per_s')" 
                                             :showdirection=0 :target="ico.total_production_with_bonus" :mystyle="number_style"/>
                                     </td>
                                     <td scope="row" class="num">
-                                        <FundsContainer v-if="ico.sell_price"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :showdirection=1 :target="ico.sell_price" :mystyle="number_style"/>                                        
+                                        <FundsContainer 
+                                            v-if="ico.sell_price" 
+                                            :update="()=>updateICOExitValue(ico)"
+                                            :jumpprecision="0.0000000000000000001" 
+                                            :label="'nas'" :places=18 :showdirection=1 :target="ico.sell_price" :mystyle="number_style"/>                                        
                                     </td>
                                     <td scope="row" ><a :href="ico.player_addr | addressUrl">{{ico.player_addr | addr}}</a></td>
                             </tr>
@@ -192,7 +195,7 @@ let is_destroyed = false;
         },
         updateICOExitValue(ico)
         {
-            return ico.exit_value;
+            return ico.sell_price;
         },
         getBestKnownScammers()
         {

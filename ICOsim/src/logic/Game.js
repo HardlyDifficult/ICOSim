@@ -120,6 +120,11 @@ module.exports =
         }, onError);
     },
 
+    getExplorerURLForAddress(address)
+    {
+        return this.getExplorerURL() + "/address/" + address;
+    },
+
     getExplorerURL()
     {
         if(neb_contract.apiUrl.indexOf("mainnet") >= 0)

@@ -8,6 +8,7 @@ import VueAnime from 'vue-animejs';
 import VueI18n from 'vue-i18n';
 require('./main.css');
 import VueLocalStorage from 'vue-localstorage'
+const game = require("./logic/game.js");
 
 let s = require('./english.json');
 
@@ -425,11 +426,15 @@ const messages = {
   }
 }
 
-
+let locale = Vue.localStorage.get('locale');
+if(!locale)
+{
+  locale = "en";
+}
 
 // Create VueI18n instance with options
 const i18n = new VueI18n({
-  locale: 'en', // set locale
+  locale: locale, // set locale
   messages, // set locale messages
   fallbackLocale: 'en',
 })
@@ -530,6 +535,11 @@ Vue.filter('name', function (value)
 Vue.filter('ticker', function (value) 
 {
   return limitString(value, 8);
+});
+
+Vue.filter('addressUrl', function(address)
+{
+  return game.getExplorerURLForAddress(address);
 });
 
 Vue.filter('resourcesApprox', function (value) {

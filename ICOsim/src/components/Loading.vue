@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-12">
-            <h3>{{ $t("loading.loading") }} - {{loadingString}}
+            <h3>{{loadingString}}
               <span class="ellipse">{{ellipse}}</span>
             </h3>
             <br>

@@ -16,6 +16,11 @@ export default new Router({
       component: Home
     },
     {
+      path: '/faq',
+      name: 'FAQ',
+      redirect: to => document.location.href='https://docs.google.com/document/d/19qHsQBc6bNHq-GNTpy4KgA4UwdnmPWQxpJSRszAkVBI/edit?usp=sharing',
+    },
+    {
       path: '/ico/:ticker',
       name: 'ico',
       component: Home

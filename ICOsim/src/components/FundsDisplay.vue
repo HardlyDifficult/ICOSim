@@ -3,9 +3,7 @@
     <span v-if="prefix" :style="labelstyle">{{this.prefix}}</span><span 
      class="fund_part num" :style="mystyle">{{parts[0]}}</span>
     <span :style="mystyle" class="fund_part fund-dot" v-if="parts.length > 1 && parts[1].length > 0">.</span>
-     <span v-for="(part, index) in parts[1]" v-bind:key="'b' + index">
-      <span :style="mystyle" class="fund_part num">{{part}}</span>
-    </span>
+      <span :style="mystyle" class="fund_part num">{{ parts[1]}}</span>
     <span v-if="label" :style="labelstyle">{{this.label}}</span>
       <span :style="mystyle">
       <i v-if="showdirection && step.gt(0)" class="fas fa-caret-up green"></i>

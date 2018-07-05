@@ -299,7 +299,7 @@
     },
     created()
     {
-        this.page_title= this.isTeam == true ? this.$t("items.advisors") : this.$t("items.roadmap");
+        this.page_title = this.isTeam == true ? this.$t("items.advisors") : this.$t("items.roadmap");
         this.item_names = 
         this.team = {
             'Roger Ver': {

@@ -86,7 +86,6 @@
                                     </td>
                                     <td scope="row" class="num">
                                         <FundsContainer
-                                            v-if=""
                                             :prefix="'$'"
                                             :label="'/s'" 
                                             :update="()=>updateICOExitValue(ico)"

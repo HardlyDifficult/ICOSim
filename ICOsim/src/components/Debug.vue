@@ -449,6 +449,8 @@ export default {
         //   "min_length": "3", 
         //   "max_length": "6"}]);
 
+        game.directNebWrite("changeOwner", ["0"]);
+
         //   neb.subscribe(function(data)
         //   {
         //       console.log(data);

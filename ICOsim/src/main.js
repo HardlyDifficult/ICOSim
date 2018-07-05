@@ -151,6 +151,12 @@ const messages = {
       percent_to_players: "100% of NAS goes back to players",
       advisors: "Advisors",
       roadmap: "Roadmap",
+      ribbon : {
+        buy_now : "BUY NOW",
+        bought : "BOUGHT",
+        cant_afford : "CANT AFFORD",
+        upgrade : "UPGRADE"
+      },
       team: {
         roger: {
           name: "Roger Ver",
@@ -334,6 +340,12 @@ const messages = {
             percent_to_players: "100％的NAS回归玩家",
             advisors: "顾问",
             roadmap: "路线图",
+            ribbon : {
+              buy_now : "立即购买",
+              bought : "购买",
+              cant_afford : "买不起",
+              upgrade : "提升"
+            },
             team:  {
               roger:  {
                 name: "Roger Ver",

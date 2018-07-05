@@ -31,7 +31,7 @@
         <template v-for="(item, index) in items">
             <div class="col-6 roadmap-step" :key="index" :class="getStepClasses(item, index)">
                 <div class="row roadmap-step-inner" :class="(item.next_price > player_money) ? 'glow-cant-afford' : 'glow-1'">
-                    <div class="corner-ribbon-container"><div class="corner-ribbon"></div></div>
+                    <div class="corner-ribbon-container"><div class="corner-ribbon">{{getRibbonText(item)}}</div></div>
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-12" v-if="isTeam">
@@ -215,6 +215,25 @@
     },
 
     methods : {
+      getRibbonText(item){
+        if(item.user_max_can_afford > 0 && parseInt(item.user_holdings) <= 0)
+        {
+          return this.$t("items.ribbon.buy_now");
+        }
+        else if(item.user_max_can_afford <= 0 && parseInt(item.user_holdings) > 0)
+        {
+          return this.$t("items.ribbon.bought");
+        }
+        else if(item.user_max_can_afford <= 0)
+        {
+          return this.$t("items.ribbon.cant_afford");
+        }
+        else
+        {
+          return this.$t("items.ribbon.upgrade");
+        }
+      },
+
       getStepClasses(item, index){
         let classes = [];
         if(!this.isTeam){
@@ -580,34 +599,17 @@
     .unlocked .corner-ribbon{
         visibility:visible;
     }
-    .unlocked.can_afford .corner-ribbon:before{
-        content: "UPGRADE";
-    }
-    
     .newuser .corner-ribbon{
         visibility:visible;
         background:#288232;
     }
-    .newuser .corner-ribbon:before{
-        content: "BUY NOW";
-    }
-
     .unlocked.cannot_afford .corner-ribbon{
         visibility:visible;
         background:#288232;
     }
-    .unlocked.cannot_afford .corner-ribbon:before{
-        content: "BOUGHT";
-    }
-    .locked.cannot_afford .corner-ribbon:before{
-        content:"CANT AFFORD";
-    }
     .locked.cannot_afford .corner-ribbon{
         visibility:visible;
         background:white;
-    }
-    .locked.can_afford .corner-ribbon:before{
-        content:"BUY NOW";
     }
     .locked.can_afford .corner-ribbon{
         visibility:visible;

@@ -1,10 +1,7 @@
 <template>
   <span class="funds">
-    <span v-if="prefix" :style="labelstyle">{{this.prefix}}</span><span
-     v-for="(part, index) in parts[0]" v-bind:key="'a' + index"><span 
-     :class="index==0?'first':''" class="fund_part num" :style="mystyle">{{part}}</span>
-      <span :style="mystyle" class="fund_part comma" v-if="index < parts[0].length - 1">,</span>
-    </span>
+    <span v-if="prefix" :style="labelstyle">{{this.prefix}}</span><span 
+     class="fund_part num" :style="mystyle">{{parts[0]}}</span>
     <span :style="mystyle" class="fund_part fund-dot" v-if="parts.length > 1 && parts[1].length > 0">.</span>
      <span v-for="(part, index) in parts[1]" v-bind:key="'b' + index">
       <span :style="mystyle" class="fund_part num">{{part}}</span>
@@ -76,7 +73,7 @@
       parts () 
       {
         let parts = this.value.toFixed(this.places != null ? this.places : 2).toString().split(".");
-        let parts2 = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",").split(",");
+        let parts2 = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         if(parts.length > 1)
         {
           return [parts2, parts[1]];

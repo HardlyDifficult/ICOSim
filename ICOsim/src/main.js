@@ -12,7 +12,7 @@ const game = require("./logic/game.js");
 
 let s = require('./english.json');
 
-Vue.config.productionTip = false;
+//Vue.config.productionTip = false;
 
 Vue.use(VueLocalStorage)
 Vue.use(VueAnime);

@@ -139,11 +139,11 @@
     .green
     {
       font-size: '1em';
-      color:'green'
+      color: green;
     }
     .red
     {
       font-size: '1em';
-      color:'red'
+      color:red;
     }
 </style>

@@ -8,8 +8,8 @@
             <span v-else>
                 <i class="fas fa-exclamation exclamation"></i>
                 {{ $t("airdrops.airdrop_in_x_blocks", 100, {
-                    count: game.blocks_till_next_event ,
-                    block_time: game.blocks_till_next_event }) }}
+                    count: game.blocks_till_next_event,
+                    block_time: game.blocks_till_next_event * 15 }) }}
                 <i class="fas fa-exclamation exclamation"></i>
             </span>
         </div>

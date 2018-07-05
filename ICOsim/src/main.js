@@ -144,7 +144,7 @@ const messages = {
       you_have: "You have",
       buy: "Buy",
       buy_for: "BUY for",
-      buy_with_nas: "BUY\nw/ NAS",
+      buy_with_nas: "BUY w/ NAS",
       percent_to_players: "100% of NAS goes back to players",
       advisors: "Advisors",
       roadmap: "Roadmap",
@@ -391,7 +391,7 @@ const messages = {
 
 // Create VueI18n instance with options
 const i18n = new VueI18n({
-  locale: 'en', // set locale
+  locale: 'cn', // set locale
   messages, // set locale messages
 })
 

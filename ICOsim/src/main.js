@@ -395,6 +395,7 @@ const messages = {
 const i18n = new VueI18n({
   locale: 'en', // set locale
   messages, // set locale messages
+  fallbackLocale: 'en',
 })
 
 
@@ -523,7 +524,8 @@ new Vue({
   router,
   components: { App },
   template: '<App/>',
-  i18n
+  i18n,
+
 });
 
 

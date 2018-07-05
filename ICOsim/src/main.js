@@ -470,6 +470,32 @@ Vue.filter('resources', function (value) {
   }
   return numberWithCommas(value, 2);
 });
+
+function limitString(value, max_length)
+{
+    if(!value || value.length <= max_length + 1)
+    {
+        return value;
+    }
+
+    let midpoint = max_length / 2;
+    let result = value.substring(0, midpoint);
+    result += "...";
+    let start_of_end = value.length - midpoint;
+    result += value.substring(start_of_end);
+    return result;
+}
+
+Vue.filter('name', function (value) 
+{
+  return limitString(value, 50);
+});
+
+Vue.filter('ticker', function (value) 
+{
+  return limitString(value, 8);
+});
+
 Vue.filter('resourcesApprox', function (value) {
   if(!(value instanceof BigNumber))
   {

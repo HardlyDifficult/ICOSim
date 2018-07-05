@@ -71,11 +71,11 @@
                             <tr v-if="!show_scammers" v-for="(ico, index) in icos" v-bind:key="ico.id">
                                     <td scope="row" class="border-right" >{{index + 1}}</td>
                                     <td scope="row" >
-                                        <span v-bind:style="{backgroundColor:ico.ticker_color, borderColor:ico.ticker_border_color}" class="ticker">{{ico.ticker}}</span>
+                                        <span v-bind:style="{backgroundColor:ico.ticker_color, borderColor:ico.ticker_border_color}" class="ticker">{{ico.ticker | ticker}}</span>
                                     </td>
                                     <td scope="row" class="text-left" >
                                         <router-link class="navbar-icosim" :to="{path:'/ico/' + ico.ticker}">
-                                            {{ico.name}}
+                                            {{ico.name | name}}
                                         </router-link>
                                     </td>
                                     <td scope="row" class="num">

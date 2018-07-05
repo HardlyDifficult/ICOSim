@@ -284,7 +284,7 @@ const messages = {
             be_patient: "星云最近出现了一些问题,请耐心等待",
             wow: "...哇...",
           },
-          no_extension:  {
+          no_ext:  {
             getting_started: "入门",
             to_play: "要玩ICOSim,你需要星云",
             and_some_nas: "和一些NAS",
@@ -391,7 +391,7 @@ const messages = {
 
 // Create VueI18n instance with options
 const i18n = new VueI18n({
-  locale: 'cn', // set locale
+  locale: 'en', // set locale
   messages, // set locale messages
 })
 

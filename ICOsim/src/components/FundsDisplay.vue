@@ -22,7 +22,7 @@
     
     export default {
     name: "FundsDisplay",
-    props : ['target', 'mystyle', 'instant', 'showdirection', 'places', 'start', 'jumpprecision', 'label', 'labelstyle', 'prefix'],
+    props : ['target', 'update', 'mystyle', 'instant', 'showdirection', 'places', 'start', 'jumpprecision', 'label', 'labelstyle', 'prefix'],
     data : function()
     {
       return {
@@ -38,6 +38,11 @@
     methods : {
       lerp()
       {
+        if(this.update)
+        {
+          this.value = this.update();
+          return;
+        }
         if(this.target == this.value)
         {
           return;

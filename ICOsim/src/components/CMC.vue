@@ -10,7 +10,8 @@
                     {{ $t("cmc.icos") }}:
                         <FundsContainer :places=0 :showdirection=0 :target="ico_count" :mystyle="number_style"/>                    
                     <span class="bullet">•</span>
-                    {{ $t("cmc.market_cap") }}: <FundsContainer :jumpprecision="1" :showdirection=0 :target="total_resources" :mystyle="number_style"/>
+                    {{ $t("cmc.market_cap") }}: <FundsContainer :jumpprecision="1" :showdirection=0 :target="total_resources" :mystyle="number_style" 
+                        :update="updateMarketCap"/>
                     <span class="bullet">•</span>
                     {{ $t("cmc.growth") }}: <FundsContainer :prefix="'$'" :showdirection=0 :target="total_growth" :mystyle="number_style" :label="'/s'"/>
                     <span v-if="scammers">
@@ -79,12 +80,16 @@
                                         </router-link>
                                     </td>
                                     <td scope="row" class="num">
-                                        <FundsContainer :showdirection=0 :target="ico.resources" :mystyle="number_style"/>
+                                        <FundsContainer :showdirection=0 :target="ico.resources"
+                                            :update="()=>updateICOResources(ico)"
+                                            :mystyle="number_style"/>
                                     </td>
                                     <td scope="row" class="num">
                                         <FundsContainer
+                                            v-if=""
                                             :prefix="'$'"
                                             :label="'/s'" 
+                                            :update="()=>updateICOExitValue(ico)"
                                             :showdirection=0 :target="ico.total_production_with_bonus" :mystyle="number_style"/>
                                     </td>
                                     <td scope="row" class="num">
@@ -165,6 +170,31 @@ let is_destroyed = false;
     },
 
     methods : {
+        updateMarketCap()
+        {
+            if(this.icos)
+            {
+                this.total_resources = new BigNumber(0);
+                for(var i = 0; i < this.icos.length; i++)
+                {
+                    let time_passed = (Date.now() - new Date(this.icos[i].last_action_date)) / 1000;
+                    this.icos[i].production = this.icos[i].total_production_with_bonus.mul(time_passed);
+                    this.icos[i].resources = this.icos[i].original_resources.plus(this.icos[i].production);
+                    this.total_resources = this.total_resources.plus(this.icos[i].resources);
+                    this.estimateSellPrice(this.icos[i]);
+                }
+            }
+
+            return this.total_resources;
+        },
+        updateICOResources(ico)
+        {
+            return ico.resources;
+        },
+        updateICOExitValue(ico)
+        {
+            return ico.exit_value;
+        },
         getBestKnownScammers()
         {
             game.getBestKnownScammers(null, null, (resp) =>
@@ -288,27 +318,27 @@ let is_destroyed = false;
         this.getSmartContractBalance();
         this.getTotalResources();
 
-        let interval = setInterval(() =>
-        {
-            if(is_destroyed)
-            {
-                clearInterval(interval);
-                return;
-            }
-            if(this.icos)
-            {
+        // let interval = setInterval(() =>
+        // {
+        //     if(is_destroyed)
+        //     {
+        //         clearInterval(interval);
+        //         return;
+        //     }
+        //     if(this.icos)
+        //     {
                 
-                this.total_resources = new BigNumber(0);
-                for(var i = 0; i < this.icos.length; i++)
-                {
-                    let time_passed = (Date.now() - new Date(this.icos[i].last_action_date)) / 1000;
-                    this.icos[i].production = this.icos[i].total_production_with_bonus.mul(time_passed);
-                    this.icos[i].resources = this.icos[i].original_resources.plus(this.icos[i].production);
-                    this.total_resources = this.total_resources.plus(this.icos[i].resources);
-                    this.estimateSellPrice(this.icos[i]);
-                }
-            }
-        }, game.number_refresh_time);
+        //         this.total_resources = new BigNumber(0);
+        //         for(var i = 0; i < this.icos.length; i++)
+        //         {
+        //             let time_passed = (Date.now() - new Date(this.icos[i].last_action_date)) / 1000;
+        //             this.icos[i].production = this.icos[i].total_production_with_bonus.mul(time_passed);
+        //             this.icos[i].resources = this.icos[i].original_resources.plus(this.icos[i].production);
+        //             this.total_resources = this.total_resources.plus(this.icos[i].resources);
+        //             this.estimateSellPrice(this.icos[i]);
+        //         }
+        //     }
+        // }, game.number_refresh_time);
     },
     destroyed()
     {

@@ -431,7 +431,14 @@ const messages = {
 let locale = Vue.localStorage.get('locale');
 if(!locale)
 {
-  locale = "en";
+  if(navigator.languages[0].startsWith("cn"))
+  {
+    locale = "cn";
+  }
+  else
+  {
+    locale = "en";
+  }
 }
 
 // Create VueI18n instance with options

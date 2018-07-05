@@ -29,6 +29,7 @@ const messages = {
     nav: {
       home: "Home",
       icos: "ICOs",
+      faq: "FAQ",
     },
     airdrops: {
       success: "Successfully claimed Airdrop!",
@@ -228,8 +229,9 @@ const messages = {
         per_s: "/秒",
     },
     nav:  {
-            home: "家",
-            icos: "ICOs",
+      home: "家",
+      icos: "ICOs",
+      faq: "常问问题",
           },
           airdrops:  {
             success: "成功声称空投！",

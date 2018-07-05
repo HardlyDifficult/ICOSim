@@ -13,6 +13,10 @@
             <router-link class="navbar-item" :style="{color : color}" to="/icos">
                 {{ $t("nav.icos") }}
             </router-link>
+            |
+            <a class="navbar-item" :style="{color : color}" href="#/faq">
+                {{ $t("nav.faq") }}
+            </a>
         </div>
         <div class="col-sm-2"> 
             <LocalChanger />

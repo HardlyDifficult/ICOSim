@@ -218,17 +218,19 @@
       getRibbonText(item){
         if(item.user_max_can_afford > 0 && parseInt(item.user_holdings) <= 0)
         {
-          return "BUY NOW"
+          return this.$t("items.ribbon.buy_now");
         }
         else if(item.user_max_can_afford <= 0 && parseInt(item.user_holdings) > 0)
         {
-          return "BOUGHT";
+          return this.$t("items.ribbon.bought");
         }
         else if(item.user_max_can_afford <= 0)
         {
-          return "CANT AFFORD";
-        }else{
-          return "UPGRADE";
+          return this.$t("items.ribbon.cant_afford");
+        }
+        else
+        {
+          return this.$t("items.ribbon.upgrade");
         }
       },
 

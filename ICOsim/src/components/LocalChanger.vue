@@ -24,16 +24,6 @@ export default {
     {
       this.$localStorage.set('locale', this.$i18n.locale);
     }
-  },
-  mounted()
-  {
-    let locale = this.$localStorage.get('locale');
-    if(!locale)
-    {
-      locale = "en";
-    }
-
-    this.$i18n.locale = locale;
   }
 }
 </script>

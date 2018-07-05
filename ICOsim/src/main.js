@@ -402,11 +402,15 @@ const messages = {
   }
 }
 
-
+let locale = Vue.localStorage.get('locale');
+if(!locale)
+{
+  locale = "en";
+}
 
 // Create VueI18n instance with options
 const i18n = new VueI18n({
-  locale: 'en', // set locale
+  locale: locale, // set locale
   messages, // set locale messages
   fallbackLocale: 'en',
 })

@@ -184,9 +184,7 @@
                                     </div>
                                     <div class="row mt-2 justify-content-center">
                                         <div class="col-12">
-                                            <button style="font-size:0.8em" v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-buy">
-                                                {{ $t("items.buy_with_nas") }}
-                                            </button>
+                                            <button style="font-size:0.8em; white-space:pre-wrap" v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-buy">{{ $t("items.buy_with_nas") }}</button>
                                         </div>
                                     <p class="mt-1" style="color:orange"><small>{{ $t("items.percent_to_players") }}</small></p>
                                     </div>

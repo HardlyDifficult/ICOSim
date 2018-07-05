@@ -144,7 +144,7 @@ const messages = {
       you_have: "You have",
       buy: "Buy",
       buy_for: "BUY for",
-      buy_with_nas: "BUY <br>w/ NAS",
+      buy_with_nas: "BUY\nw/ NAS",
       percent_to_players: "100% of NAS goes back to players",
       advisors: "Advisors",
       roadmap: "Roadmap",

@@ -46,7 +46,7 @@
                                 </div>
                                 <div class="col-12">
                                     <p class="title" v-if="isTeam">{{team[item.name].name}}</p>
-                                    <p class="title" v-else>{{item.name}}</p>
+                                    <p class="title" v-else>{{getTranslatedItemName(item.name)}}</p>
                                     <template v-if="isTeam">
                                         <span v-if="game.active_ico">
                                         <p v-if="parseInt(item.user_holdings) > 0" class="member-buy">
@@ -215,6 +215,31 @@
     },
 
     methods : {
+      getTranslatedItemName(name){
+        switch (name){
+          case 'Announce an Announcement':
+            return this.$t("items.roadmap_steps.announce_announcement");
+          case 'Make a Commit on Github':
+            return this.$t("items.roadmap_steps.github_commit");
+          case 'Do a Giveaway on Twitter':
+            return this.$t("items.roadmap_steps.twitter_giveaway");
+          case 'Publish Performance Numbers':
+            return this.$t("items.roadmap_steps.publish_performance");
+          case 'Incite FOMO':
+            return this.$t("items.roadmap_steps.incite_fomo");
+          case 'Release Audit':
+            return this.$t("items.roadmap_steps.release_audit");
+          case 'Announce Partnership':
+            return this.$t("items.roadmap_steps.announce_partnership");
+          case 'Release Wallet':
+            return this.$t("items.roadmap_steps.release_wallet");
+          case 'Rebrand':
+            return this.$t("items.roadmap_steps.rebrand");
+          case 'Buy Exchange Listing':
+            return this.$t("items.roadmap_steps.exchange_listing");
+        }
+        return name;
+      },
       getRibbonText(item){
         if(item.user_max_can_afford > 0 && parseInt(item.user_holdings) <= 0)
         {

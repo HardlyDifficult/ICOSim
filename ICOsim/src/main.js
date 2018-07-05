@@ -157,6 +157,18 @@ const messages = {
         cant_afford : "CANT AFFORD",
         upgrade : "UPGRADE"
       },
+      roadmap_steps : {
+        announce_announcement : "Announce an Announcement",
+        github_commit : "Make a Commit on Github",
+        twitter_giveaway : "Do a Giveaway on Twitter",
+        publish_performance : "Publish Performance Numbers",
+        incite_fomo : "Incite FOMO",
+        release_audit : "Release Audit",
+        announce_partnership : "Announce Partnership",
+        release_wallet : "Release Wallet",
+        rebrand : "Rebrand",
+        exchange_listing : "Buy Exchange Listing"
+      },
       team: {
         roger: {
           name: "Roger Ver",
@@ -345,6 +357,18 @@ const messages = {
               bought : "购买",
               cant_afford : "买不起",
               upgrade : "提升"
+            },
+            roadmap_steps : {
+              announce_announcement : "宣布公告",
+              github_commit : "在Github上做一个提交",
+              twitter_giveaway : "在Twitter上做一个赠品",
+              publish_performance : "发布性能数字",
+              incite_fomo : "煽动Fomo",
+              release_audit : "发布审计",
+              announce_partnership : "宣布合作",
+              release_wallet : "发布钱包",
+              rebrand : "更名",
+              exchange_listing : "购买交易所清单"
             },
             team:  {
               roger:  {

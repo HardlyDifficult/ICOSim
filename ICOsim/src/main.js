@@ -7,11 +7,13 @@ import VueParticles from 'vue-particles'
 import VueAnime from 'vue-animejs';
 import VueI18n from 'vue-i18n';
 require('./main.css');
+import VueLocalStorage from 'vue-localstorage'
 
 let s = require('./english.json');
 
 Vue.config.productionTip = false;
 
+Vue.use(VueLocalStorage)
 Vue.use(VueAnime);
 Vue.use(VueParticles);
 Vue.use(VueI18n);
@@ -207,13 +209,13 @@ const messages = {
         per_s: "/秒",
     },
     nav:  {
-            home: "Home",
+            home: "家",
             icos: "ICOs",
           },
           airdrops:  {
-            success: "成功声称Airdrop！",
-            airdrop_in_x_blocks: "Airdrop in：{count} blocks（〜{block_time} s）",
-            claim_worth: "索赔Airdrop值得",
+            success: "成功声称空投！",
+            airdrop_in_x_blocks: "空投在{count}个街区(〜{block_time} 小号)", // : {count} blocks (~{block_time}s)
+            claim_worth: "索赔空投值得",
             seconds: "秒",
             blocks_remaining: "剩余块",
           },
@@ -227,7 +229,7 @@ const messages = {
             top_icos: "按市值划分的顶级ICO",
             exit_value: "退出值",//退出前
             exit_amount: "退出金额",//退出后
-            tickers: "Ticker(s)",
+            tickers: "股票行情",
             name: "名称",
             owner: "所有者",
           },
@@ -260,7 +262,7 @@ const messages = {
             welcome: "欢迎",
             intro: "发布ICO的时间。请检查门口的道德。",
             name: "名称",
-            ticker: "Ticker",
+            ticker: "股票行情",
             not_available: "不可用",
             launch_ico: "启动ICO",
             about:  {
@@ -393,6 +395,7 @@ const messages = {
 const i18n = new VueI18n({
   locale: 'en', // set locale
   messages, // set locale messages
+  fallbackLocale: 'en',
 })
 
 
@@ -521,7 +524,8 @@ new Vue({
   router,
   components: { App },
   template: '<App/>',
-  i18n
+  i18n,
+
 });
 
 

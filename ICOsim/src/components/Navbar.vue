@@ -14,14 +14,21 @@
                 {{ $t("nav.icos") }}
             </router-link>
         </div>
-        <div class="col-sm-2"> </div>
+        <div class="col-sm-2"> 
+            <LocalChanger />
+        </div>
     </div>
 </template>
 
 <script>
+import LocalChanger from './LocalChanger';
+
 export default {
   name: "Navbar",
-  props : ['color']
+  props : ['color'],
+  components: {
+    LocalChanger,
+  },
 }
 </script>
 

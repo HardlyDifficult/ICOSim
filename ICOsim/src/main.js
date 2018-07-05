@@ -431,7 +431,7 @@ const messages = {
 let locale = Vue.localStorage.get('locale');
 if(!locale)
 {
-  if(navigator.languages[0].startsWith("cn"))
+  if(navigator.languages[0].contains("cn"))
   {
     locale = "cn";
   }

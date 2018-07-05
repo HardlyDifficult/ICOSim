@@ -7,11 +7,11 @@
         </div>
         <div class="col-sm-8">
             <a class="navbar-item" :style="{color : color}" href="/">
-                Home
+                {{ $t("nav.home") }}
             </a>
             |
             <router-link class="navbar-item" :style="{color : color}" to="/icos">
-                ICOs
+                {{ $t("nav.icos") }}
             </router-link>
         </div>
         <div class="col-sm-2"> </div>

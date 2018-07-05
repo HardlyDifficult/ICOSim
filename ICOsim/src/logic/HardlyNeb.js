@@ -218,6 +218,17 @@ module.exports =
             return;
         }
     },
+
+    subscribe(onEvent)
+    {
+        neb.api.subscribe({
+            topics: ["chain.pendingTransaction", "chain.latestIrreversibleBlock", "chain.transactionResult", "chain.newTailBlock"],
+            onDownloadProgress: function(data)
+            {
+                console.log("yum " + data);
+            }
+        }).then(onEvent);
+    }
 }
 
 function completeWrite(method, args, onTxPosted, nas_to_send, onSuccess, onError, write_id)

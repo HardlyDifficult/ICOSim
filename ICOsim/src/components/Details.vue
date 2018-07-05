@@ -6,9 +6,14 @@
                     <div class="row text-center align-bottom" v-if="game.active_ico">
                         <div class="col-xl-4">
                             <span v-if="!isscam">
-                                <div class="details-header">Market Cap</div>
+                                <div class="details-header">{{ $t("details.market_cap") }}</div>
                                 <div>$<FundsContainer :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" :target="playerResources" :start="playerResources"/></div>
-                                <div>+ $<FundsContainer :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :showdirection=1 :target="total_production_with_bonus" :start="total_production_with_bonus" style="display:inline-block"/>/ s</div>
+                                <div><FundsContainer 
+                                    :prefix="'+$'"
+                                    :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" 
+                                    :showdirection=1 :target="total_production_with_bonus" 
+                                    :start="total_production_with_bonus" style="display:inline-block"
+                                    :label="$t('units.per_s')" /></div>
                             </span>
                         </div>
                         <div class="col-xl-4 mb-3">
@@ -19,13 +24,19 @@
                             <div class="tickericon">
                                 <span v-if="game.active_ico" v-bind:style="{backgroundColor:game.active_ico.ticker_color, borderColor:game.active_ico.ticker_border_color}" class="ticker">{{game.active_ico.ticker}}</span>
                             </div>
-                            <div class="notyours" v-if="game.active_ico && !isMyGame()">Not your ICO. <a style="color:white;" href="/">Launch Your Own ICO.</a></div>
+                            <div class="notyours" v-if="game.active_ico && !isMyGame()">
+                                {{ $t("details.not_your_ico") }}.
+                                 <a style="color:white;" href="/">{{ $t("details.launch_your_own") }}</a>.</div>
                         </div>
                         <div class="col-xl-4" >
                             <div class="details-header header-small">
-                                Exit Scam 
-                                <span class="details-header header-small" v-if="!isscam">Value <i style="cursor:pointer" @click="$refs.helpModal.show()" class="fas fa-question-circle"></i></span>
-                                <span class="details-header header-small" v-else>Amount Taken</span>
+                                {{ $t("details.exit_scam") }} 
+                                <span class="details-header header-small" v-if="!isscam">
+                                    {{ $t("details.value") }} <i style="cursor:pointer" @click="$refs.helpModal.show()" class="fas fa-question-circle"></i>
+                                </span>
+                                <span class="details-header header-small" v-else>
+                                    {{ $t("details.amount_taken") }}
+                                </span>
                             </div>
                             <FundsContainer 
                                 v-if="nas_value() != null"  
@@ -33,7 +44,7 @@
                                 :places=18 :mystyle="{fontSize:'2em', backgroundColor:'transparent'}" 
                                 :showdirection=1 :target="nas_value()" 
                                 :start="nas_value()" style="display:inline-block" :label="'nas'" :labelstyle="''"/>
-                        <br><button v-if="canExit()" class="btn btn-sm btn-primary mt-2" @click="exitScam()">EXIT SCAM NOW</button>
+                        <br><button v-if="canExit()" class="btn btn-sm btn-primary mt-2" @click="exitScam()">{{ $t("details.exit_scam_now") }}</button>
                         </div>
                     </div>
                 </div>
@@ -58,22 +69,19 @@
         </div>
 
         <Modal ref="helpModal">
-            <h3>What's an Exit Scam?</h3>
+            <h3>{{ $t("details.about_exit.title") }}</h3>
             <div style="modalbody">
-            <p>
-                100% of NAS spent is redistributed to players who "Exit Scam".  
-                The value you may claim is determined by the ICOs market cap. 
-                So hype your ICO before you dump your bags.  
-            </p>
-            <p>
-                The amount you can get when exit scamming may go down when others play.
-                Once you "Exit Scam" you may start over by launching a new ICO.
-            </p>
-            <p>
-                Good Luck!
-            </p>
+                <p>
+                    {{ $t("details.about_exit.p1") }} 
+                </p>
+                <p>
+                    {{ $t("details.about_exit.p2") }}
+                </p>
+                <p>
+                    {{ $t("details.about_exit.good_luck") }}!
+                </p>
             </div>
-        </Modal>
+        </Modal> 
     </div>
 </template>
 

@@ -2,57 +2,57 @@
     <div class="launchform">
         <div class="col-lg-3"></div>
         <div class="col-lg-6 container">
-            <h3>Welcome! <i style="cursor:pointer" @click="$refs.helpModal.show()" class="fas fa-question-circle"></i></h3>
+            <h3>{{ $t("launch.welcome") }}! <i style="cursor:pointer" @click="$refs.helpModal.show()" class="fas fa-question-circle"></i></h3>
             
             <div class="row mt-3">
-                <div class="col">Time to launch an ICO. Please check your morals at the door.</div>
+                <div class="col">{{ $t("launch.intro") }}</div>
             </div>
             <div class="row">
                 <div class="col-2"></div>
                 <div class="col-8 align-content-center form">
-                        Name:
+                        {{ $t("launch.name") }}:
                         <input v-model="coin_name" class="inp form-control" type="text" title="ico-name" placeholder="BitConnect"/>
                         <br>
-                        Ticker:
+                        {{ $t("launch.ticker") }}:
                         <input v-model="coin_ticker" class="inp form-control" style="text-transform: uppercase;" type="text" title="ico-name" placeholder="BCC"  @change="checkTicker()" @input="checkTicker()" />
                         <i class="fa fa-check status_icon" v-if="ticker_is_available" aria-hidden="true"></i>
                         <i class="fa fa-spinner status_icon" aria-hidden="true" v-if="coin_ticker != '' && ticker_is_available == null"></i>
                         <span v-if="ticker_is_available == false">
                             <i class="fa fa-ban status_icon"  aria-hidden="true"></i>
-                            Not Available
+                            {{ $t("launch.not_available") }}
                         </span>
                 </div>
                 <div class="col-2"></div>
             </div>
             <div class="col-12 mt-2">
-                <button class="btn btn-primary" @click="launch">Launch ICO</button>
+                <button class="btn btn-primary" @click="launch">{{ $t("launch.launch_ico") }}</button>
             </div>
         </div>
         <div class="col-lg-3"></div>
         <Modal ref="helpModal">
-            <h3>About ICOSim.io</h3>
+            <h3>{{ $t("launch.about.title") }}</h3>
             <div class="modalbody">
                 <p>
-                    Launch your own coin, meet milestones on your roadmap, hire the best shillers in the business, and finally,
-                    culminate all that worth into a lucrative exit scam. The path to your very own moon Lambo starts here*.
+                    {{ $t("launch.about.p1") }}*.
                 </p>
                 <p>
-                    100% of NAS spent is redistributed to players who "Exit Scam".  
-                    The value you may claim is determined by the ICOs market cap. 
-                    So hype your ICO before you dump your bags.  
+                    {{ $t("launch.about.p2") }} 
                 </p>
                 <p>
-                    The amount you can get when exit scamming may go down when others play.
-                    Once you "Exit Scam" you may start over by launching a new ICO.
+                    {{ $t("launch.about.p3") }}
+                    
                 </p>
                 <p>
-                    Good Luck!
+                    {{ $t("launch.about.good_luck") }}
                 </p>
                 <p class="disclaimer">
-                    * May not prove profitable.  This is a game!  Do not spend more than you are willing to lose.
+                    * {{ $t("launch.about.disclaimer") }}
+                    
                     <br>
-                    The funds are managed by our open-source 
-                    <a target="_blank" v-bind:href="explorer_smart_contract_url">Smart Contract</a>.
+                    {{ $t("launch.about.open_source") }}
+                    <a target="_blank" v-bind:href="explorer_smart_contract_url">
+                        {{ $t("launch.about.smart_contract") }}
+                    </a>.
                 </p>
             </div>
         </Modal>

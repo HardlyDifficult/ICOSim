@@ -3,20 +3,19 @@
     <div class="row mb-5">
         <div class="col-lg-2"></div>
         <div class="col-xl-8 warning-container glow-1">
-            <h3>You Need NAS</h3>
+            <h3>{{ $t("poor.title") }}</h3>
             <div class="row justify-content-center">
                 <div class="modalbody">
                     <p>
-                        The game is free to play, but you do need a small balance to cover gas.  
-                        It seems you are out of money.  
+                        {{ $t("poor.p1") }}
                     </p>
                     <p>
-                        Just post your address in our <a target="_blank"  class="highlight underline" href="https://discord.gg/2bsDfkv">Discord</a>.
-                        You can also buy NAS from
+                        {{ $t("poor.post_to_discord") }} <a target="_blank"  class="highlight underline" href="https://discord.gg/2bsDfkv">Discord</a>.
+                        {{ $t("poor.or_buy_from") }}
                         <a target="_blank" class="highlight underline" href="https://binance.com/?ref=15811261">Binance</a>.
                     </p>
                     <small class="row justify-content-center mb-3 mt-3">
-                        NAS transactions are super cheap, you can play for weeks for a just a penny.
+                        {{ $t("poor.nas_is_cheap") }}
                     </small>
                 </div>
             </div>

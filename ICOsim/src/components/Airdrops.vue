@@ -1,53 +1,32 @@
 <template>
     <div class="airdrop-outer">
-        <div class="airdrop-warning" v-if="!game.current_event || game.current_event.number_of_blocks_remaining === 0 || game.current_event.user_has_redeemed">
+        <div class="airdrop-warning" 
+            v-if="!game.current_event || game.current_event.number_of_blocks_remaining === 0 || game.current_event.user_has_redeemed">
             <span v-if="game.current_event && game.current_event.user_has_redeemed">
-                Successfully claimed Airdrop!<br>
-                <!--$<FundsDisplay :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="game.current_event.expected_reward" :start="game.current_event.expected_reward" style="display:inline-block"/>-->
+                {{ $t("airdrops.success") }}
             </span>
             <span v-else>
                 <i class="fas fa-exclamation exclamation"></i>
-                Airdrop in: {{ game.blocks_till_next_event | count }} blocks (~{{ game.blocks_till_next_event | blocks_to_seconds}}s)
+                {{ $t("airdrops.airdrop_in_x_blocks", 100, {
+                    count: game.blocks_till_next_event ,
+                    block_time: game.blocks_till_next_event }) }}
                 <i class="fas fa-exclamation exclamation"></i>
             </span>
         </div>
         <div v-else class="airdrop-container">
             <div class="airdrop-information clickable glow-airdrop" @click="redeemEvent()">
                 <div class="col-12">
-                    Claim Airdrop worth<br>
+                    {{ $t("airdrops.claim_worth") }}<br>
                     $<FundsDisplay showdirection=1 :mystyle="rewardNumberStyle" :target="getExpectedReward()"/>
                 </div>
                 <div class="col-12">
-                    Blocks Remaining: {{ game.current_event ? game.current_event.number_of_blocks_remaining : 0 | count }}
-                    (~{{(game.current_event ? game.current_event.number_of_blocks_remaining : 0) | blocks_to_seconds}} seconds)
+                    {{ $t("airdrops.blocks_remaining") }}: 
+                        {{ game.current_event ? game.current_event.number_of_blocks_remaining : 0 | count }}
+                    (~{{(game.current_event ? game.current_event.number_of_blocks_remaining : 0) | blocks_to_seconds}} {{ $t("airdrops.seconds") }})
                 </div>
             </div>
         </div>
     </div>
-
-    <!--
-    <div class="row airdrops-container">
-        <h1>
-            Airdrop
-        </h1>
-        <div class="col">
-            <div class="col" v-if="!game.current_event || game.current_event.number_of_blocks_remaining == 0 || game.current_event.user_has_redeemed">
-                Next Event starts in: {{ game.blocks_till_next_event | count }} blocks
-            </div>
-            <span v-else>
-                <div class="col-12">
-                    Expected Reward: {{ game.current_event.expected_reward | count }}
-                </div>
-                <div class="col-12">
-                    Blocks Remaining: {{ game.current_event.number_of_blocks_remaining | count }}
-                </div>
-                <div class="col-12" v-if="isMyGame()">
-                    <button @click="redeemEvent()" class="btn btn-primary">Redeem</button>
-                </div>
-            </span>
-        </div>
-    </div>
-    -->
 </template>
 
 <script>

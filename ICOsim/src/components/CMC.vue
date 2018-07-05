@@ -7,24 +7,24 @@
             <div class="row" >
                 <div class="col-12 hl"></div>
                 <div class="col-12" v-if="icos">
-                    ICOs:
+                    {{ $t("cmc.icos") }}:
                         <FundsContainer :places=0 :showdirection=0 :target="ico_count" :mystyle="number_style"/>                    
                     <span class="bullet">•</span>
-                    Market Cap: <FundsContainer :jumpprecision="1" :showdirection=0 :target="total_resources" :mystyle="number_style"/>
+                    {{ $t("cmc.market_cap") }}: <FundsContainer :jumpprecision="1" :showdirection=0 :target="total_resources" :mystyle="number_style"/>
                     <span class="bullet">•</span>
-                    Growth: <FundsContainer :prefix="'$'" :showdirection=0 :target="total_growth" :mystyle="number_style" :label="'/s'"/>
+                    {{ $t("cmc.growth") }}: <FundsContainer :prefix="'$'" :showdirection=0 :target="total_growth" :mystyle="number_style" :label="'/s'"/>
                     <span v-if="scammers">
                         <span class="bullet">•</span>
-                        Scammers: 
+                        {{ $t("cmc.scammers") }}: 
                             <FundsContainer :jumpprecision="1" :places=0 :showdirection=0 :target="scammer_count" :mystyle="number_style"/>                                        
                         <span class="bullet">•</span>
-                        Taken:  <FundsContainer instant :showdirection=1 :target="total_scammed"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :mystyle="number_style"/>
+                        {{ $t("cmc.taken") }}:  <FundsContainer instant :showdirection=1 :target="total_scammed"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :mystyle="number_style"/>
                     </span>
                 </div>
                 <div class="col-12 hl" v-if="icos"></div>
                 <div class="col-12" v-if="icos">
-                    <h3 class="title" v-if="show_scammers">Top Scammers By NAS Taken</h3>
-                    <h3 class="title" v-if="!show_scammers">Top ICOs By Market Capitalization</h3>
+                    <h3 class="title" v-if="show_scammers">{{ $t("cmc.top_scammers") }}</h3>
+                    <h3 class="title" v-if="!show_scammers">{{ $t("cmc.top_icos") }}</h3>
                 </div>
             </div>
         </div>
@@ -34,23 +34,37 @@
                 <div class="col-lg-10">
                     <div class="row table-header">
                         <div class="col-2 table-header-el" :class="show_scammers ? '' : 'active'" @click="show_scammers=false">
-                            ICOs
+                            {{ $t("cmc.icos") }}
                         </div>
                         <div class="col-2 table-header-el" :class="show_scammers ?  'active' : ''" @click="show_scammers=true">
-                            Scammers
+                            {{ $t("cmc.scammers") }}
                         </div>
                     </div>
                     <table class="table cmc-table">
                         <thead>
                             <tr>
                                 <th scope="col" class="border-right">#</th>
-                                <th scope="col" class="num" v-if="show_scammers">Exit Amount</th>
-                                <th scope="col">Ticker(s)</th>
-                                <th scope="col" v-if="!show_scammers">Name</th>
-                                <th scope="col" class="num" v-if="!show_scammers">Market Cap</th>
-                                <th scope="col" class="num" v-if="!show_scammers">Growth</th>
-                                <th scope="col" class="num" v-if="!show_scammers">Exit Value</th>
-                                <th scope="col" >Owner</th>
+                                <th scope="col" class="num" v-if="show_scammers">
+                                    {{ $t("cmc.exit_amount") }}
+                                </th>
+                                <th scope="col">
+                                    {{ $t("cmc.tickers") }}
+                                </th>
+                                <th scope="col" v-if="!show_scammers">
+                                    {{ $t("cmc.name") }}
+                                </th>
+                                <th scope="col" class="num" v-if="!show_scammers">
+                                    {{ $t("cmc.market_cap") }}
+                                </th>
+                                <th scope="col" class="num" v-if="!show_scammers">
+                                    {{ $t("cmc.growth") }}
+                                </th>
+                                <th scope="col" class="num" v-if="!show_scammers">
+                                    {{ $t("cmc.exit_value" )}}
+                                </th>
+                                <th scope="col" >
+                                    {{ $t("cmc.owner") }}
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -114,9 +128,7 @@ let game = require("../logic/game.js");
 import FundsContainer from './FundsDisplay';
 import Loading from './Loading';
 import Footer from './Footer';
-const auto_refresh_time = 10000; // TODO auto refresh
 let is_destroyed = false;
-
 
 
   export default {

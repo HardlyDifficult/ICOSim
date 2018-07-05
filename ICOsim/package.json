@@ -19,6 +19,7 @@
     "random-seed": "^0.3.0",
     "vue": "^2.5.2",
     "vue-animejs": "^1.0.1",
+    "vue-i18n": "^8.0.0",
     "vue-particles": "^1.0.9",
     "vue-router": "^3.0.1",
     "vue-slider-component": "^2.7.2"

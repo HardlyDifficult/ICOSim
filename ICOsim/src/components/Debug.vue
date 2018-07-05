@@ -240,7 +240,8 @@
 </template>
 
 <script>
-let game = require("../logic/game.js");
+const game = require("../logic/game.js");
+const neb = require("../logic/HardlyNeb.js");
 
 export default {
     name: 'Debug',
@@ -422,31 +423,37 @@ export default {
         },
     },
     mounted() {
-        this.smart_contract_address = game.getSmartContractAddress();
-        this.explorer_smart_contract_url = game.getBlockExplorerURLForContract();
-        if(window.location.search)
-        {
-            game.setTicker(window.location.search.substring(1));
-        }
+        // this.smart_contract_address = game.getSmartContractAddress();
+        // this.explorer_smart_contract_url = game.getBlockExplorerURLForContract();
+        // if(window.location.search)
+        // {
+        //     game.setTicker(window.location.search.substring(1));
+        // }
 
-        this.getGame();
+        // this.getGame();
 
-        this.getBestKnownScammers();
-        this.getCoinMarketCaps();
+        // this.getBestKnownScammers();
+        // this.getCoinMarketCaps();
 
-        setTimeout(() =>
-        { // It takes a second for the wallet game to appear
-            this.is_wallet_missing = !game.isWalletInstalled();
-        }, 1000);
+        // setTimeout(() =>
+        // { // It takes a second for the wallet game to appear
+        //     this.is_wallet_missing = !game.isWalletInstalled();
+        // }, 1000);
 
-        game.directNebWrite("setEventConfig", [{
-          "interval": "25", 
-          "min_reward": "4200000", 
-          "max_reward": "4200000000", 
-          "min_reward_percent": "1", 
-          "max_reward_percent": "300", 
-          "min_length": "3", 
-          "max_length": "6"}]);
+        // game.directNebWrite("setEventConfig", [{
+        //   "interval": "25", 
+        //   "min_reward": "4200000", 
+        //   "max_reward": "4200000000", 
+        //   "min_reward_percent": "1", 
+        //   "max_reward_percent": "300", 
+        //   "min_length": "3", 
+        //   "max_length": "6"}]);
+
+        //   neb.subscribe(function(data)
+        //   {
+        //       console.log(data);
+        //   })
+
     }
 }
 

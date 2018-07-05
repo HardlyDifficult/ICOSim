@@ -3,21 +3,21 @@
     <div class="row mb-5">
         <div class="col-lg-2"></div>
         <div class="col-xl-8 warning-container glow-1">
-            <h3>Getting Started</h3>
+            <h3>{{ $t("no_ext.getting_started") }}</h3>
             <div class="row justify-content-center">
                 <div class="modalbody">
                     <p>
-                        To play ICOSim you need the Nebulas 
+                        {{ $t("no_ext.to_play") }}
                         <a target="_blank" class="highlight underline" href="https://chrome.google.com/webstore/detail/nasextwallet/gehjkhmhclgnkkhpfamakecfgakkfkco">WebExtensionWallet</a>
-                        and some NAS.
+                        {{ $t("no_ext.and_some_nas") }}.
                     </p>
                     <p>
-                        I'll give you money to play!  Just post your address in our <a target="_blank"  class="highlight underline" href="https://discord.gg/2bsDfkv">Discord</a>.
-                        You can also buy NAS from
+                        {{ $t("no_ext.ill_give_you") }} <a target="_blank"  class="highlight underline" href="https://discord.gg/2bsDfkv">Discord</a>.
+                        {{ $t("no_ext.you_can_buy_from") }}
                         <a target="_blank" class="highlight underline" href="https://binance.com/?ref=15811261">Binance</a>.
                     </p>
                     <small class="row justify-content-center mb-3 mt-3">
-                        NAS transactions are super cheap, you can play for weeks for a just a penny.
+                        {{ $t("no_ext.super_cheap") }}.
                     </small>
                 </div>
             </div>
@@ -27,30 +27,29 @@
     <div class="row mb-5 justify-content-center">
         <div class="col-lg-2"></div>
         <div class="col-xl-8 warning-container glow-1">
-            <h3>About ICOSim.io</h3>
+            <h3>{{ $t("no_ext.about.title") }}</h3>
             <div class="row justify-content-center">
                 <div class="modalbody">
                 <p>
-                    Launch your own coin, meet milestones on your roadmap, hire the best shillers in the business, and finally,
-                    culminate all that worth into a lucrative exit scam. The path to your very own moon Lambo starts here*.
+                    {{ $t("no_ext.about.p1") }}*.
                 </p>
                 <p>
-                    100% of NAS spent is redistributed to players who "Exit Scam".  
-                    The value you may claim is determined by the ICOs market cap. 
-                    So hype your ICO before you dump your bags.  
+                    {{ $t("no_ext.about.p2") }}
                 </p>
                 <p>
-                    The amount you can get when exit scamming may go down when others play.
-                    Once you "Exit Scam" you may start over by launching a new ICO.
+                    {{ $t("no_ext.about.p3") }}
                 </p>
                 <p>
-                    Good Luck!
+                    {{ $t("no_ext.about.good_luck") }}
                 </p>
                 <small>
-                    * May not prove profitable.  This is a game!  Do not spend more than you are willing to lose.
+                    * {{ $t("no_ext.about.disclaimer") }}
                     <br>
-                    The funds are managed by our open-source 
-                    <a target="_blank" v-bind:href="explorer_smart_contract_url">Smart Contract</a>.
+                    {{ $t("no_ext.about.open_source") }}
+                    
+                    <a target="_blank" v-bind:href="explorer_smart_contract_url">
+                        {{ $t("no_ext.about.smart_contract") }}
+                    </a>.
                 </small>
                 <br>
                 <br>

@@ -3,14 +3,14 @@
     <div class="row mb-5">
         <div class="col-lg-2"></div>
         <div class="col-xl-8 warning-container glow-1">
-            <h3>Wrong Network!</h3>
+            <h3>{{ $t("wrong_network.title") }}</h3>
             <div class="row justify-content-center">
                 <div class="modalbody">
                     <p>
-                        Please switch the NAS extension wallet to point to MAINNET.
+                        {{ $t("wrong_network.p1") }}
                     </p>
                     <p>
-                        Then refresh the page.
+                        {{ $t("wrong_network.p2") }}
                     </p>
                 </div>
             </div>

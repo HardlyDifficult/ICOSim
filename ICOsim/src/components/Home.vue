@@ -145,8 +145,12 @@ export default {
     },
 
     onTxPosted(resp) {
-      this.showNotification( "Transaction posted", '', game.getBlockExplorerURLForTx(resp.txhash), 'Open in Explorer',3000,true);
-      console.log(resp);
+      this.showNotification($t("notifications.tx_posted"), 
+        '', 
+        game.getBlockExplorerURLForTx(resp.txhash), 
+        $t("notifications.open_in_explorer"),
+        3000,
+        true);
     },
 
     onError(error) 
@@ -165,16 +169,22 @@ export default {
       console.log(error);
     },
 
-    getSuccessMessage(resp){
-      try{
+    getSuccessMessage(resp)
+    {
+      try
+      {
         let obj = JSON.parse(b64DecodeUnicode(resp.data));
-        if(obj['Function'] === 'buy'){
+        if(obj['Function'] === 'buy')
+        {
           let args = JSON.parse(obj['Args']);
-          return `Bought ${args[1]} [${args[0]}]`;
+          return $t("notifications.bought") + ` ${args[1]} [${args[0]}]`;
         }
-      }catch (e) {
+      }
+      catch (e) 
+      {
         console.log(e);
       }
+
       return '';
     },
 
@@ -184,14 +194,20 @@ export default {
         clearTimeout(get_game_timeout);
       }
       this.getGame();
-      this.showNotification( "Transaction successful", this.getSuccessMessage(resp), game.getBlockExplorerURLForTx(resp.hash), 'Open in Explorer', 3000,false);
+      this.showNotification($t("notifications.tx_success"), 
+        this.getSuccessMessage(resp), 
+        game.getBlockExplorerURLForTx(resp.hash), 
+        $t("notifications.open_in_explorer"), 
+        3000,
+        false);
       console.log(resp);
     },
 
     // Write
-    launchICO(icoName, icoTicker) {
-      console.log(`launching ico ${icoName} ticker ${icoTicker}`);
-      game.launchICO(icoName, icoTicker, this.onTxPosted, (resp) => {
+    launchICO(icoName, icoTicker) 
+    {
+      game.launchICO(icoName, icoTicker, this.onTxPosted, (resp) => 
+      {
         this.$router.push({name : 'ico', params : {ticker:  this.launch_ico_ticker}});
         this.onSuccess(resp);
       }, this.onError);
@@ -420,13 +436,11 @@ export default {
   },
   destroyed()
   {
-    console.log("Home destroyed");
     is_destroyed = true;
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
     *{
         color : #eee;

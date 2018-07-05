@@ -1,14 +1,14 @@
 <template>
     <div class="row">
         <div class="col-12">
-            <h3>Loading - please wait while we're {{loadingString}}
+            <h3>{{ $t("loading.loading") }} - {{loadingString}}
               <span class="ellipse">{{ellipse}}</span>
             </h3>
             <br>
-            <h5 v-if="been_a_minute">(Nebulas has been having some issues recently, please be patient)</h5>
+            <h5 v-if="been_a_minute">({{ $t("loading.be_patient") }})</h5>
             
             <br>
-            <h5 v-if="been_a_while">...wow...</h5>
+            <h5 v-if="been_a_while">{{ $t("loading.wow") }}</h5>
         </div>
     </div>
 </template>
@@ -29,12 +29,7 @@ let tick_count = 0;
 
     data() {
       return {
-        strings : [
-          'copy-pasting Whitepapers',
-          'inviting Shillers',
-          'creating our ERC20 token',
-          'moving to a tax haven'
-        ],
+        strings: null,
         current : 0,
         destroyed : false,
         ellipse: "",
@@ -87,14 +82,18 @@ let tick_count = 0;
     beforeDestroy(){
       this.destroyed = true
     },
-
-    mounted(){
-      this.strings = shuffle(this.strings);
+    created()
+    {
+      this.strings = shuffle(this.$t("loading.strings"));
+    },
+    mounted()
+    {
       this.tick();
     },
 
     computed : {
-      loadingString(){
+      loadingString()
+      {
         return this.strings[this.current]
       }
     }

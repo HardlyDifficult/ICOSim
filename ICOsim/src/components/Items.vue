@@ -4,10 +4,10 @@
             <h2>{{ page_title }}</h2>
             <h5 v-if="game.active_ico">
                 <span v-if="!isTeam && game.active_ico.total_production_rate != null">
-                    Production: 
+                    {{ $t("items.production") }}: 
                     <FundsContainer
                         :prefix="'$'"
-                        :label="'/s'"
+                        :label="$t('units.per_s')"
                         instant 
                         style="display:inline-block" 
                         :mystyle="{fontSize:'1.25em', color:'white', backgroundColor:'transparent'}" 
@@ -16,7 +16,7 @@
                         :showdirection=0 /> 
                 </span>
                 <span v-if="isTeam && game.active_ico.total_bonus != null">
-                    Bonus:
+                    {{ $t("items.bonus") }}:
                     <FundsContainer
                         :label="'%'"
                         instant 
@@ -45,18 +45,16 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <p class="title">{{item.name}}</p>
+                                    <p class="title" v-if="isTeam">{{team[item.name].name}}</p>
+                                    <p class="title" v-else>{{item.name}}</p>
                                     <template v-if="isTeam">
                                         <span v-if="game.active_ico">
                                         <p v-if="parseInt(item.user_holdings) > 0" class="member-buy">
-                                            <span v-if="team[item.name].quote">
+                                            <span>
                                                 "{{quote(team[item.name].quote)}}"
                                             </span>
-                                            <span v-else>
-                                                ADVISOR LEVEL {{item.user_holdings}}
-                                            </span>
                                         </p>
-                                        <p v-else class="member-buy">BUY TO UNLOCK ADVISOR</p>
+                                        <p v-else class="member-buy">{{ $t("items.buy_to_unlock_advisor") }}</p>
                                         </span>
                                     </template>
                                 </div>
@@ -67,14 +65,18 @@
 
 
                         <div class="col-12 gray-on-disable">
-                            <p>Price</p>
-                            $<FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" :target="item.user_price ? item.user_price : item.start_price"/>
+                            <p>{{ $t("items.price") }}</p>
+                            $<FundsContainer 
+                                instant 
+                                style="display:inline-block" 
+                                :mystyle="{fontSize:'1.5em', backgroundColor:'transparent'}" 
+                                :target="item.user_price ? item.user_price : item.start_price"/>
                             <span v-if="item.resources_per_s">
-                                <p class="mt-1">Production</p>
-                                <span class="mono">${{item.resources_per_s | resources}}/s</span>
+                                <p class="mt-1">{{ $t("items.production") }}</p>
+                                <span class="mono">${{item.resources_per_s | resources}}{{ $t("units.per_s") }}</span>
                             </span>
                             <span v-else>
-                                <p class="mt-1">Bonus</p>
+                                <p class="mt-1">{{ $t("items.bonus") }}</p>
                                 <span class="mono">{{item.bonus_multiplier | percent}}</span>
                             </span>
                         </div>
@@ -83,9 +85,14 @@
                         <div v-if="game.active_ico" class="col-12">
                             <div class="row">
                                 <div class="col text-center">
-                                    <span v-if="isTeam">Level</span><span v-else>You have</span>: 
-                                    <FundsContainer instant style="display:inline-block" :mystyle="{fontSize:'1.25em', color:'white', backgroundColor:'transparent'}" 
-                                        :target="item.user_holdings" :places="'0'" :showdirection=0 />                                    
+                                    <span v-if="isTeam">{{ $t("items.level") }}</span><span v-else>{{ $t("items.you_have") }}</span>: 
+                                    <FundsContainer 
+                                        instant 
+                                        style="display:inline-block" 
+                                        :mystyle="{fontSize:'1.25em', color:'white', backgroundColor:'transparent'}" 
+                                        :target="item.user_holdings" 
+                                        :places="'0'" 
+                                        :showdirection=0 />                                    
                                 </div>
                             </div>
                             <div class="row">
@@ -124,9 +131,9 @@
                                         <div class="col-12">
                                             <div class="row">
                                                 <div class="col">
-                                                    Buy <span class="mono">{{selections[item.name].number_to_buy | count}}</span>
+                                                    {{ $t("items.buy") }} <span class="mono">{{selections[item.name].number_to_buy | count}}</span>
                                                         <br>
-                                                    <span class="mono">+${{ getBuyProductionGain(item) | resources }}/s</span>
+                                                    <span class="mono">+${{ getBuyProductionGain(item) | resources }}{{ $t("units.per_s") }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -144,15 +151,16 @@
                                 </div>
                                 <div class="col-sm-12">
                                     <button @click="onBuy(item, selections[item.name].number_to_buy.toString())" class="btn btn-buy">
-                                        BUY for <span class="mono">${{getBuyPrice(item) | resourcesApprox}}</span>
+                                        {{ $t("items.buy_for") }} <span class="mono">${{getBuyPrice(item) | resourcesApprox}}</span>
                                         </button>
                                 </div>
                             </div>
                             <div class="row buy-with-nas-container" v-if="isMyGame()">
                                 <div class="col-12 line gray-on-disable mt-2"></div>
                                 <div class="col-12">
-                                    <button class="btn btn-secondary col-12 btn-buy-w-nas" style="cursor:pointer" @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">
-                                        Buy for {{ item.nas_price | nasApprox }}
+                                    <button class="btn btn-secondary col-12 btn-buy-w-nas" style="cursor:pointer" 
+                                        @click="show_buy_nas[item.name] = !show_buy_nas[item.name]">
+                                        {{ $t("items.buy_for") }} {{ item.nas_price | nasApprox }}
                                     </button>
                                 </div>
                                 <div class="col-12 mt-3" v-if="show_buy_nas[item.name]">
@@ -160,14 +168,14 @@
                                         <div class="col-12">
                                             <div class="row text-bottom">
                                                 <div class="col-2 mt-2">
-                                                    Buy:
+                                                    {{ $t("items.buy") }}:
                                                 </div>
                                                 <div class="col-10">
                                                     <input title="nas-buy-input" class="form-control" type="number" min="1" onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : event.charCode >= 48 && event.charCode <= 57" 
                                                         v-model="selections[item.name].number_to_buy_with_nas" @input="$forceUpdate()">
                                                 </div>
                                                 <div class="col-12 mt-2 mono">
-                                                    +${{ getBuyProductionGainWithNas(item) | resources }}/s
+                                                    +${{ getBuyProductionGainWithNas(item) | resources }}{{ $t("units.per_s") }}
                                                     <br>
                                                     {{ getBuyWithNasCost(item) | nas }}
                                                 </div>
@@ -177,10 +185,10 @@
                                     <div class="row mt-2 justify-content-center">
                                         <div class="col-12">
                                             <button style="font-size:0.8em" v-on:click="buyWithNas(item, selections[item.name].number_to_buy_with_nas)" class="btn btn-buy">
-                                                BUY <br>w/ NAS
+                                                {{ $t("items.buy_with_nas") }}
                                             </button>
                                         </div>
-                                    <p class="mt-1" style="color:orange"><small>100% of NAS goes back to players</small></p>
+                                    <p class="mt-1" style="color:orange"><small>{{ $t("items.percent_to_players") }}</small></p>
                                     </div>
                                 </div>
                             </div>
@@ -265,7 +273,7 @@
         },
         quote(value)
         {
-            return value.replace("TICKER", this.game.active_ico.ticker);
+            return value.replace("_", this.game.active_ico.ticker);
         }
     },
     
@@ -283,58 +291,74 @@
         ],
         player_money : 75,
         amount_to_invest: 0,
-        page_title: this.isTeam == true ? "Advisors" : "Roadmap",
-        team : {
-          'Roger Ver' : {
-            img:require('../assets/ver.png'),
-            desc : 'The most passionate in the business',
-            quote: 'TICKER is the real Bitcoin'
-          } ,
-          'John McAfee' : {
-            img:require('../assets/mcafee.png'),
-            desc : 'Each tweet averages $3 million in revenue',
-            quote: 'No. Not joking. TICKER is a legitimate privacy coin and it\'s also selling for less than three cents.'
-          },
-          'Carlos Matos': {
-            img:require('../assets/matos.png'),
-            desc : 'The best Hype Man crypto has ever seen',
-            quote: 'Wassa Wassa Wassa Wassa Up TICKER'
-          },
-          'Tom Lee' : {
-            img:require('../assets/lee.png'),
-            desc : 'The Permabull',
-            quote: 'TICKER to $25k by 2019'
-          },
-          'Craig Grant': {
-            img:require('../assets/grant.png'),
-            desc : 'I started with $100 six months ago',
-            quote : 'Look at the TICKER I earned, and didn\'t buy',
-          },
-          'Ian Balina': {
-            img:require('../assets/balina.png'),
-            desc : '\'Hacking the System\' and only hacked once',
-            quote: 'ICO Grade for TICKER is 99%'
-          },
-          'Suppoman': {
-            img:require('../assets/suppoman.png'),
-            desc : 'Your superhero of cryptocurrency',
-            quote: 'TICKER is one of the TOP 5 BEST ICOs of the year'
-          },
-          'Trevon James': {
-            img:require('../assets/trevon.png'),
-            desc : 'Don\'t talk to me unless it\'s about intangible coins',
-            quote: 'This is day 30 of TICKER, I\'ve earned 30 Bitcoin so far',
-          },
-          'Dr Craig S Wright': {
-            img:require('../assets/dr_fakesatoshi.png'),
-            desc : 'Imagine that, having Satoshi as your advisor!',
-            quote: 'I am going full billionaire mode on TICKER'
-          },
-        },
+        page_title: null,
+        team: null,
+        item_names: null,
         show_buy_nas : {
 
         }
       };
+    },
+    created()
+    {
+        this.page_title= this.isTeam == true ? this.$t("items.advisors") : this.$t("items.roadmap");
+        this.item_names = 
+        this.team = {
+            'Roger Ver': {
+                name: this.$t("items.team.roger.name"),
+                img:require('../assets/ver.png'),
+                desc: this.$t("items.team.roger.desc"),
+                quote: this.$t("items.team.roger.quote"),
+            },
+            'John McAfee': {
+                name: this.$t("items.team.mcafee.name"),
+                img:require('../assets/mcafee.png'),
+                desc: this.$t("items.team.mcafee.desc"),
+                quote: this.$t("items.team.mcafee.quote"),
+            },
+            'Carlos Matos': {
+                name: this.$t("items.team.carlos.name"),
+                img:require('../assets/matos.png'),
+                desc: this.$t("items.team.carlos.desc"),
+                quote: this.$t("items.team.carlos.quote"),
+            },
+            'Tom Lee': {
+                name: this.$t("items.team.tom.name"),
+                img:require('../assets/lee.png'),
+                desc: this.$t("items.team.tom.desc"),
+                quote: this.$t("items.team.tom.quote"),
+            },
+            'Craig Grant': {
+                name: this.$t("items.team.grant.name"),
+                img:require('../assets/grant.png'),
+                desc: this.$t("items.team.grant.desc"),
+                quote: this.$t("items.team.grant.quote"),
+            },
+            'Ian Balina': {
+                name: this.$t("items.team.ian.name"),
+                img:require('../assets/balina.png'),
+                desc: this.$t("items.team.ian.desc"),
+                quote: this.$t("items.team.ian.quote"),
+            },
+            'Suppoman': {
+                name: this.$t("items.team.suppoman.name"),
+                img:require('../assets/suppoman.png'),
+                desc: this.$t("items.team.suppoman.desc"),
+                quote: this.$t("items.team.suppoman.quote"),
+            },
+            'Trevon James': {
+                name: this.$t("items.team.trevon.name"),
+                img:require('../assets/trevon.png'),
+                desc: this.$t("items.team.trevon.desc"),
+                quote: this.$t("items.team.trevon.quote"),
+            },
+            'Dr Craig S Wright': {
+                name: this.$t("items.team.wright.name"),
+                img:require('../assets/dr_fakesatoshi.png'),
+                desc: this.$t("items.team.wright.desc"),
+                quote: this.$t("items.team.wright.quote"),
+            },
+        };
     },
     mounted()
     {

@@ -1,7 +1,10 @@
 <template>
 <span>
-    Penis
-    <div style="height:150vh"></div>
+    <span class="penis"><a href="http://www.businessinsider.com/cryptocurrencty-and-blockchain-startup-prodeum-pulled-an-exit-scam-2018-1">
+        {{ $t("penis.penis") }}
+    </a></span>
+    <div class="whitebackground"></div>
+    <div class="spacer"></div>
 </span>
 </template>
 
@@ -34,6 +37,28 @@ const game = require("../logic/game.js");
     }
     h3{
         padding-top:10px;
+    }
+    .whitebackground
+    {
+        height:150vh;
+        background-color: white;
+        width: 100%;
+        top: 0;
+        left: 0;
+        position: absolute;
+        z-index: -1;
+    }
+    .penis a
+    {
+        top: .5em;
+        position: absolute;
+        color: black;
+        font-size: 1.5em;
+        left: .5em;
+    }
+    .spacer
+    {
+        height:150vh;
     }
 
 </style>

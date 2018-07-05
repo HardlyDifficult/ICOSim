@@ -22,7 +22,7 @@
                 <div class="col-12">
                     {{ $t("airdrops.blocks_remaining") }}: 
                         {{ game.current_event ? game.current_event.number_of_blocks_remaining : 0 | count }}
-                    (~{{(game.current_event ? game.current_event.number_of_blocks_remaining : 0) | blocks_to_seconds}} {{ $t("airdrops.seconds") }})
+                    (~{{(game.current_event ? game.current_event.number_of_blocks_remaining : 0) * 15}} {{ $t("airdrops.seconds") }})
                 </div>
             </div>
         </div>

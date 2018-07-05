@@ -21,7 +21,7 @@ const messages = {
   en: {
     units:
     {
-      per_s: "/ s",
+      per_s: "/s",
     },
     nav: {
       home: "Home",

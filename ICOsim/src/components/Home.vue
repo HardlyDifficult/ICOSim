@@ -145,10 +145,10 @@ export default {
     },
 
     onTxPosted(resp) {
-      this.showNotification($t("notifications.tx_posted"), 
+      this.showNotification(this.$t("notifications.tx_posted"), 
         '', 
         game.getBlockExplorerURLForTx(resp.txhash), 
-        $t("notifications.open_in_explorer"),
+        this.$t("notifications.open_in_explorer"),
         3000,
         true);
     },
@@ -177,7 +177,7 @@ export default {
         if(obj['Function'] === 'buy')
         {
           let args = JSON.parse(obj['Args']);
-          return $t("notifications.bought") + ` ${args[1]} [${args[0]}]`;
+          return this.$t("notifications.bought") + ` ${args[1]} [${args[0]}]`;
         }
       }
       catch (e) 
@@ -194,10 +194,10 @@ export default {
         clearTimeout(get_game_timeout);
       }
       this.getGame();
-      this.showNotification($t("notifications.tx_success"), 
+      this.showNotification(this.$t("notifications.tx_success"), 
         this.getSuccessMessage(resp), 
         game.getBlockExplorerURLForTx(resp.hash), 
-        $t("notifications.open_in_explorer"), 
+        this.$t("notifications.open_in_explorer"), 
         3000,
         false);
       console.log(resp);

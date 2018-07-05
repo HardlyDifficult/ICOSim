@@ -90,7 +90,7 @@
                                     <td scope="row" class="num">
                                         <FundsContainer v-if="ico.sell_price"  :jumpprecision="0.0000000000000000001" :label="'nas'" :places=18 :showdirection=1 :target="ico.sell_price" :mystyle="number_style"/>                                        
                                     </td>
-                                    <td scope="row" >{{ico.player_addr | addr}}</td>
+                                    <td scope="row" ><a :href="ico.player_addr | addressUrl">{{ico.player_addr | addr}}</a></td>
                             </tr>
                             <tr v-if="show_scammers" v-for="(scammer, index) in scammers" v-bind:key="scammer.id">
                                 <td scope="row" class="border-right" >{{index + 1}}</td>
@@ -105,7 +105,7 @@
                                             </router-link><span v-if="index != scammer.retired_icos.length - 1">, </span>
                                         </span>
                                     </td>
-                                <td scope="row" >{{scammer.addr | addr}}</td>
+                                <td scope="row" ><a :href="scammer.addr | addressUrl">{{scammer.addr | addr}}</a></td>
                         </tr>
                         </tbody>
                     </table>

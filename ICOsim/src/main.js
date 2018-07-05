@@ -8,6 +8,7 @@ import VueAnime from 'vue-animejs';
 import VueI18n from 'vue-i18n';
 require('./main.css');
 import VueLocalStorage from 'vue-localstorage'
+const game = require("./logic/game.js");
 
 let s = require('./english.json');
 
@@ -494,6 +495,11 @@ Vue.filter('name', function (value)
 Vue.filter('ticker', function (value) 
 {
   return limitString(value, 8);
+});
+
+Vue.filter('addressUrl', function(address)
+{
+  return game.getExplorerURLForAddress(address);
 });
 
 Vue.filter('resourcesApprox', function (value) {

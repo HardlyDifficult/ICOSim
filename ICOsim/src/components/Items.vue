@@ -102,7 +102,7 @@
                                     <span v-if="item.user_item_production"> 
                                         <FundsContainer
                                             :prefix="'$'"
-                                            :label="'/s'"
+                                            :label="$t('units.per_s')"
                                             instant 
                                             style="display:inline-block" 
                                             :mystyle="{fontSize:'1.25em', color:'white', backgroundColor:'transparent'}" 
